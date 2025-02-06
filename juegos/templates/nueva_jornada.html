@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{%block content%}
+<div class="marco">
+    <div class="row">
+        <div class="col-4 col-md-4 offset-md-0">
+            <h3 class="text-center pt-3 pb-3">Crea una nueva jornada de juego</h3>
+            <form action="{% url 'nueva_jornada' %}" method="post">
+                {%csrf_token%}
+                {%for field in form%}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {%endfor%}
+                <input type="submit" value="Crear" class="btn btn-outline-success">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block js %}
+{{ block.super }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const horaInput = document.querySelector('input[type="time"]');
+        const horaMin = '15:00';
+        const horaMax = '21:00';
+
+        horaInput.addEventListener('change', function () {
+            const seleccion = this.value;
+            if (seleccion < horaMin || seleccion > horaMax) {
+                alert(`Por favor selecciona una hora dentro del horario permitido (${horaMin} - ${horaMax}).`);
+                this.value = ''; // Resetea el valor si no está en el rango permitido
+            }
+        });
+    });
+    </script>
+    
+{% endblock %}
+{%endblock%}
+

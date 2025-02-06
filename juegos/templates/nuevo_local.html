@@ -1,0 +1,21 @@
+{%extends 'base.html' %}
+{%block content%}
+<div class="marco">
+    <div class="row">
+        <div class="col-8 col-md-4 offset-md-2">
+            <h3 class="text-center pt-5">Agregar un nuevo Local de juegos</h3>
+            <form action="{% url 'nuevo_local' %}" method="post">
+                {%csrf_token%}
+                {%for field in form%}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {%endfor%}
+                <input type="submit" value="Crear" class="btn btn-outline-success text-center">
+            </form>
+        </div>
+    </div>
+</div>
+
+{%endblock%}

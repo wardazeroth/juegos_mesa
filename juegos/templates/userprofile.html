@@ -1,0 +1,166 @@
+{%extends 'base.html' %}
+{%block content%}
+<div class="contenido">
+    <h3 class="pt-5 pb-5" style="color: darkcyan;">Crea tu perfil de usuario</h3>
+    <div class="marco">
+        <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+        <h3 class="text-center pt-5">Cambia tu contraseña</h3>
+            <form action="/accounts/change-pass" method="post">
+            {% csrf_token%}
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input
+                type="password"
+                class="form-control"
+                name="password"
+                id="password"
+                placeholder=********
+                required
+                />
+            </div>
+            <div class="mb-3">
+            <label for="pass_repeat" class="form-label">Repita Contraseña</label>
+            <input
+                type="password"
+                class="form-control"
+                name="pass_repeat"
+                id="pass_repeat"
+                placeholder=********
+                required
+            />
+            </div>
+            <input type="submit" value="Enviar">
+            </form>
+            </div>
+        </form>
+        <!-- <div class="col-md-1"></div> -->
+        <div class="col-md-4"><h3 class="text-center pt-5">Editar datos personales</h3>
+            <form action="/edit-user/" method="post">
+                <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    id="email"
+                    placeholder="abc@mail.com"
+                    value="{{ user.email }}"
+                    required
+                />
+                </div>
+                <div class="mb-3">
+                <label for="" class="form-label">Nombre</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="first_name"
+                    id="first_name"
+                    placeholder="tu nombre"
+                    value="{{user.first_name}}"
+                    required
+                />
+                </div>
+                <div class="mb-3">
+                <label for="" class="form-label">Apellido</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="last_name"
+                    id="last_name"
+                    placeholder="tu apellido"
+                    value="{{user.last_name}}"
+                    required
+                />
+                </div>
+                <div class="mb-3">
+                <label for="" class="form-label">Alias</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    name="alias"
+                    id="alias"
+                    placeholder="tu alias"
+                    value="{{user.usuario.alias}}"
+                    required
+                />
+                </div>
+    
+                <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <input
+                    class="form-check-input"
+                    type="radio"
+                    name="rol"
+                    id="jugador"
+                    value="jugador"
+                    required
+                    {%if user.usuario.rol == 'jugador' %}
+                    checked
+                    {%endif%}
+                    />
+                    <label class="form-check-label" for="">Jugador</label>
+                </div>
+            </div>  
+                <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <input
+                    class="form-check-input"
+                    type="radio"
+                    name="rol"
+                    id="anfitrion"
+                    value="anfitrion"
+                    required
+                    {%if user.usuario.rol == 'anfitrion' %}
+                    checked
+                    {%endif%}
+                    />
+                    <label class="form-check-label" for="">Anfitrión</label>
+                </div>
+            </div>        
+            {%csrf_token%}
+            <input type="submit" value="Enviar">
+            </form>
+            </div>
+            <!-- <div class="col-md-1"></div> -->
+            <div class="col-md-3">
+            <h3 class="text-center pt-5">{%if user.usuario.rol == 'anfitrion' %}
+                Tus Partidas
+                {% elif user.usuario.rol == 'Jugador' %}
+                Tus participaciones
+                {%else%}
+                Todas
+                {%endif%}
+    
+            </h3>
+            <form action="/" method="post">
+                <ul class="list-group">
+                {%for inmueble in mis_inmuebles %}
+                <li class="list-group-item">
+                    <h4>{{ inmueble.nombre }}</h4>
+                    <div class="d-flex justify-content-between">
+                    <span>${{inmueble.precio}} por mes</span>
+    
+                    <a href="{% url 'editar_inmueble' id=inmueble.id %}" class="p-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="{% url 'eliminar_inmueble' id=inmueble.id %}" class="p-1 text-danger"
+                        onclick = "eliminar(event)">
+                        <i class="bi bi-trash-fill" id="{{inmueble.id}}"></i>
+                    </a>
+                    </div>
+                </li>
+                {%empty%}
+                <li class="list-group-item">Sin propiedades aún</li>
+                {%endfor%}
+                </ul>
+                
+            </form>
+            </div>
+        <div class="col-md-1"></div>
+    </div>
+
+</div>
+
+{%endblock%}

@@ -1,0 +1,156 @@
+@import url("fontawesome-all.min.css");
+
+.navbar {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+}
+
+body {
+    background: #4568DC;
+    background: -webkit-linear-gradient(to right, #080808, #001044);
+    background: linear-gradient(to right, #000000, #010f3d);
+}
+
+.saludo {
+    margin-left: auto;
+}
+
+#particles-js {
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    z-index: -1;
+}
+
+
+.full-width-carousel {
+    position: relative;
+    width: 100vw;  /* Hace que el carrusel ocupe todo el ancho de la pantalla */
+    left: 50%; /* Mueve el contenedor al centro */
+    transform: translateX(-50%); /* Corrige la alineación centrando el carrusel */
+    max-width: 100vw; /* Asegura que no se exceda del ancho total */
+    z-index: 1;
+}
+
+.full-width-carousel .carousel-inner,
+.full-width-carousel .carousel-item img {
+    width: 100vw; /* Hace que las imágenes ocupen el ancho completo */
+    height: 500px; /* Ajusta la altura según sea necesario */
+    object-fit: cover; /* Mantiene la proporción de la imagen */
+}
+
+
+
+.marco{
+    background: rgba(255, 255, 255, 0.1); /* Ajusta el último valor (0.5) para controlar la opacidad */
+    backdrop-filter: blur(5px); /* Opcional: agrega un efecto de desenfoque */
+    padding: 20px; /* Ajusta el espaciado según necesidad */
+    border-radius: 10px; /* Bordes redondeados opcionales */
+    color: #ffff;
+    text-align: center;
+}
+
+.marco h3 {
+    color: darkturquoise;
+}
+
+.dropdown-menu {
+    background-color: #088e97!important; /* Cambia el color de fondo */
+
+    color: white;
+}
+
+.dropdown-item {
+    color: white !important; /* Cambia el color del texto */
+}
+
+.dropdown-item:hover {
+    background-color: #a70399 !important; /* Cambia el color de fondo al pasar el mouse */
+}
+
+.card {
+    background-color: transparent!important;;
+}
+
+.card-body {
+    color: white!important;
+}
+
+.table {
+    background-color: transparent!important;
+}
+
+.bloque {
+border: 1px solid darkturquoise;
+text-decoration: none;
+}
+
+figure {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+figure > .image {
+    background-position: center center;
+    background-size: cover;
+    display: block;
+    position: relative;
+    width: 8em;
+    height: 5em;
+    
+}
+
+figure > .image img {
+    margin-top: 1em;
+    border-radius: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: all 500ms ease-out;
+}
+
+figure > .capa {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(11,103,123,0.6);
+    transition: all 500ms ease-out;
+    opacity: 0;
+    text-align: center;
+
+}
+
+figure:hover > .capa {
+    opacity: 1;
+    visibility: visible;
+}
+
+figure:hover {
+    transition: all 250ms ease-out;
+    transform: scale(1.6);
+}
+
+figure:hover > .image {
+    transition: all 250ms ease-out;
+    transform: scale(1.6);
+}
+
+figure:hover > .capa p {
+    font-size: 10px;
+}
+
+

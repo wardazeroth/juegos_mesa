@@ -1,0 +1,72 @@
+{%extends 'base.html' %}
+{%block css%}
+<style>
+
+    input {
+    padding: 7px;
+    width: 100%;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease-in-out;
+    outline: none;
+    color: #333;
+    display: flex;
+
+    }
+    form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  p {
+    text-align: center;
+    color: white;
+  }
+
+  a{
+    color: red;
+    text-decoration: None;
+    font-size: 1.5rem
+  }
+
+</style>
+
+{%endblock%}
+
+{%block content%}
+
+<div class="marco">
+    <div>
+        <h1 class="text-center" style="margin-top: 4rem;">Iniciar Sesión</h1>
+    </div>
+    
+    
+    <div class="row" style="margin-top: 2rem;">
+        <div class="col-md-4 d-inline-block mx-auto">
+            {% if form.errors %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>El nombre de usuario y/o la contraseña son incorrectos</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {%endif%}
+            <form method="post" action="{% url 'login' %}">
+                {%csrf_token %}
+                {{form}}
+                <!-- <div class="mb-3">
+                    <label for="formGroupExampleInput" class="form-label text-center">Username</label>
+                    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Nombre" name = "{{form.username.name}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label text-center">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name = "{{form.password.name}}" required>
+                </div> -->
+                <button type="submit" class="btn btn-primary" style = 'margin-top: 2rem;'>Iniciar Sesión</button>
+            </form>
+            <p style="margin-top: 1rem; font-size: 1rem;">Si no tienes cuenta <a href="/accounts/registro">crea una</a></p>
+        </div>
+    </div>
+    </div>
+    {%endblock%}
+</div>
+
