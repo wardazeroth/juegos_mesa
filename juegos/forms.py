@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen
 from datetime import date, time, datetime, timedelta
 
 # @staticmethod
@@ -56,7 +56,7 @@ class PartidaModelForm(ModelForm):
 class JuegoModelForm(ModelForm):
     class Meta:
         model= Juego
-        fields = ['nombre', 'descripcion', 'minimo_jugadores', 'maximo_jugadores']
+        fields = ['nombre', 'descripcion', 'minimo_jugadores', 'maximo_jugadores', 'logo']
         
         widgets= {
             'nombre': forms.TextInput(
@@ -78,8 +78,30 @@ class JuegoModelForm(ModelForm):
                 attrs={
                     'class': 'form-control'
                 }
+            ),
+            'logo': forms.ClearableFileInput(
+                attrs= {
+                    'class': 'form-control'
+                }
             )
         }
+        
+class JuegoImagenForm(ModelForm):
+    class Meta:
+        model = JuegoImagen
+        fields = ['imagen']
+        
+class JuegoImagenMultipleForm(ModelForm):
+    imagen = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                'multiple': True
+            }
+        )
+    )
+    class Meta:
+        model = JuegoImagen
+        fields = ['imagen']
 
 class LocalModelForm(ModelForm):
     class Meta:

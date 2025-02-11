@@ -76,7 +76,8 @@
     <div class="row mb-5">
             <div class="col bloque text-center">
                 <figure>
-                    <a href="#" class="image"><img src="{% static 'img/m&l.webp' %}" alt="" data-position="top center" /></a>
+                    
+                    <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
                     {%for partida in partida_lunes%}
                     <div class="capa mt-4">
                         <a href="{%url 'inscribir' partida.id %}">
@@ -92,51 +93,93 @@
 
     
         <div class="col bloque text-center">
-            {%for partida in partida_martes%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_martes%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
     
         <div class="col bloque text-center">
-            {%for partida in partida_miercoles%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_miercoles%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
     
         <div class="col bloque text-center">
-            {%for partida in partida_jueves%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_jueves%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
     
         <div class="col bloque text-center">
-            {%for partida in partida_viernes%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_viernes%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
     
         <div class="col bloque text-center">
-            {%for partida in partida_sabado%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_sabado%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
 
         <div class="col bloque text-center">
-            {%for partida in partida_domingo%}
-                <p>{{partida.juego.nombre}}</p>
-                <p>{{partida.hora}}</p>
-                <p>{{partida.local}}</p>
-            {%endfor%}
+            <figure>
+                {%for partida in partida_domingo%}
+                <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>
+                <div class="capa mt-4">
+                    <a href="{%url 'inscribir' partida.id %}">
+                        <p class="text-light">{{partida.juego.nombre}}</p>
+                        <p class="text-light">{{partida.hora}}</p>
+                        <p class="text-light">{{partida.local}}</p>
+                    </a>
+                </div>
+                {%endfor%}
+            </figure>
         </div>
     </div>
 </div>

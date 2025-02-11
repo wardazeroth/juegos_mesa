@@ -4,9 +4,9 @@ from django.contrib.auth.models import User, Group
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
 from django.contrib.auth.decorators import login_required
-from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm
+from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego
 from datetime import timedelta, date, datetime
 
 # Create your views here.
@@ -103,7 +103,31 @@ def edit_user(req):
     messages.success(req, '¡Ha actualizado sus datos con éxito!')
     return redirect('/')
 
+def ver_games(req):
+    juegos = Juego.objects.all()
+    context = {
+        'juegos': juegos
+    }
+    
+    return render(req, 'ver_juegos.html', context)
 
+def detalleJuego(req, id):
+    juego = Juego.objects.get(id=id)
+    context = {
+        'juego': juego
+    }
+    return render (req, 'detalle.html', context)
+
+def edit_game(req, id):
+    if req.method == 'GET':
+        juego = Juego.objects.get(id=id)
+        context = {
+            'juego': juego
+        }
+        return render(req, 'editar_juego.html', context)
+    else:
+        juego_id = id
+        
 
 class RegistroView(View):
 
@@ -135,15 +159,25 @@ class NuevoJuegoView(View):
         return super().dispatch(request, *args, **kwargs)
     def get(self, req):
         form = JuegoModelForm()
+        imagen_form = JuegoImagenForm()
         context = {
-            'form': form
+            'form': form,
+            'imagen_form': imagen_form
         }
         return render(req, 'nuevo_juego.html', context)
     
     def post(self, req):
-        form = JuegoModelForm(req.POST)
-        form.save()
-        messages.success(req, 'Juego Creado')
+        form = JuegoModelForm(req.POST, req.FILES)
+        imagen_form = JuegoImagenMultipleForm(req.POST, req.FILES)
+        try:
+            if form.is_valid() and imagen_form.is_valid():
+                juego = form.save()
+                for img in req.FILES.getlist('imagen'):
+                    JuegoImagen.objects.create(juego=juego, imagen = img)
+                messages.success(req, 'Juego Creado')
+        except IntegrityError:
+            messages.warning(req, "Este juego ya está registrado!")
+        
         return redirect('/')
         
 class NuevaPartidaView(View):

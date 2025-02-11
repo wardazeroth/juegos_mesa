@@ -60,6 +60,7 @@
                     Juegos
                     </a>
                     <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'ver_juegos' %}">Ver Juegos</a></li>
                     <li><a class="dropdown-item" href="{% url 'nuevo_juego' %}">Agregar Juego</a></li>
                     <li><a class="dropdown-item" href="{% url 'nuevo_local' %}">Agregar local</a></li>
                     <li><a class="dropdown-item" href="#">Something else here</a></li>
@@ -69,6 +70,9 @@
                 <li class="nav-item">
                     <a class="nav-link text-light" href="{% url 'ver_partidas_reservadas' %}">Ver partidas reservadas</a>
                 </li>   
+                <li>
+                    <a class="nav-link text-light" href="{% url 'ver_juegos' %}">Ver Juegos Disponibles</a>
+                </li>
                 {%endif%}                
                 {%endif%}
 

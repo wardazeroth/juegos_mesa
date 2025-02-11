@@ -24,13 +24,26 @@ class UserProfile(models.Model):
         return f"{self.user.username} - {self.rol}"
     
 class Juego(models.Model):
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, unique= True)
     descripcion = models.TextField()
     minimo_jugadores = models.IntegerField()
     maximo_jugadores = models.IntegerField()
+    logo = models.ImageField(null=True, upload_to='juegos/')
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['nombre'], name='unique_nombre')
+        ]
     
     def __str__(self):
         return f'{self.nombre}'
+    
+class JuegoImagen(models.Model):
+    juego= models.ForeignKey(Juego, on_delete=models.RESTRICT, related_name='imagenes')
+    imagen = models.ImageField(upload_to='juegos/')
+    
+    def __str__(self):
+        return f"Imagen de {self.juego.nombre}"
     
 class Resultado(models.Model):
     puntos_ganador = models.IntegerField()

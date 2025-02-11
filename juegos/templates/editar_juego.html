@@ -1,0 +1,58 @@
+{%extends 'base.html' %}
+{%block content%}
+{%load static%}
+<div class="col-md-4"><h3 class="text-center pt-5">Editar Juego {{juego.nombre}}</h3>
+    <form action="{% url 'editar_juego' id=juego.id %}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+        <label for="text" class="form-label">Descripcion</label>
+        <input
+            type="text"
+            class="form-control"
+            name="descripcion"
+            id="descripcion"
+            placeholder="descripción"
+            value="{{ juego.descripcion }}"
+            required
+        />
+        </div>
+        <div class="mb-3">
+        <label for="" class="form-label">Mínimo Jugadores</label>
+        <input
+            type="number"
+            class="form-control"
+            name="minimo_jugadores"
+            id="minimo_jugadores"
+            placeholder="Mínimo de jugadores"
+            value="{{juego.minimo_jugadores}}"
+            required
+        />
+        </div>
+        <div class="mb-3">
+        <label for="" class="form-label">Máximo Jugadores</label>
+        <input
+            type="number"
+            class="form-control"
+            name="maximo_jugadores"
+            id="maximo_jugadores"
+            placeholder="Máximo de jugadores"
+            value="{{juego.maximo_jugadores}}"
+            required
+        />
+        </div>
+        <div class="mb-3">
+        <label for="" class="form-label">Agrega una imagen</label>
+        <input
+            type="image"
+            class="form-control"
+            name="imagenes"
+            id="imagenes"
+            placeholder="nueva imagen"
+            value="{{juego.imagenes}}"
+            required
+        />
+        </div>
+        {%csrf_token%}
+        <input type="submit" value="Enviar">
+        </form>
+    </div>
+{%endblock%}
