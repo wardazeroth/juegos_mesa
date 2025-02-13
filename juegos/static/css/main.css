@@ -159,3 +159,8 @@ figure:hover > .capa p {
     margin-top: 1rem;
     background-color: rgb(238, 236, 236);
 }
+
+img {
+    width: 5px;
+    height: 8px;
+}

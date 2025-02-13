@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
 from django.contrib.auth.decorators import login_required
-from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm
+from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm
 from django.views import View
 from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego
 from datetime import timedelta, date, datetime
@@ -68,9 +68,12 @@ def change_password (req):
 
 @login_required
 def edit_user(req):
+
     #1.obtengo el usuario actual
+    
     current_user = req.user
     username = current_user.username
+    
     #2. Modifico los atributos del user
     user = User.objects.get(username=username)
     email = req.POST['email']
@@ -78,30 +81,36 @@ def edit_user(req):
     last_name = req.POST['last_name']
     alias = req.POST['alias']
     rol = req.POST['rol']
-    #Actualizar los campos del usuario utilizando update
-    User.objects.filter(username = username).update(
-        email = email,
-        first_name = first_name,
-        last_name = last_name
-    )
-    if not UserProfile.objects.filter(user=user).exists():
+    avatar = req.FILES.get('avatar')
+
+    user = current_user
+    user.email = email
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+    
+    try: 
+        profile = UserProfile.objects.get(user=user)
+        profile.nombre = first_name
+        profile.apellido = last_name
+        profile.alias = alias
+        profile.rol = rol
+        if avatar:
+            profile.avatar = avatar
+        profile.save()
+        
+    except:
         UserProfile.objects.create(
             user = user,
             nombre = first_name,
             apellido = last_name,
             alias = alias,
-            rol = rol
+            rol = rol,
+            avatar = avatar
         )
-    else:
-    #Actualizar el perfil del usuario utilizando update
-        UserProfile.objects.filter(user=user).update(
-            nombre = first_name,
-            apellido = last_name,
-            alias = alias,
-            rol = rol
-    )
     messages.success(req, '¡Ha actualizado sus datos con éxito!')
     return redirect('/')
+
 
 def ver_games(req):
     juegos = Juego.objects.all()
@@ -127,8 +136,23 @@ def edit_game(req, id):
         return render(req, 'editar_juego.html', context)
     else:
         juego_id = id
-        
-
+        juego = Juego.objects.get(id=juego_id)
+        descripcion = req.POST['descripcion']
+        minimo_jugadores = req.POST['minimo_jugadores']
+        maximo_jugadores = req.POST['maximo_jugadores']
+        imagenes = req.FILES.getlist('imagenes', None)
+        logo = req.FILES.get('logo', None)
+        juego.descripcion= descripcion
+        juego.minimo_jugadores = minimo_jugadores
+        juego.maximo_jugadores = maximo_jugadores
+        juego.logo = logo
+        nuevas_img = [JuegoImagen.objects.create(juego=juego, imagen=img) for img in imagenes]
+        juego.imagenes.add(*nuevas_img)
+        # Juego.objects.filter(id=juego_id).update(descripcion, minimo_jugadores, maximo_jugadores, imagenes)
+        juego.save()
+        messages.success(req, 'Juego editado con éxito')
+        return redirect('/') 
+    
 class RegistroView(View):
 
     def get(self, req):

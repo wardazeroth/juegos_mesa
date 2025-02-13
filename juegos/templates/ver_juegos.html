@@ -14,7 +14,7 @@
                 <a href="{% url 'detalle_juego' juego.id %}" style="text-decoration: none;">
                     <div class="card">
                         {%if juego.logo %}
-                            <img src="{{juego.logo.url}}" alt="Logo" class="card-img-top">
+                            <img style="background-color: transparent;" src="{{juego.logo.url}}" alt="Logo" class="card-img-top">
                         {%endif%}    
                             <div class="card-body">
                                 <h5 class="card-title">{{juego.nombre}}</h5>

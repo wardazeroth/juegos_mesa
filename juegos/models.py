@@ -12,6 +12,7 @@ class UserProfile(models.Model):
     puntos = models.IntegerField(null=True, blank=True)
     deuda = models.IntegerField(null=True, blank=True)
     rol = models.CharField(max_length=255, choices=roles, default = 'anfitrion')
+    avatar = models.ImageField(null=True, upload_to='juegos/')
     
     def get_extra_attributes(self):
         """Devuelve atributos extra basados en el rol del usuario"""
@@ -28,7 +29,7 @@ class Juego(models.Model):
     descripcion = models.TextField()
     minimo_jugadores = models.IntegerField()
     maximo_jugadores = models.IntegerField()
-    logo = models.ImageField(null=True, upload_to='juegos/')
+    logo = models.ImageField(blank=True, null=True, upload_to='juegos/')
     
     class Meta:
         constraints = [
@@ -40,7 +41,7 @@ class Juego(models.Model):
     
 class JuegoImagen(models.Model):
     juego= models.ForeignKey(Juego, on_delete=models.RESTRICT, related_name='imagenes')
-    imagen = models.ImageField(upload_to='juegos/')
+    imagen = models.ImageField(upload_to='juegos/', blank=True, null=True)
     
     def __str__(self):
         return f"Imagen de {self.juego.nombre}"

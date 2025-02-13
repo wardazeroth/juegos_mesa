@@ -1,5 +1,5 @@
 {%extends 'base.html'%}
-
+{%load static%}
 {%block content%}
 <div class="marco">
     <div class="row">
@@ -22,7 +22,8 @@
                     {%for jugador in partida_jugador %}
                     <tbody>
                         <tr class="table-active">
-                            <td>{{ jugador.jugador.usuario.alias }}</td>
+                            <td>{{ jugador.jugador.usuario.alias }}<img style="width:4rem; height:4rem; margin-left: 8em;" src="{{ jugador.jugador.usuario.avatar.url }}" alt=""></td>
+                            
                         </tr>
                         {%endfor%}
                     </tbody>

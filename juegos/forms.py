@@ -1,7 +1,43 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile
 from datetime import date, time, datetime, timedelta
+
+class UserProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = ['nombre', 'apellido', 'alias', 'rol', 'avatar']
+        
+        widgets= {
+            
+    'nombre': forms.TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ),
+    'apellido': forms.TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ),
+    'alias': forms.TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ),
+    'rol': forms.TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ),
+    'avatar': forms.ClearableFileInput(
+        attrs= {
+            'class': 'form-control'
+        }
+    )
+}
+
 
 # @staticmethod
 # def generar_opciones_horas():
@@ -22,6 +58,8 @@ class PartidaModelForm(ModelForm):
     class Meta:
         model = Partida
         fields = ['fecha', 'hora', 'local', 'juego']
+        
+        
         
         widgets = {
             'fecha': forms.DateInput(

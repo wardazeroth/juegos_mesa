@@ -37,7 +37,7 @@
         </form>
         <!-- <div class="col-md-1"></div> -->
         <div class="col-md-4"><h3 class="text-center pt-5">Editar datos personales</h3>
-            <form action="/edit-user/" method="post">
+            <form action="/edit-user/" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input
@@ -86,6 +86,19 @@
                     required
                 />
                 </div>
+                <div class="mb-3">
+                    <label for="" class="form-label">Avatar</label>
+                    <input
+                        type="file"
+                        class="form-control"
+                        name="avatar"
+                        id="avatar"
+                        placeholder="tu avatar"
+                        value="{{ user.usuario.avatar }}"
+                    />
+            </div>
+
+
     
                 <div class="mb-3">
                 <div class="form-check form-check-inline">

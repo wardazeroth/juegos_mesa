@@ -29,6 +29,7 @@
 <div id="particles-js"></div>
 <header class="container">
     {%block header%}
+    {%load static%}
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid text-light">
             <a class="navbar-brand text-light" href="#">Navbar</a>
@@ -80,6 +81,9 @@
                 {% if user.is_authenticated %}
 				<form class="saludo  d-inline-block" role="search" method="post" action="{% url 'logout' %}">
 				<label for="#" class="text-light">Hola {{user.first_name}} {{user.last_name}} <img src="https://i.cloudup.com/2ZAX3hVsBE-3000x3000.png" height="50" width="50"></label>
+                {%if user.usuario.avatar %}
+                    <img style="width:4rem; height: 4.5rem; margin-right: 1rem;" src="{{ user.usuario.avatar.url }}" alt="avatar">
+                {%endif%}
 				{% csrf_token %}
 				<button class="btn btn-outline-warning" type="submit">Salir</button>
 				</form>

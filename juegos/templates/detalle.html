@@ -3,66 +3,70 @@
 {%load static%}
 
 {%if juego != None %}
-<h1 class="text-center pt-5 pb-5 text-light">{{juego.nombre}}</h1>
-    
+<form action="/" method="post">
+    <h1 class="text-center pt-5 pb-5 text-light">{{juego.nombre}}</h1>
     <div class="container">
-    <div class="marco">
-        <div class="row">
-            {%if juego.imagenes%}
+        <div class="marco">
+            <div class="row">
+                {%if juego.imagenes%}
+                
+                    <div class="col-md-6">
+                        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                        <div id="carouselExample" class="carousel slide carousel-fade">
+        
+                            <div class="carousel-inner">
+                            {%for imagen in juego.imagenes.all %}
+                            <div class="carousel-item active" data-bs-interval="2000">
+                                <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
+                            </div>
+                            {%endfor%}
+        
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                
+    
+            {%endif%}
             
-                <div class="col-md-6">
-                    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-                    <div id="carouselExample" class="carousel slide carousel-fade">
     
-                        <div class="carousel-inner">
-                        {%for imagen in juego.imagenes.all %}
-                        <div class="carousel-item active" data-bs-interval="2000">
-                            <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
-                        </div>
-                        {%endfor%}
-    
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                        </button>
+    {%endif%}
+    <div class="col-md-1"></div>
+        <div class="col-md-5">
+        <div class="card-body">
+            <h1 class="card-title">{{juego.nombre}}</h5>
+                    <h2 class="card-subtitle mb-2 text-light">{{juego.descripcion}}</h2>        
+                    <ul>
+                        <li class="list-group-item mt-5">
+                            <h6 class="text-center">Mínimo jugadores: {{juego.minimo_jugadores}}</h2>                
+                        </li>
+                        <li class="list-group-item mt-3">
+                            <h6>Máximo jugadores: {{juego.maximo_jugadores}}</h2>                
+                        </li>
+                    </ul>
+                    <div>
+                        {%if user.usuario.rol == 'anfitrion' or user.usuario.rol == 'admin' %}
+                            <a href="{% url 'editar_juego' juego.id %}" class="btn btn-primary">Editar</a>
+                            <a href="#" class="btn btn-primary">Eliminar</a>
+                        {%endif%}
                     </div>
                 </div>
-                </div>
-            
-
-        {%endif%}
-        
-
-{%endif%}
-<div class="col-md-1"></div>
-    <div class="col-md-5">
-    <div class="card-body">
-        <h1 class="card-title">{{juego.nombre}}</h5>
-                <h2 class="card-subtitle mb-2 text-light">{{juego.descripcion}}</h2>        
-                <ul>
-                    <li class="list-group-item mt-5">
-                        <h6 class="text-center">Mínimo jugadores: {{juego.minimo_jugadores}}</h2>                
-                    </li>
-                    <li class="list-group-item mt-3">
-                        <h6>Máximo jugadores: {{juego.maximo_jugadores}}</h2>                
-                    </li>
-                </ul>
-                <div>
-                    {%if user.usuario.rol == 'anfitrion' or user.usuario.rol == 'admin' %}
-                        <a href="#"class="btn btn-primary">Editar</a>
-                        <a href="#" class="btn btn-primary">Eliminar</a>
-                    {%endif%}
-                </div>
+    
             </div>
-
         </div>
+    
     </div>
+        </div>
+</form>
 
-</div>
-</div>
+    
+
 {%endblock%}
