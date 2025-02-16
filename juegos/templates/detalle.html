@@ -55,7 +55,7 @@
                     <div>
                         {%if user.usuario.rol == 'anfitrion' or user.usuario.rol == 'admin' %}
                             <a href="{% url 'editar_juego' juego.id %}" class="btn btn-primary">Editar</a>
-                            <a href="#" class="btn btn-primary">Eliminar</a>
+                            <a href="{% url 'eliminar_juego' id=juego.id %}" class="btn btn-danger" onclick="eliminar(event, '{{ juego.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                         {%endif%}
                     </div>
                 </div>
@@ -67,6 +67,20 @@
         </div>
 </form>
 
-    
+{%endblock%}
+
+{%block js%}
+<script>
+    function eliminar(event, id) {
+        event.preventDefault()
+        const url = '/juegos/eliminar_juego/' + id +'/'
+
+        debugger
+        const confirmacion = confirm('¿Está seguro quer desea eliminar este juego?')
+        if (confirmacion == true) {
+            window.location.href = url
+        }
+    }
+</script>
 
 {%endblock%}

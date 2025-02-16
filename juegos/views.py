@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.decorators import login_required
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local
 from datetime import timedelta, date, datetime
 
 # Create your views here.
@@ -153,6 +153,12 @@ def edit_game(req, id):
         messages.success(req, 'Juego editado con éxito')
         return redirect('/') 
     
+def eliminar_game(req, id):
+    
+    Juego.objects.get(id=id).delete()
+    messages.success(req, '¡Juego eliminado!')
+    return redirect('/juegos/ver_juegos')
+
 class RegistroView(View):
 
     def get(self, req):
@@ -232,11 +238,14 @@ class NuevoLocalView(View):
         context = {
             'form': form
         }       
-        return render(req, 'nuevo_locaL.html', context)
+        return render(req, 'nuevo_local.html', context)
     
     def post(self, req):
         form= LocalModelForm(req.POST)
-        form.save()
+        if form.is_valid():
+            local = form.save(commit=False)
+            local.guardar_coordenadas()
+            local.save()
         messages.success(req, 'Local agregado')
         return redirect('/')
     
@@ -256,17 +265,21 @@ class InscripcionView(View):
     
     def get(self, req, id):
         partida = Partida.objects.get(id=id)
-        partida_jugador = PartidaJugador.objects.raw('select * from juegos_partidajugador where partida_id = %s', [id])
-        context = {
+        partida_jugador = PartidaJugador.objects.filter(partida_id=id)
+        local = Local.objects.filter(id=id)
+
+        context = { 
             'partida': partida,
-            'partida_jugador' : partida_jugador
+            'partida_jugador' : partida_jugador,
+            'local': local
         }
+        
         return render (req, 'inscripcion.html', context)
     
     def post(self, req, id):
         partida = Partida.objects.get(id=id)
         suma = 0
-        partida_jugador = PartidaJugador.objects.raw('select * from juegos_partidajugador where partida_id = %s', [id])
+        partida_jugador = PartidaJugador.objects.filter(partida_id=id)
         for p in partida_jugador:
             print(p)
             suma +=1
@@ -287,3 +300,13 @@ class InscripcionView(View):
             messages.warning(req, "El usuario ya está registrado en esta partida.")
             return redirect('/partidas')
         
+
+def mapa(request):
+    # Coordenadas de prueba (Madrid y Barcelona)
+    data = {
+        "puntos": [
+            {"nombre": "Madrid", "lat": 40.4168, "lng": -3.7038},
+            {"nombre": "Barcelona", "lat": 41.3851, "lng": 2.1734},
+        ]
+    }
+    return render(request, "inscripcion.html", {"data": data})

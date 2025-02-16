@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import requests
 
 # Create your models here.
 
@@ -40,7 +41,7 @@ class Juego(models.Model):
         return f'{self.nombre}'
     
 class JuegoImagen(models.Model):
-    juego= models.ForeignKey(Juego, on_delete=models.RESTRICT, related_name='imagenes')
+    juego= models.ForeignKey(Juego, on_delete=models.CASCADE, related_name='imagenes')
     imagen = models.ImageField(upload_to='juegos/', blank=True, null=True)
     
     def __str__(self):
@@ -58,15 +59,38 @@ class Resultado(models.Model):
 class Local(models.Model):
     nombre = models.CharField(max_length=100)
     ubicacion = models.CharField(max_length=100)
+    latitud = models.FloatField(blank=True, null=True)
+    longitud = models.FloatField(blank= True, null=True)
     def __str__(self):
         return f'{self.nombre}'
     
+    def guardar_coordenadas(self, *args, **kwargs):
+        if not self.latitud or not self.longitud:
+            self.obtener_coordenadas()
+        super().save(*args, **kwargs)
     
+    def obtener_coordenadas(self):
+        url = f'https://nominatim.openstreetmap.org/search?q={self.ubicacion}&format=json'
+        headers = {"User-Agent": "MiApp/1.0 (guardaajavier@gmail.com)"} 
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                    data = response.json()
+                    print(f"Datos obtenidos de la API: {data}") 
+            if data:
+                print(f"Coordenadas encontradas: {data[0]['lat']}, {data[0]['lon']}")
+                self.latitud = float(data[0]['lat'])
+                self.longitud = float(data[0]['lon'])
+            else:
+                print("No se encontraron coordenadas para esta dirección.")
+        except requests.exceptions.RequestException as e:
+            print(f"Error en la API: {e}")
+
 class Partida(models.Model):
     fecha = models.DateField()
     hora = models.TimeField()
-    local = models.ForeignKey(Local, on_delete=models.RESTRICT, related_name='partidas')
-    juego= models.ForeignKey(Juego, on_delete=models.RESTRICT, related_name='partidas')
+    local = models.ForeignKey(Local, on_delete=models.CASCADE, related_name='partidas')
+    juego= models.ForeignKey(Juego, on_delete=models.CASCADE, related_name='partidas')
     resultado= models.ForeignKey(Resultado, on_delete=models.RESTRICT, related_name='partidas', null =True, blank=True)
     
 class PartidaJugador(models.Model):
@@ -82,7 +106,6 @@ class PartidaJugador(models.Model):
     #     if self.jugador.rol != 'jugador':
     #         raise ValueError("El usuario debe tener el rol 'jugador'")
     #     super().save(*args, **kwargs)
-
 
 
 

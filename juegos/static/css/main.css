@@ -90,8 +90,19 @@ body {
 }
 
 .bloque {
+display: flex;
+flex-direction: column;
+align-items: center;
+position: relative;
 border: 1px solid darkturquoise;
 text-decoration: none;
+
+}
+
+.partida-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
 }
 
 figure {
@@ -102,6 +113,7 @@ figure {
     overflow: hidden;
     border-radius: 6px;
     cursor: pointer;
+
 }
 
 .image {
@@ -115,6 +127,7 @@ figure {
 }
 
 .image img {
+    position: relative;
     margin-top: 1em;
     border-radius: 0;
     display: block;
@@ -126,29 +139,37 @@ figure {
 .capa {
     position: absolute;
     top: 0;
-    left: 12px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
     background: rgba(11,103,123,0.6);
     transition: all 500ms ease-out;
     opacity: 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
 }
 
- .capa:hover {
+figure:hover > .capa {
     opacity: 1;
     visibility: visible;
 }
 
 figure:hover {
+    z-index: 10;
     transition: all 250ms ease-out;
     transform: scale(1.6);
+    position: relative;
 
 }
-
-figure:hover > .image {
+/* 
+figure:hover .image {
     transition: all 250ms ease-out;
-    transform: scale(1.6);
-}
+    transform: scale(1.2);
+} */
 
 figure:hover > .capa p {
     font-size: 10px;
@@ -160,7 +181,3 @@ figure:hover > .capa p {
     background-color: rgb(238, 236, 236);
 }
 
-img {
-    width: 5px;
-    height: 8px;
-}

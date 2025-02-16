@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, ver_games, detalleJuego, edit_game
+from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, ver_games, detalleJuego, edit_game, eliminar_game, mapa
 from django.contrib.auth.views import LoginView, LogoutView
 
 
@@ -13,6 +13,7 @@ urlpatterns = [
     path('partidas/<id>/inscribir/', InscripcionView.as_view(), name= 'inscribir'),
     path('juegos/ver_juegos', ver_games, name= 'ver_juegos'),
     path('juegos/editar_juego/<int:id>/', edit_game, name='editar_juego'),
+    path('juegos/eliminar_juego/<int:id>/', eliminar_game, name='eliminar_juego'),
     path('<int:id>/', detalleJuego, name='detalle_juego'),
     path('accounts/userprofile', userprofile, name = 'userprofile'),
     path('accounts/change-pass', change_password, name='change-password'),
