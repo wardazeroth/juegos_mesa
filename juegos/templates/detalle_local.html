@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{%block content%}
+{%load static%}
+
+{%if local != None %}
+
+    <h1 class="text-center pt-5 pb-5 text-light">{{local.nombre}}</h1>
+    <div class="container">
+        <div class="marco">
+            <div class="row">
+                
+                {%if local.imagenes%}
+
+                    <div class="col-md-6">
+                        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                        <div id="carouselExample" class="carousel slide carousel-fade">
+        
+                            <div class="carousel-inner">
+                            {%for imagen in local.imagenes.all %}
+                            <div class="carousel-item active" data-bs-interval="2000">
+                                <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
+                            </div>
+                            {%endfor%}
+        
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                
+    
+            {%endif%}
+            
+    
+    {%endif%}
+    
+        <div class="col-md-6">
+        <div class="card-body">
+
+                    <h2 class="card-subtitle mb-2 text-light">Ubicación: {{local.ubicacion}}</h2>        
+                    <div id="map" style="width: 500px; height: 400px ; margin-top: 2rem;"></div>
+                    <div>
+                        <button class="btn btn-outline-success mt-4 mb-4" id="getLocation">Obtener mi ubicación</button>
+                        <br>
+                        <a id="locationResult" target="_blank"></a>
+                    </div>
+                    <div>
+                        {%if user.usuario.rol == 'anfitrion' or user.usuario.rol == 'admin' %}
+                            <a href="{% url 'editar_local' local.id %}" class="btn btn-primary">Editar</a>
+                            <a href="{% url 'eliminar_local' id=local.id %}" class="btn btn-danger" onclick="eliminar(event, '{{ juego.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                        {%endif%}
+                    </div>
+                </div>
+    
+            </div>
+        </div>
+    
+    </div>
+        </div>
+
+{%endblock%}
+
+{%block js%}
+<script>
+    function eliminar(event, id) {
+        event.preventDefault()
+        const url = '/locales/eliminar_local/' + id +'/'
+
+        debugger
+        const confirmacion = confirm('¿Está seguro quer desea eliminar este juego?')
+        if (confirmacion == true) {
+            window.location.href = url
+        }
+    }
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    let map= L.map('map').setView([{{local.latitud}},  {{local.longitud}}], 15 )
+    
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+
+        L.marker([{{local.latitud}}, {{local.longitud}}]).addTo(map).bindPopup('{{local.nombre}}').openPopup()
+
+       
+    // Conocer la geolocalizacipon del usuario
+    const locationResult = document .querySelector('#locationResult')
+    document.querySelector('#getLocation').addEventListener('click', geolocalizacion)
+
+    function success(position) {
+        let userLat = position.coords.latitude;
+        let userLng = position.coords.longitude;
+        locationResult.textContent = 'Vea su ubicación en el mapa'
+        L.marker([userLat, userLng],{
+                icon: L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map).bindPopup('📍 Estás aquí').openPopup(); 
+        map.setView([userLat, userLng], 15);
+    }
+
+    function geolocalizacion () {
+        navigator.geolocation.getCurrentPosition(success);
+    }
+
+</script>
+{%endblock%}

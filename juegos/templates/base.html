@@ -64,6 +64,7 @@
                     <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{% url 'ver_juegos' %}">Ver Juegos</a></li>
                     <li><a class="dropdown-item" href="{% url 'nuevo_juego' %}">Agregar Juego</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ver_locales' %}">Ver Locales</a></li>
                     <li><a class="dropdown-item" href="{% url 'nuevo_local' %}">Agregar local</a></li>
                     <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>
@@ -131,6 +132,7 @@ https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js
 "></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="{% static 'js/app.js' %}"></script>
+
 {% endblock %}
 </body>
 </html>

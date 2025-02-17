@@ -86,6 +86,13 @@ class Local(models.Model):
         except requests.exceptions.RequestException as e:
             print(f"Error en la API: {e}")
 
+class LocalImagen(models.Model):
+    local= models.ForeignKey(Local, on_delete=models.CASCADE, related_name='imagenes')
+    imagen = models.ImageField(upload_to='juegos/', blank=True, null=True)
+    
+    def __str__(self):
+        return f"Imagen de {self.local.nombre}"
+
 class Partida(models.Model):
     fecha = models.DateField()
     hora = models.TimeField()

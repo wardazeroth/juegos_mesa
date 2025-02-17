@@ -1,0 +1,40 @@
+{%extends 'base.html' %}
+{%block content%}
+{%load static%}
+
+<div class="marco">
+    <div class="col-md-4"><h3 class="text-center pt-5 text-light">Editar Local {{local.nombre}}</h3>
+        <form action="{% url 'editar_local' id=local.id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+            <label for="text" class="form-label">Editar ubicación</label>
+            <input
+                type="text"
+                class="form-control"
+                name="ubicacion"
+                id="ubicacion"
+                placeholder="descripción"
+                value="{{ local.ubicacion }}"
+                required
+                />
+                </div>
+
+                <div class="mb-3">
+                    <label for="" class="form-label">Agrega una imagen</label>
+                    <input
+                        type="file"
+                        class="form-control"
+                        name="imagenes"
+                        id="imagenes"
+                        placeholder="nueva imagen"
+                        value="{{local.imagenes}}"
+                    />
+                    </div>
+        
+            {%csrf_token%}
+            <input class="btn btn-outline-success" type="submit" value="Enviar">
+            </form>
+    </div>
+</div>
+
+{%endblock%}

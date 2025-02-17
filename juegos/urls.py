@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, ver_games, detalleJuego, edit_game, eliminar_game, mapa
+from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, ver_games, detalleJuego, edit_game, eliminar_game, ver_locales, edit_local, eliminar_local, detalleLocal
 from django.contrib.auth.views import LoginView, LogoutView
 
 
@@ -8,7 +8,11 @@ urlpatterns = [
     path('', inicio, name ='inicio'),
     path('nueva_jornada', NuevaPartidaView.as_view(), name ='nueva_jornada'),
     path('juegos/nuevo_juego', NuevoJuegoView.as_view(), name = 'nuevo_juego'),
-    path('nuevo_local', NuevoLocalView.as_view(), name= 'nuevo_local'),
+    path('locales/nuevo_local', NuevoLocalView.as_view(), name= 'nuevo_local'),
+    path('locales/ver_locales', ver_locales, name= 'ver_locales'),
+    path('<int:id>/', detalleLocal, name='detalle_local'),
+    path('locales/editar_local/<int:id>/', edit_local, name='editar_local'),
+    path('locales/eliminar_local/<int:id>/', eliminar_local, name='eliminar_local'),
     path('partidas', partidas, name='ver_partidas_reservadas'),
     path('partidas/<id>/inscribir/', InscripcionView.as_view(), name= 'inscribir'),
     path('juegos/ver_juegos', ver_games, name= 'ver_juegos'),

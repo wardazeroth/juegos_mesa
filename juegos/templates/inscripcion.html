@@ -35,12 +35,18 @@
             </div>
 
     </div>
-    <div class=col-md-5>
+    <div class="col-md-5 mt-4">
 
-        <h1 class="text-light mt-5">{{partida.local.nombre}}</h1>
+        <h3 class="mt-5">{{partida.local.nombre}}</h1>
 
-        <div id="map" style="width: 500px; height: 400px;"></div>
+        <div id="map" style="width: 450px; height: 400px ; margin-top: 2rem;"></div>
+        <div>
+            <button class="btn btn-outline-success mt-4" id="getLocation">Obtener mi ubicación</button>
+            <br>
+            <a id="locationResult" target="_blank"></a>
+        </div>
     </div>
+
 </div>
 </div>
 
@@ -49,7 +55,7 @@
 {%block js%}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-    let map= L.map('map').setView([{{partida.local.latitud}}, {{partida.local.longitud}}], 12 )
+    let map= L.map('map').setView([{{partida.local.latitud}},  {{partida.local.longitud}}], 15 )
     
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -57,6 +63,28 @@
 
 
         L.marker([{{partida.local.latitud}}, {{partida.local.longitud}}]).addTo(map).bindPopup('{{partida.local.nombre}}').openPopup()
+
+       
+    // Conocer la geolocalizacipon del usuario
+    const locationResult = document .querySelector('#locationResult')
+    document.querySelector('#getLocation').addEventListener('click', geolocalizacion)
+
+    function success(position) {
+        let userLat = position.coords.latitude;
+        let userLng = position.coords.longitude;
+        locationResult.textContent = 'Vea su ubicación en el mapa'
+        L.marker([userLat, userLng],{
+                icon: L.icon({
+                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                    iconSize: [30, 30]
+                })
+            }).addTo(map).bindPopup('📍 Estás aquí').openPopup(); 
+        map.setView([userLat, userLng], 15);
+    }
+
+    function geolocalizacion () {
+        navigator.geolocation.getCurrentPosition(success);
+    }
 
 </script>
 {%endblock%}

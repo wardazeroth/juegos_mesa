@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.contrib.auth.decorators import login_required
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen
 from datetime import timedelta, date, datetime
 
 # Create your views here.
@@ -248,6 +248,49 @@ class NuevoLocalView(View):
             local.save()
         messages.success(req, 'Local agregado')
         return redirect('/')
+
+def ver_locales(req):
+    locales = Local.objects.all()
+    context = {
+        'locales': locales
+    }
+    
+    return render(req, 'ver_locales.html', context)
+
+def detalleLocal(req, id):
+    local= Local.objects.get(id=id)
+    context = {
+        'local': local
+    }
+    return render (req, 'detalle_local.html', context)
+
+def edit_local(req, id):
+    if req.method == 'GET':
+        local = Local.objects.get(id=id)
+        context = {
+            'local': local
+        }
+        return render(req, 'editar_local.html', context)
+    else:
+        local_id = id
+        local = Local.objects.get(id=local_id)
+        ubicacion = req.POST['ubicacion']
+        imagenes = req.FILES.getlist('imagenes', None)
+        
+        local.ubicacion= ubicacion
+        local.guardar_coordenadas()
+        nuevas_img = [LocalImagen.objects.create(local=local, imagen=img) for img in imagenes]
+        local.imagenes.add(*nuevas_img)
+        local.save()
+
+        messages.success(req, 'Juego editado con éxito')
+        return redirect('/')
+    
+def eliminar_local(req, id):
+    Local.objects.get(id=id).delete()
+    messages.success(req, '¡Local eliminado!')
+    return redirect('/locales/ver_locales')
+
     
 def partidas(req):
     datos = req.GET
@@ -300,13 +343,3 @@ class InscripcionView(View):
             messages.warning(req, "El usuario ya está registrado en esta partida.")
             return redirect('/partidas')
         
-
-def mapa(request):
-    # Coordenadas de prueba (Madrid y Barcelona)
-    data = {
-        "puntos": [
-            {"nombre": "Madrid", "lat": 40.4168, "lng": -3.7038},
-            {"nombre": "Barcelona", "lat": 41.3851, "lng": 2.1734},
-        ]
-    }
-    return render(request, "inscripcion.html", {"data": data})
