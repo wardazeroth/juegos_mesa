@@ -41,7 +41,7 @@
 
         <div id="map" style="width: 450px; height: 400px ; margin-top: 2rem;"></div>
         <div>
-            <button class="btn btn-outline-success mt-4" id="getLocation">Obtener mi ubicación</button>
+            <button class="btn btn-outline-success mt-4 mb-3" id="getLocation">Obtener mi ubicación</button>
             <br>
             <a id="locationResult" target="_blank"></a>
         </div>
@@ -69,6 +69,7 @@
     const locationResult = document .querySelector('#locationResult')
     document.querySelector('#getLocation').addEventListener('click', geolocalizacion)
 
+
     function success(position) {
         let userLat = position.coords.latitude;
         let userLng = position.coords.longitude;
@@ -80,10 +81,49 @@
                 })
             }).addTo(map).bindPopup('📍 Estás aquí').openPopup(); 
         map.setView([userLat, userLng], 15);
+        obtener_distancia(position)
+
     }
 
+function error() {
+    status.textContent = 'No es posible acceder a tu localización';
+}
+
     function geolocalizacion () {
-        navigator.geolocation.getCurrentPosition(success);
+        if (!navigator.geolocation) {
+            status.textContent = 'Geolocalizador no es soportado por tu navegador';
+        } else {
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+        
+    }
+
+    function obtener_distancia(position) {
+        
+        let userLat = position.coords.latitude
+        let userLng = position.coords.longitude
+        let destLat = {{partida.local.latitud}}
+        let destLng = {{partida.local.longitud}}
+
+        let url =  `https://router.project-osrm.org/route/v1/driving/${userLng},${userLat};${destLng},${destLat}?overview=full&geometries=geojson`
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Ruta obtenida: ', data)
+            let coords = data.routes[0].geometry.coordinates.map(c=> [c[1], c[0]]);
+            L.polyline(coords, {color: 'blue'}).addTo(map);
+            let distancia = data.routes[0].distance
+            let duracion = data.routes[0].duration
+            let dist = (distancia / 1000).toFixed(2)
+            let dur = (duracion / 3600).toFixed(2)
+            locationResult.textContent = `Usted se encuentra a ${dist} kilómetros de distancia de {{partida.local.nombre}}`
+            if (dur >= 1) {
+                locationResult.innerHTML += `<br>El tiempo de viaje será de ${dur} horas`
+            }else {
+                locationResult.innerHTML += `<br>El tiempo de viaje será de ${duracion} minutos`
+            } 
+        })
+        .catch(error => console.error('Error al obtener la ruta:', error))
     }
 
 </script>

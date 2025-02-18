@@ -53,8 +53,8 @@
                     </div>
                     <div>
                         {%if user.usuario.rol == 'anfitrion' or user.usuario.rol == 'admin' %}
-                            <a href="{% url 'editar_local' local.id %}" class="btn btn-primary">Editar</a>
-                            <a href="{% url 'eliminar_local' id=local.id %}" class="btn btn-danger" onclick="eliminar(event, '{{ juego.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                            <a href="{% url 'editar_local' local.id %}" class="btn btn-primary mt-3">Editar</a>
+                            <a href="{% url 'eliminar_local' id=local.id %}" class="btn btn-danger mt-3" onclick="eliminar(event, '{{ juego.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                         {%endif%}
                     </div>
                 </div>
@@ -108,11 +108,49 @@
                 })
             }).addTo(map).bindPopup('📍 Estás aquí').openPopup(); 
         map.setView([userLat, userLng], 15);
+        obtener_distancia(position)
+
     }
+
+function error() {
+    status.textContent = 'No es posible acceder a tu localización';
+}
 
     function geolocalizacion () {
-        navigator.geolocation.getCurrentPosition(success);
+        if (!navigator.geolocation) {
+            status.textContent = 'Geolocalizador no es soportado por tu navegador';
+        } else {
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+        
     }
 
+    function obtener_distancia(position) {
+        
+        let userLat = position.coords.latitude
+        let userLng = position.coords.longitude
+        let destLat = {{local.latitud}}
+        let destLng = {{local.longitud}}
+
+        let url =  `https://router.project-osrm.org/route/v1/driving/${userLng},${userLat};${destLng},${destLat}?overview=full&geometries=geojson`
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Ruta obtenida: ', data)
+            let coords = data.routes[0].geometry.coordinates.map(c=> [c[1], c[0]]);
+            L.polyline(coords, {color: 'blue'}).addTo(map);
+            let distancia = data.routes[0].distance
+            let duracion = data.routes[0].duration
+            let dist = (distancia / 1000).toFixed(2)
+            let dur = (duracion / 3600).toFixed(2)
+            locationResult.textContent = `Usted se encuentra a ${dist} kilómetros de distancia de {{local.nombre}}`
+            if (dur >= 1) {
+                locationResult.innerHTML += `<br>El tiempo de viaje será de ${dur} horas`
+            }else {
+                locationResult.innerHTML += `<br>El tiempo de viaje será de ${duracion} minutos`
+            } 
+        })
+        .catch(error => console.error('Error al obtener la ruta:', error))
+    }
 </script>
 {%endblock%}

@@ -85,6 +85,16 @@ class Local(models.Model):
                 print("No se encontraron coordenadas para esta dirección.")
         except requests.exceptions.RequestException as e:
             print(f"Error en la API: {e}")
+            
+    def calcular_ruta(self, user, perfil= 'driving'):
+        lat1 = self.latitud
+        lon1 = self.longitud
+        
+        
+        url= f'http://router.project-osrm.org/route/v1/{perfil}/{lat1}, {lon1}; {lat2}, {lon2}?overview=false'
+        response = requests.get(url)
+        data = response.json()
+        return data
 
 class LocalImagen(models.Model):
     local= models.ForeignKey(Local, on_delete=models.CASCADE, related_name='imagenes')
