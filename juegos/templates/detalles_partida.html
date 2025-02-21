@@ -22,20 +22,15 @@
                     {%for jugador in partida_jugador %}
                     <tbody>
                         <tr class="table-active">
-                            <td>{{ jugador.jugador.usuario.alias }}<img class="img-jugador" src="{{ jugador.jugador.usuario.avatar.url }}" alt=""></td>
-                            
+                            <td>{{ jugador.jugador.usuario.alias }}<img class="img-jugador" src="{{ jugador.jugador.usuario.avatar.url }}" alt=""></td>                           
                         </tr>
-                        
+                        {%endfor%}
                     </tbody>
-                    {%endfor%}
                 </table>
-                
-                <form action="#" method="post"> 
-                    {%csrf_token%}
-                    <input type="submit" value="Inscribirse en la partida" class="btn btn-outline-success mt-3">
-                </form>
+                <button class="btn btn-outline-success mt-3">Desinscribirse de la partida</button>
             </div>
-            
+        
+
     </div>
     <div class="col-md-5 mt-4">
 

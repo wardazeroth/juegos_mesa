@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{%block content%}
+{%load static%}
+
+<div class="container">
+    <div class="marco">
+        <div class="row">
+            <div class="col-md-4">
+                <h1>{{ user.first_name}} {{user.last_name}}</h1>
+                <h3>{{user.usuario.alias}}</h3>
+                <img class="img-historial" src="{{user.usuario.avatar.url}}" alt="avatar">
+            </div>
+            <div class="col-md-8">
+                <h3>Tus próximas Partidas</h3>
+                <table class="table table-dark table-bordered border-primary mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">Juego</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Local</th>
+                            <th scope="col">Ver partida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for partis in partidas %}
+                        <tr class="table-active">
+                            <td>{{ partis.juego.nombre}}</td>
+                            <td>{{ partis.fecha }}</td>
+                            <td>{{ partis.hora}}</td>
+                            <td>{{ partis.local.nombre}}</td>
+                            <td><a href="{%url 'detalles_partida' partis.id %}">Ver detalle</a></td>
+    
+                        </tr>
+                    {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{%endblock%}

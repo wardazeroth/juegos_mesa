@@ -11,7 +11,7 @@ from datetime import timedelta, date, datetime
 
 # Create your views here.
 
-@login_required
+
 def inicio(req):
     partidas = Partida.objects.all()
     week_day = get_weeks_days()
@@ -110,6 +110,18 @@ def edit_user(req):
         )
     messages.success(req, '¡Ha actualizado sus datos con éxito!')
     return redirect('/')
+
+def historial(req):
+    current_user = req.user
+    user_id = current_user.id
+    partida_jugador = PartidaJugador.objects.filter(jugador_id=user_id)
+    partidas = Partida.objects.raw(f'SELECT * FROM juegos_partida JOIN juegos_partidajugador ON juegos_partida.id = juegos_partidajugador.partida_id AND juegos_partidajugador.jugador_id = {user_id}')
+    context = {
+        'partida_jugador': partida_jugador,
+        'partidas': partidas
+    }
+    
+    return render(req, 'historial.html', context)
 
 
 def ver_games(req):
@@ -227,6 +239,18 @@ class NuevaPartidaView(View):
         form.save()
         messages.success(req, 'Partida Creada')
         return redirect('/')
+    
+def detalles_partida(req, id):
+    partida = Partida.objects.get(id=id)
+    partida_jugador = PartidaJugador.objects.filter(partida_id = id)
+    
+    context = {
+        'partida': partida,
+        'partida_jugador': partida_jugador
+    }
+    
+    return render(req, 'detalles_partida.html', context)
+    
     
 class NuevoLocalView(View):
     @method_decorator(login_required)
