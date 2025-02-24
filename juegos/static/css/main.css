@@ -261,6 +261,10 @@ li > a {
     font-size: 10px;
 }
 
+a {
+    text-decoration: none!important;
+}
+
 p {
     font-size: 12px;
 }
@@ -330,7 +334,7 @@ p {
     width:5rem; 
     height:6rem; 
     object-fit: cover;
-    margin-left: 8em;
+
 }
 
 .img-historial {
@@ -342,3 +346,4 @@ p {
 ul {
     list-style: none;
 }
+

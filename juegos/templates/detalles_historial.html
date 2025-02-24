@@ -1,0 +1,45 @@
+{%extends 'base.html' %}
+{%load static%}
+{%block content%}
+<div class="marco">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="card col-md-5" style="width: 30rem; margin-top: 30rem; margin-top:5rem">
+            <div class="card-body">
+                <h3 class="card-title">{{ detalles_partida.juego.nombre}}</h3>
+                <p class="card-text">{{ detalles_partida.juego.descripcion}}</p>
+                <p class="card-text">{{ detalles_partida.fecha}}</p>
+                <p class="card-text">{{ detalles_partida.hora }}</p>
+                <p class="card-text">{{ detalles_partida.local}}</p>
+    
+                <table class="table table-dark table-bordered border-primary mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">Jugaron:</th>
+                        </tr>
+                    </thead>
+    
+                    {%for jugador in detalles_partida_jugador %}
+                    <tbody>
+                        <tr class="table-active">
+                            <td>{{ jugador.jugador.usuario.alias }}<img class="img-jugador" src="{{ jugador.jugador.usuario.avatar.url }}" alt="">
+                            {%if jugador.puntaje%}
+                                <h4>Puntaje: {{ jugador.puntaje }}</h3>
+                            {%endif%}
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-5 mt-5">
+            {%if detalles_partida.ganador%}
+            <p>.... y el ganador es ...</p>
+            <h3>¡{{ detalles_partida.ganador.usuario.alias }}!</h3>
+        {%endif%}
+        </div>
+
+    </div>
+
+{%endblock%}

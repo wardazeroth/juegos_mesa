@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     nombre = models.CharField(max_length=45)
     apellido = models.CharField(max_length= 45)
     alias = models.CharField(max_length=45)
-    puntos = models.IntegerField(null=True, blank=True)
+    puntaje_general = models.IntegerField(null=True, blank=True, default= 0)
     deuda = models.IntegerField(null=True, blank=True)
     rol = models.CharField(max_length=255, choices=roles, default = 'anfitrion')
     avatar = models.ImageField(null=True, upload_to='juegos/')
@@ -18,7 +18,7 @@ class UserProfile(models.Model):
     def get_extra_attributes(self):
         """Devuelve atributos extra basados en el rol del usuario"""
         if self.rol == 'jugador':
-            return {'puntos': self.puntos, 'deuda': self.deuda}
+            return {'puntos': self.puntaje_general, 'deuda': self.deuda}
         else:
             return {'nombre': self.nombre, 'apellido': self.apellido}
 
@@ -46,15 +46,6 @@ class JuegoImagen(models.Model):
     
     def __str__(self):
         return f"Imagen de {self.juego.nombre}"
-    
-class Resultado(models.Model):
-    puntos_ganador = models.IntegerField()
-    jugador = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name='resultados')
-    def save(self, *args, **kwargs):
-        """Sobreescribir el método save para asegurarse de que solo se puede agregar un jugador con rol 'jugador'"""
-        if self.jugador.rol != 'jugador':
-            raise ValueError("El usuario debe tener el rol 'jugador'")
-        super().save(*args, **kwargs)
         
 class Local(models.Model):
     nombre = models.CharField(max_length=100)
@@ -102,25 +93,63 @@ class LocalImagen(models.Model):
     
     def __str__(self):
         return f"Imagen de {self.local.nombre}"
+    
 
 class Partida(models.Model):
     fecha = models.DateField()
     hora = models.TimeField()
     local = models.ForeignKey(Local, on_delete=models.CASCADE, related_name='partidas')
     juego= models.ForeignKey(Juego, on_delete=models.CASCADE, related_name='partidas')
-    resultado= models.ForeignKey(Resultado, on_delete=models.RESTRICT, related_name='partidas', null =True, blank=True)
+    ganador = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='resultados', null=True, blank=True)
+    
+    def guardar_ganador(self, *args, **kwargs):
+        # if not self.ganador:
+        self.obtener_ganador()
+        super().save(*args, **kwargs)
+        
+    def obtener_ganador(self):
+        partida_jugador = PartidaJugador.objects.filter(partida = self)
+        winner = {}
+        for p in partida_jugador:
+            winner[p.jugador] = p.puntaje
+        print(winner)
+        ganador = max(winner, key = winner.get)
+        print(f'El ganador es... {ganador}')
+        self.ganador = ganador
+    
+    
+class Resultado(models.Model):
+    partida = models.OneToOneField(Partida, on_delete=models.CASCADE, related_name='resultados', null= True)
+    puntos_ganador = models.IntegerField()
+    ganador = models.ForeignKey(UserProfile, on_delete=models.RESTRICT, related_name='resultados')
+    def save(self, *args, **kwargs):
+        """Sobreescribir el método save para asegurarse de que solo se puede agregar un ganadorcon rol 'jugador'"""
+        if self.ganador.rol != 'jugador':
+            raise ValueError("El usuario debe tener el rol 'jugador'")
+        super().save(*args, **kwargs)
+        
+    def guardar_ganador(self, *args, **kwargs):
+        if not self.ganador:
+            self.obtener_ganador()
+        super().save(*args, **kwargs)
+        
+    def obtener_ganador(self):
+        pass
     
 class PartidaJugador(models.Model):
     partida= models.ForeignKey(Partida, on_delete=models.CASCADE, related_name= 'jugadores_partida')
     jugador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='partidas_jugador')
+    puntaje = models.IntegerField(null=True, blank=True, default = 0)
     
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['partida', 'jugador'], name='unique_partida_jugador')
         ]
+        
+        
     # def save(self, *args, **kwargs):
     #     """Sobreescribir el método save para asegurarse de que solo se puede agregar un jugador con rol 'jugador'"""
-    #     if self.jugador.rol != 'jugador':
+    #     if self.jugador.usuario.rol != 'jugador':
     #         raise ValueError("El usuario debe tener el rol 'jugador'")
     #     super().save(*args, **kwargs)
 

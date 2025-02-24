@@ -27,7 +27,8 @@
                         {%endfor%}
                     </tbody>
                 </table>
-                <button class="btn btn-outline-success mt-3">Desinscribirse de la partida</button>
+                
+                <a href="{% url 'desinscribir' partida.id %}" class="btn btn-danger"  onclick="eliminar(event, '{{ partida.id }}')">Desinscribirse de la partida</a>
             </div>
         
 
@@ -50,6 +51,20 @@
 {%endblock%}
 
 {%block js%}
+
+<script>
+    function eliminar(event, id) {
+        event.preventDefault()
+        const url = '/partidas/' + id +'/desinscribir'
+
+        debugger
+        const confirmacion = confirm('¿Está seguro que desea quitarse de esta partida?')
+        if (confirmacion == true) {
+            window.location.href = url
+        }
+    }
+</script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
     let map= L.map('map').setView([{{partida.local.latitud}},  {{partida.local.longitud}}], 15 )

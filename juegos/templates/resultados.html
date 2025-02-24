@@ -1,0 +1,67 @@
+{%extends 'base.html' %}
+{%block content%}
+<div class="marco">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-5 card" style="width: 30rem; margin-top: 30rem; margin-top:5rem">
+            <div class="card-body">
+                <h3 class="card-title">{{ partida.juego.nombre}}</h3>
+                <p class="card-text">{{ partida.juego.descripcion}}</p>
+                <p class="card-text">{{ partida.fecha}}</p>
+                <p class="card-text">{{ partida.hora }}</p>
+                <p class="card-text">{{ partida.local}}</p>
+    
+                <table class="table table-dark table-bordered border-primary mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">Jugaron:</th>
+                        </tr>
+                    </thead>
+                    
+                <form action="{% url 'editar_resultados' partida.id %}" method="post">
+                    {% csrf_token %}
+                    {%for jugador in participantes %}
+                    <tbody>
+                        <tr class="table-active">
+                            <td>
+                                <img class="img-jugador" src="{{ jugador.usuario.avatar.url }}" alt="">{{ jugador.usuario.alias }}<br>
+                            <div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6">
+                                    <label for="" class="form-label">Puntaje:</label>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        name="puntaje_{{jugador.id}}"
+                                        id="puntaje"
+                                        placeholder="Puntaje"
+                                        value="{{jugador.usuario.puntaje}}"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            </td>                           
+                        </tr>                       
+                    </tbody>
+                    {%endfor%}
+                </table>
+            </div>
+            {%csrf_token%}
+            <input type="submit" value="Enviar">
+            </form>
+        </div>
+
+        <div class="col-md-5">
+            <div class="mb-3">
+                <label for="ganador" class="form-label mb-4">Selecciona un ganador</label>
+                <select name="ganador" id="ganador" class="form-select">
+                    <option value="">Participantes:</option>
+                    {%for jugador in participantes%}
+                        <option value="{{ jugador.id }}">{{ jugador.usuario.alias }} - {{ jugador.first_name}} {{ jugador.last_name}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

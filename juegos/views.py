@@ -3,11 +3,14 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado
 from datetime import timedelta, date, datetime
+from django.db.models import Q
+
 
 # Create your views here.
 
@@ -115,14 +118,39 @@ def historial(req):
     current_user = req.user
     user_id = current_user.id
     partida_jugador = PartidaJugador.objects.filter(jugador_id=user_id)
-    partidas = Partida.objects.raw(f'SELECT * FROM juegos_partida JOIN juegos_partidajugador ON juegos_partida.id = juegos_partidajugador.partida_id AND juegos_partidajugador.jugador_id = {user_id}')
+    today = date.today()
+    ahora = datetime.now().time()
+
+    partidas = Partida.objects.filter(
+        Q(fecha = today, hora__gt = ahora) | Q(fecha__gt = today),
+        jugadores_partida__jugador_id = user_id
+    )
+    
+    partidas_anteriores = Partida.objects.filter(
+        Q(fecha = today, hora__lt = ahora) | Q(fecha__lt = today),
+        jugadores_partida__jugador_id = user_id
+    ).order_by('-fecha')
+    
+    print(today)
+
     context = {
         'partida_jugador': partida_jugador,
-        'partidas': partidas
+        'partidas': partidas,
+        'partidas_anteriores': partidas_anteriores
     }
     
     return render(req, 'historial.html', context)
 
+def detalles_historial(req, id):
+    detalles_partida = Partida.objects.get(id=id)
+    detalles_partida_jugador = PartidaJugador.objects.filter(partida_id = id)
+    
+    context = {
+        'detalles_partida': detalles_partida,
+        'detalles_partida_jugador': detalles_partida_jugador
+    }
+    
+    return render(req, 'detalles_historial.html', context)
 
 def ver_games(req):
     juegos = Juego.objects.all()
@@ -317,11 +345,20 @@ def eliminar_local(req, id):
 
     
 def partidas(req):
-    datos = req.GET
-    partidas_dispo= Partida.objects.all()
+    today = date.today()
+    ahora = datetime.now().time()
+
+    partidas_dispo = Partida.objects.filter(
+        Q(fecha = today, hora__gt = ahora) | Q(fecha__gt = today)
+    )
+    
+    partidas_anteriores = Partida.objects.filter(
+        (Q(fecha = today, hora__lt = ahora) | Q(fecha__lt = today))
+    ).order_by('fecha')
     
     context = {
-        'partidas_dispo': partidas_dispo
+        'partidas_dispo': partidas_dispo,
+        'partidas_anteriores': partidas_anteriores
     }
     return render(req, 'ver_partidas_reservadas.html', context)
 
@@ -367,3 +404,41 @@ class InscripcionView(View):
             messages.warning(req, "El usuario ya está registrado en esta partida.")
             return redirect('/partidas')
         
+def desinscripcion (req, id):
+    user_id = req.user.id
+    partida_actual = Partida.objects.get(id=id)
+    PartidaJugador.objects.get(partida_id= partida_actual, jugador_id = user_id).delete()
+    messages.success(req, 'Se ha quitado de esta partida')
+    return redirect('/')
+    
+class ResultadosView(View):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get(self, req, id):
+        partida = Partida.objects.get(id=id)
+        partida_jugador = PartidaJugador.objects.filter(partida_id = id)
+        participantes = User.objects.filter(partidas_jugador__partida = id)
+        
+        context = {
+            'partida': partida,
+            'partida_jugador': partida_jugador,
+            'participantes': participantes
+        }
+        return render (req, 'resultados.html', context)
+    
+    def post(self, req, id):
+        partida = Partida.objects.get(id=id)
+        partida_jugador = PartidaJugador.objects.filter(partida_id = id)
+        
+        for p in partida_jugador:
+            puntaje_key = f'puntaje_{p.jugador.id}'
+            nuevo_puntaje = req.POST.get(puntaje_key)
+            print(puntaje_key)
+            if nuevo_puntaje is not None:
+                p.puntaje = int(nuevo_puntaje)           
+            p.save()
+        partida.guardar_ganador()
+        messages.success(req, 'Puntaje actualizado')
+        return redirect(f'/accounts/historial/{id}/detalles') 

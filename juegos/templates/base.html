@@ -62,9 +62,20 @@
                     <li><a class="dropdown-item" href="{% url 'historial' %}">Historial</a></li>
                     </ul>
                 </li>
+            {%if user.usuario.rol == 'anfitrion' or user.is_staff%}
+                <li class="nav-item dropdown">
+                    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Registros
+                    </a>
+                    <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'historial' %}?from=registro_admin">Asignar resultados</a></li>
+                    </ul>
+                </li>
+            {%else%}
                 <li><a href="#one">Proyectos</a></li>
                 <li><a href="#two">Experiencia</a></li>
                 <li><a href="#three">Contáctame</a></li>
+            {%endif%}
             </ul>
         </nav>
     </div>

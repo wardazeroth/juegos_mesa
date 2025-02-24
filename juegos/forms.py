@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User
 from datetime import date, time, datetime, timedelta
 
 class UserProfileForm(forms.ModelForm):
@@ -158,4 +158,13 @@ class LocalModelForm(ModelForm):
                 }
             )
         }
-
+        
+# class ResultadoModelForm(ModelForm):
+#     class Meta:
+#         model = Resultado
+#         fields = ['ganador']
+        
+#     def __init__(self, *args, partida=None, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         if partida  :
+#             self.fields['ganador'].queryset = User.objects.filter(jugadores_partida__partida = partida)
