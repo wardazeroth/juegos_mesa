@@ -68,6 +68,7 @@
                         Registros
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'nueva_jornada' %}">Registrar jornada<br> de juegos</a></li>
                     <li><a class="dropdown-item" href="{% url 'historial' %}?from=registro_admin">Asignar resultados</a></li>
                     </ul>
                 </li>
@@ -107,9 +108,6 @@
                     {%endif%}    
 
                     {%if user.usuario.rol == 'anfitrion' or user.is_staff%}
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'nueva_jornada' %}">Registrar jornada de juegos</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Juegos
@@ -122,13 +120,35 @@
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
                     </li>
-                    {%else%}
-                    <li class="nav-item">
-                        <a class="nav-link text-light" href="{% url 'ver_partidas_reservadas' %}">Partidas reservadas</a>
-                    </li>   
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Partidas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'ver_partidas_reservadas' %}">Programación</a></li>
+                            <li><a class="dropdown-item" href="{% url 'historial' %}?from=navbar">Historial general</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="nav-link text-light" href="{% url 'foro' %}">Foro</a>
+                    </li>
+                    {%else%}  
                     <li>
                         <a class="nav-link text-light" href="{% url 'ver_juegos' %}">Juegos Disponibles</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Partidas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'ver_partidas_reservadas' %}">Programación</a></li>
+                            <li><a class="dropdown-item" href="{% url 'historial' %}?from=navbar">Historial general</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a class="nav-link text-light" href="{% url 'foro' %}">Foro</a>
+                    </li>
+
                     {%endif%}                
 
     

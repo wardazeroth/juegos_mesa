@@ -43,24 +43,31 @@
                             </td>                           
                         </tr>                       
                     </tbody>
-                    {%endfor%}
+                    {%endfor%}    
                 </table>
             </div>
-            {%csrf_token%}
-            <input type="submit" value="Enviar">
-            </form>
-        </div>
 
+            <input type="submit" class="btn btn-outline-success mt-3" value="Enviar">
+        </form>
+    </div>
+    
+    
         <div class="col-md-5">
+            <form action="{% url 'editar_resultados' partida.id %}" method="post">
+            {% csrf_token %}
             <div class="mb-3">
-                <label for="ganador" class="form-label mb-4">Selecciona un ganador</label>
-                <select name="ganador" id="ganador" class="form-select">
+                <h5>Si no hay puntajes en el juego puedes</h5>
+                <label for="ganador" class="form-label mb-4">seleccionar un ganador</label>
+                <select name="ganador_{{jugador.id}}" id="ganador" class="form-select">
                     <option value="">Participantes:</option>
                     {%for jugador in participantes%}
                         <option value="{{ jugador.id }}">{{ jugador.usuario.alias }} - {{ jugador.first_name}} {{ jugador.last_name}}</option>
                     {%endfor%}
                 </select>
+                <input type="submit" class="btn btn-outline-success mt-3" value="Enviar">
+            </form> 
             </div>
+        
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@
 <div class="container">
     <div class="marco">
         <div class="row">
-{% if request.GET.from == "registro_admin" %}
+{% if request.GET.from == "registro_admin"%}
 <div class="col-md-1"></div>
 <div class="col-md-10">
     <h3>Historial partidas recientes</h3>
@@ -21,14 +21,40 @@
             </tr>
         </thead>
         <tbody>
-            {%for partant in partidas_anteriores %}
+            {%for partant in partidas_anteriores_todas %}
             <tr class="table-active">
                 <td>{{ partant.juego.nombre}}</td>
                 <td>{{ partant.fecha }}</td>
                 <td>{{ partant.hora}}</td>
                 <td>{{ partant.local.nombre}}</td>
                 <td><a href="{%url 'editar_resultados' partant.id %}">Editar resultados</a></td>
-
+            </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+{%elif request.GET.from == "navbar"%}
+<div class="col-md-1"></div>
+<div class="col-md-10">
+    <h3>Historial partidas recientes</h3>
+    <table class="table table-dark table-bordered border-primary mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Juego</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Hora</th>
+                <th scope="col">Local</th>
+                <th scope="col">Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for partant in partidas_anteriores_todas %}
+            <tr class="table-active">
+                <td>{{ partant.juego.nombre}}</td>
+                <td>{{ partant.fecha }}</td>
+                <td>{{ partant.hora}}</td>
+                <td>{{ partant.local.nombre}}</td>
+                <td><a href="{%url 'detalles_historial' partant.id %}">Ver detalles</a></td>
             </tr>
         {%endfor%}
         </tbody>
@@ -71,6 +97,7 @@
     {%endif%}
 
                 <h3>Historial partidas anteriores</h3>
+
                 <table class="table table-dark table-bordered border-primary mt-5">
                     <thead>
                         <tr>
@@ -83,15 +110,14 @@
                     </thead>
                     <tbody>
                         {%for partant in partidas_anteriores %}
-                        <tr class="table-active">
-                            <td>{{ partant.juego.nombre}}</td>
-                            <td>{{ partant.fecha }}</td>
-                            <td>{{ partant.hora}}</td>
-                            <td>{{ partant.local.nombre}}</td>
-                            <td><a href="{%url 'detalles_historial' partant.id %}">Ver detalle</a></td>
-    
-                        </tr>
-                    {%endfor%}
+                            <tr class="table-active">
+                                <td>{{ partant.juego.nombre}}</td>
+                                <td>{{ partant.fecha }}</td>
+                                <td>{{ partant.hora}}</td>
+                                <td>{{ partant.local.nombre}}</td>
+                                <td><a href="{%url 'detalles_historial' partant.id %}">Ver detalle</a></td>
+                            </tr>
+                        {%endfor%}
                     </tbody>
                 </table>
             </div>

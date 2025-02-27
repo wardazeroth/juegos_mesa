@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario
 from datetime import date, time, datetime, timedelta
 
 class UserProfileForm(forms.ModelForm):
@@ -159,6 +159,43 @@ class LocalModelForm(ModelForm):
             )
         }
         
+class PostModelForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['titulo', 'contenido', 'categoria']
+        
+        widgets= {
+            'titulo': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                }
+            ),
+            
+            'contenido': forms.TextInput(
+                attrs={
+                    'class': 'form-control'
+                }
+            ),
+            
+            'categoria': forms.TextInput(
+                attrs={
+                    'class': 'form-select'
+                }
+            )
+                }
+        
+class ComentarioModelForm(ModelForm):
+    class Meta:
+        model = Comentario
+        fields = ['mensaje']
+        
+        widgets= {
+        'mensaje': forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        )     
+            }  
 # class ResultadoModelForm(ModelForm):
 #     class Meta:
 #         model = Resultado

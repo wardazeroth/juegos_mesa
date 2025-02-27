@@ -37,6 +37,9 @@
             {%if detalles_partida.ganador%}
             <p>.... y el ganador es ...</p>
             <h3>¡{{ detalles_partida.ganador.usuario.alias }}!</h3>
+            <div>
+                <img class="img-jugador-front" src="{{ detalles_partida.ganador.usuario.avatar.url }}" alt="">
+            </div>
         {%endif%}
         </div>
 

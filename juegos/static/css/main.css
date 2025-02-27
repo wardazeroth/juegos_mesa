@@ -67,8 +67,8 @@ body {
 
 .dropdown-menu {
     background-color: #088e97!important; /* Cambia el color de fondo */
-
-    color: white;
+    color: white;   
+    z-index: 2000;
 }
 
 .dropdown-item {
@@ -80,7 +80,8 @@ body {
 }
 
 .card {
-    background-color: transparent!important;;
+    background-color: transparent!important;
+    
 }
 
 .card-body {
@@ -114,7 +115,6 @@ figure {
     overflow: hidden;
     border-radius: 6px;
     cursor: pointer;
-
 }
 
 .image {
@@ -144,20 +144,41 @@ figure {
     width: 100%;
     height: 100%;
     opacity: 0;
-    background: rgba(11,103,123,0.6);
+    background: rgba(6, 131, 148, 0.849);
     transition: all 500ms ease-out;
     opacity: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
 
+.capa-2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: rgba(231, 30, 30, 0.555);
+    transition: all 500ms ease-out;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 figure:hover > .capa {
     opacity: 1;
     visibility: visible;
 }
+
+figure:hover > .capa-2 {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 figure:hover {
     z-index: 10;
@@ -173,6 +194,10 @@ figure:hover .image {
 } */
 
 figure:hover > .capa p {
+    font-size: 10px;
+}
+
+figure:hover > .capa-2 p {
     font-size: 10px;
 }
 
@@ -253,7 +278,7 @@ max-width: 100vw; /* Asegura que no se exceda del ancho total */
     }
 }
 
-h2, p, a{
+h2, a{
     font-family: "Press Start 2P", serif;
 }
 
@@ -334,7 +359,19 @@ p {
     width:5rem; 
     height:6rem; 
     object-fit: cover;
+}
 
+.img-foro {
+    width:3rem; 
+    height:3rem; 
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.img-jugador-front {
+    width:14rem; 
+    height:17rem; 
+    object-fit: cover;
 }
 
 .img-historial {

@@ -5,9 +5,9 @@ from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm
+from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario
 from datetime import timedelta, date, datetime
 from django.db.models import Q
 
@@ -18,6 +18,11 @@ from django.db.models import Q
 def inicio(req):
     partidas = Partida.objects.all()
     week_day = get_weeks_days()
+    hoy = date.today()
+    ahora = datetime.now().time()
+    ahora_mas_una = (datetime.combine(datetime.today(), ahora) + timedelta(hours=1)).time()
+
+
     
     partida_lunes = Partida.objects.filter(fecha = week_day[0]).order_by('hora')
     partida_martes = Partida.objects.filter(fecha = week_day[1]).order_by('hora')
@@ -36,7 +41,10 @@ def inicio(req):
         'partida_viernes': partida_viernes,
         'partida_sabado': partida_sabado,
         'partida_domingo': partida_domingo,
-        'week_day': week_day
+        'week_day': week_day,
+        'hoy': hoy,
+        'ahora_mas_una': ahora
+        
     }
     return render(req, 'index.html', context)
 
@@ -131,19 +139,24 @@ def historial(req):
         jugadores_partida__jugador_id = user_id
     ).order_by('-fecha')
     
+    partidas_anteriores_todas = Partida.objects.filter(
+        Q(fecha = today, hora__lt = ahora) | Q(fecha__lt = today)
+    ).order_by('-fecha')
+    
     print(today)
 
     context = {
         'partida_jugador': partida_jugador,
         'partidas': partidas,
-        'partidas_anteriores': partidas_anteriores
+        'partidas_anteriores': partidas_anteriores,
+        'partidas_anteriores_todas': partidas_anteriores_todas
     }
     
     return render(req, 'historial.html', context)
 
 def detalles_historial(req, id):
     detalles_partida = Partida.objects.get(id=id)
-    detalles_partida_jugador = PartidaJugador.objects.filter(partida_id = id)
+    detalles_partida_jugador = PartidaJugador.objects.filter(partida_id = id).order_by('-puntaje')
     
     context = {
         'detalles_partida': detalles_partida,
@@ -434,11 +447,71 @@ class ResultadosView(View):
         
         for p in partida_jugador:
             puntaje_key = f'puntaje_{p.jugador.id}'
+            ganador_key = f'ganador_{p.jugador.id}'
             nuevo_puntaje = req.POST.get(puntaje_key)
+            ganador = req.POST.get(ganador_key)
             print(puntaje_key)
             if nuevo_puntaje is not None:
-                p.puntaje = int(nuevo_puntaje)           
+                p.puntaje = int(nuevo_puntaje)   
+            elif partida.ganador is not None:
+                partida.ganador =  ganador   
+                partida.save()
+
             p.save()
         partida.guardar_ganador()
+        
         messages.success(req, 'Puntaje actualizado')
         return redirect(f'/accounts/historial/{id}/detalles') 
+    
+def foro(req):
+    posteos = Post.objects.all()
+    for p in posteos:
+        p.obtener_respuestas()
+    context = {
+        'posteos': posteos, 
+    }
+    return render(req, 'foro.html', context)
+
+class CrearPostView(View):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    #El get carga el template
+    def get(self, req):
+        form = PostModelForm()
+        context = {
+            'form': form
+        }       
+        return render(req, 'nuevo_post.html', context)
+    
+    def post(self, req):
+        form= PostModelForm(req.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.autor = req.user
+            post.save()
+        messages.success(req, 'Post publicado con éxito')
+        return redirect('/foro')
+
+def detalle_post(req, id):
+    if req.method == 'GET':
+        post = Post.objects.get(id=id)
+        comentarios = Comentario.objects.filter(post=post)
+        form = ComentarioModelForm()
+    
+        context = {
+            'post': post,
+            'form': form,
+            'comentarios': comentarios
+        }
+        return render(req, 'detalle_post.html', context)
+    else:
+        form= ComentarioModelForm(req.POST)
+        post = Post.objects.get(id=id)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.post = post
+            comentario.autor = req.user
+            comentario.save()
+        messages.success(req, 'Respuesta publicada con éxito')
+        return redirect(f'/foro/{id}/detalle_post')

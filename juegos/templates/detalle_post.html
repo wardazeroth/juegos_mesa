@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{%block content%}
+{%load static%}
+
+<div class="marco">
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10"> 
+            <h3>{{ post.titulo }}</h3> 
+            <div class="card text-light" style="margin-top:5rem; padding: 2rem;">
+                
+                <div class="row">
+                    <div class="col-md-2">
+                        <img src="{{post.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="card-text" style="text-align: left;">{{ post.autor.usuario.alias}}</h3>
+                        <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
+                    </div>
+                </div>
+                <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
+
+                {%if post.comentarios%}
+                {%for com in comentarios%} 
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                </div>
+                                <div class="col-md-6">
+                                    <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
+                                    <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                </div>
+                            </div>
+                            <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+                        </div>
+                    </div>
+                </div>
+                {%endfor%}
+                {%endif%}
+            </div>
+        </div>
+    </div>
+
+    {% if request.GET.from == "post"%}
+    <section id="formulario">
+        <div class="row">
+            <div class="col-md-8 offset-md-3">
+                <h3 class="text-center pt-5">Responder</h3>
+                <form action="{% url 'detalle_post' post.id %}?from=post" method="post" enctype="multipart/form-data">
+                    {%csrf_token%}
+                    {%for field in form%}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    {%endfor%}
+                    <input type="submit" value="Enviar" class="btn btn-outline-success">
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {%endif%}
+</div>
+
+
+<div class="row">
+    <div class="col-md-10"></div>
+    <div class="col-md-2">
+        <a href="{% url 'detalle_post' post.id %}?from=post#formulario" class="btn btn-primary mt-3">Responder</a>
+    </div>
+</div>
+
+{%endblock%}
