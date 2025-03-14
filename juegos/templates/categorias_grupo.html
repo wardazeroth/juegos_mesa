@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{%block content%}
+{%load static%}
+    <div class="marco">
+        <div class="row">
+            <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <table class="table table-dark table-bordered border-primary mt-5">
+                        <tbody>
+                            {%for post in posteos %}
+                                <tr class="table-active">
+                                    <td><img src="{{ post.autor.usuario.avatar.url}}" class="img-foro" alt="foto_autor"></td>
+                                    <td><a href="{% url 'detalle_post' 'Post' post.id %}">{{ post.titulo }}</a><br>{{ post.autor.usuario.alias }}</td>
+                                    <td><a href="{% url 'categorias' %}" class="btn btn-primary mt-3">{{ post.categoria}}</a></td>
+                                    <td> cantidad visitas </td>
+                                    <td> {{post.respuestas}} respuestas</td>
+                                </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 import requests
 
 # Create your models here.
@@ -159,13 +161,23 @@ class Categoria(models.Model):
     def __str__(self):
         return f'{self.nombre}'
     
+class Like(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    content_type= models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        unique_together = ('usuario', 'content_type', 'object_id')  # Evita que un usuario dé más de un like a un post
+    
 class Post(models.Model):
     titulo = models.CharField(max_length=255, unique= True)
     contenido = models.TextField()
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name= 'posts')
     autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name= 'posts')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     respuestas = models.IntegerField(null=True, blank= True)
+    likes = GenericRelation(Like)
     
     def obtener_respuestas(self):
         comentarios = Comentario.objects.filter(post = self)
@@ -177,6 +189,8 @@ class Post(models.Model):
         self.respuestas = suma
         self.save()
             
+    def total_likes(self):
+        return self.likes.count()  # Cuenta los likes relacionados
     
     def __str__(self):
         return f'{self.titulo}'
@@ -186,3 +200,16 @@ class Comentario(models.Model):
     mensaje = models.TextField()
     autor = models.ForeignKey(User, on_delete= models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    likes = GenericRelation(Like)
+    
+    def total_likes(self):
+        return self.likes.count()  # Cuenta los likes relacionados
+
+
+# class Like(models.Model):
+#     post = models.ForeignKey(Post, on_delete= models.CASCADE, related_name= 'likes')
+#     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+#     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    
+#     class Meta:
+#         unique_together = ('post', 'usuario')  # Evita que un usuario dé más de un like a un post

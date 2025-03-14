@@ -84,7 +84,7 @@ class PartidaModelForm(ModelForm):
             ),
             'juego': forms.Select(
                 attrs={
-                    'class': 'forms-select'
+                    'class': 'form-select'
                 }
             )
         }
@@ -177,7 +177,7 @@ class PostModelForm(ModelForm):
                 }
             ),
             
-            'categoria': forms.TextInput(
+            'categoria': forms.Select(
                 attrs={
                     'class': 'form-select'
                 }

@@ -7,8 +7,8 @@
             {%for post in posteos %}
                 <tr class="table-active">
                     <td><img src="{{ post.autor.usuario.avatar.url}}" class="img-foro" alt="foto_autor"></td>
-                    <td><a href="{% url 'detalle_post' post.id %}">{{ post.titulo }}</a><br>{{ post.autor.usuario.alias }}</td>
-                    <td>{{ post.categoria}}</td>
+                    <td><a href="{% url 'detalle_post' 'Post' post.id %}">{{ post.titulo }}</a><br>{{ post.autor.usuario.alias }}</td>
+                    <td><a href="{% url 'categorias_group' post.categoria.id %}" class="btn btn-primary mt-3">{{ post.categoria}}</a></td>
                     <td> cantidad visitas </td>
                     <td> {{post.respuestas}} respuestas</td>
                 </tr>

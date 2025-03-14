@@ -194,7 +194,7 @@ figure:hover .image {
 } */
 
 figure:hover > .capa p {
-    font-size: 10px;
+    font-size: 8px;
 }
 
 figure:hover > .capa-2 p {

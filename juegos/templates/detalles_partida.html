@@ -131,7 +131,7 @@ function error() {
             if (dur >= 1) {
                 locationResult.innerHTML += `<br>El tiempo de viaje será de ${dur} horas`
             }else {
-                locationResult.innerHTML += `<br>El tiempo de viaje será de ${duracion} minutos`
+                locationResult.innerHTML += `<br>El tiempo de viaje será de ${(duracion)} minutos`
             } 
         })
         .catch(error => console.error('Error al obtener la ruta:', error))

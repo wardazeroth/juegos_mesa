@@ -1,16 +1,17 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
+from django.http import JsonResponse
 from django.contrib.auth.models import User, Group
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like
 from datetime import timedelta, date, datetime
 from django.db.models import Q
-
 
 # Create your views here.
 
@@ -493,25 +494,177 @@ class CrearPostView(View):
         messages.success(req, 'Post publicado con éxito')
         return redirect('/foro')
 
-def detalle_post(req, id):
+def detalle_post(req, modelo, id):
     if req.method == 'GET':
-        post = Post.objects.get(id=id)
-        comentarios = Comentario.objects.filter(post=post)
-        form = ComentarioModelForm()
-    
-        context = {
-            'post': post,
-            'form': form,
-            'comentarios': comentarios
-        }
-        return render(req, 'detalle_post.html', context)
+        if modelo == 'Post':
+            post = Post.objects.get(id=id)
+            comentarios = Comentario.objects.filter(post=post)
+            form = ComentarioModelForm()
+            content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+            content_type_coment = ContentType.objects.get(app_label= 'juegos', model = 'Comentario')
+            
+            if req.user.is_authenticated:
+                
+                liked_post = Like.objects.filter(content_type = content_type, object_id=id, usuario=req.user).exists()
+                liked_coments = {com.id : Like.objects.filter(content_type = content_type_coment, object_id = com.id, usuario= req.user).exists()
+                for com in comentarios } 
+                # liked = Like.objects.filter(object_id = id, usuario = req.user)
+                context = {
+                'post': post,
+                'form': form,
+                'comentarios': comentarios, 
+                'liked_post': liked_post,
+                'liked_coments': liked_coments
+            }
+            return render(req, 'detalle_post.html', context)
+        else:
+            post = Post.objects.get(comentarios__id= id)
+            comentarios = Comentario.objects.filter(post=post)
+            form = ComentarioModelForm()
+            content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+            content_type_post = ContentType.objects.get(app_label= 'juegos', model = 'Post')
+            
+            if req.user.is_authenticated:
+                
+                liked_coments = { com.id: Like.objects.filter(content_type = content_type, object_id=com.id, usuario=req.user).exists() 
+                    for com in comentarios
+                    } 
+                liked_post = Like.objects.filter(content_type=content_type_post, usuario=req.user).exists()
+                # liked = Like.objects.filter(object_id = id, usuario = req.user)
+                context = {
+                'post': post,
+                'form': form,
+                'comentarios': comentarios, 
+                'liked_coments': liked_coments,
+                'liked_post': liked_post
+            }
+            return render(req, 'detalle_post.html', context)
+        
     else:
-        form= ComentarioModelForm(req.POST)
-        post = Post.objects.get(id=id)
+        if modelo == 'Post':
+            form= ComentarioModelForm(req.POST)
+            post = Post.objects.get(id=id)
+        else:
+            form= ComentarioModelForm(req.POST)
+            post = Post.objects.get(comentarios__id= id)
         if form.is_valid():
             comentario = form.save(commit=False)
             comentario.post = post
             comentario.autor = req.user
             comentario.save()
+        
         messages.success(req, 'Respuesta publicada con éxito')
-        return redirect(f'/foro/{id}/detalle_post')
+        return redirect(f'/foro/{modelo}/{id}/detalle_post')
+    
+def categorias(req):
+    if req.method == 'GET':
+        categorias = Categoria.objects.all()
+        context = {
+            'categorias': categorias
+        }
+        return render(req, 'foro_categorias.html', context)
+    else:
+        categoria_nombre = req.POST['nombre']
+        Categoria.objects.create(nombre = categoria_nombre)
+        messages.success(req, 'Categoria creada')
+        return redirect('/foro/categorias')
+        
+def categorias_group(req, id):
+    categoria = Categoria.objects.get(id=id)
+    posteos = Post.objects.filter(categoria = categoria)
+
+    context = {
+        'posteos': posteos
+    }   
+    return render(req, 'categorias_grupo.html', context)
+
+@login_required
+def reaccionar(req, modelo, id):
+    
+    usuario = req.user
+    
+    content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+    print(content_type)
+    liked = Like.objects.filter(content_type = content_type, object_id=id, usuario=usuario).exists()
+    
+    if liked:
+        Like.objects.filter(content_type= content_type, object_id=id, usuario=usuario).delete()
+        liked = False
+    else:
+
+        Like.objects.create(content_type= content_type, object_id=id, usuario=usuario) 
+        
+        liked = True
+    return redirect(f'/foro/{modelo}/{id}/detalle_post')
+
+def editar_post(req, modelo, id):
+    if req.method == 'GET':
+        post = Post.objects.get(id=id)
+        comentarios = Comentario.objects.filter(post=post)
+        form = ComentarioModelForm()
+        content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+        content_type_coment = ContentType.objects.get(app_label= 'juegos', model = 'Comentario')
+            
+        if req.user.is_authenticated:
+            
+            liked_post = Like.objects.filter(content_type = content_type, object_id=id, usuario=req.user).exists()
+            liked_coments = {com.id : Like.objects.filter(content_type = content_type_coment, object_id = com.id, usuario= req.user).exists()
+            for com in comentarios } 
+            # liked = Like.objects.filter(object_id = id, usuario = req.user)
+            context = {
+            'post': post,
+            'form': form,
+            'comentarios': comentarios, 
+            'liked_post': liked_post,
+            'liked_coments': liked_coments
+            }
+            return render(req, 'detalle_post.html', context)
+    else:
+        post = Post.objects.get(id=id)
+        contenido = req.POST['contenido']
+        post.contenido = contenido
+        post.save()
+        messages.success(req, 'Post editado con éxito')
+        return redirect(f'/foro/{modelo}/{id}/detalle_post') 
+
+def eliminar_post(req, id):
+    Post.objects.get(id = id).delete()
+    messages.success(req, 'Ha eliminado el post')
+    return redirect('/foro')
+
+def editar_comentario(req, modelo, id):
+    if req.method == 'GET':
+        post = Post.objects.get(comentarios__id= id)
+        comentarios = Comentario.objects.filter(post=post)
+        form = ComentarioModelForm()
+        content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+        content_type_post = ContentType.objects.get(app_label= 'juegos', model = 'Post')
+        
+        if req.user.is_authenticated:
+            
+            liked_coments = { com.id: Like.objects.filter(content_type = content_type, object_id=com.id, usuario=req.user).exists() 
+                for com in comentarios
+                } 
+            liked_post = Like.objects.filter(content_type=content_type_post, usuario=req.user).exists()
+            # liked = Like.objects.filter(object_id = id, usuario = req.user)
+            context = {
+            'post': post,
+            'form': form,
+            'comentarios': comentarios, 
+            'liked_coments': liked_coments,
+            'liked_post': liked_post
+        }
+        return render(req, 'detalle_post.html', context)
+        
+    else:
+        comentarios = Comentario.objects.get(id=id)
+        mensaje = req.POST['mensaje']
+        comentarios.mensaje = mensaje
+        comentarios.save()
+        messages.success(req, 'Comentario editado con éxito')
+        return redirect(f'/foro/{modelo}/{id}/detalle_post') 
+
+def eliminar_comentario(req, id):
+    Comentario.objects.get(id = id).delete()
+    messages.success(req, 'Ha eliminado el comentario')
+    return redirect('/foro')
