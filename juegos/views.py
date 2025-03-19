@@ -523,13 +523,13 @@ def detalle_post(req, modelo, id):
             form = ComentarioModelForm()
             content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
             content_type_post = ContentType.objects.get(app_label= 'juegos', model = 'Post')
-            
+
             if req.user.is_authenticated:
                 
                 liked_coments = { com.id: Like.objects.filter(content_type = content_type, object_id=com.id, usuario=req.user).exists() 
                     for com in comentarios
                     } 
-                liked_post = Like.objects.filter(content_type=content_type_post, usuario=req.user).exists()
+                liked_post = Like.objects.filter(content_type=content_type_post, object_id = post.id ,usuario=req.user).exists()
                 # liked = Like.objects.filter(object_id = id, usuario = req.user)
                 context = {
                 'post': post,

@@ -21,20 +21,69 @@
                 </div>
 
                 {%if request.GET.from == "editar_post"%}
-                <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                    <label for="text" class="form-label">Editar</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="contenido"
-                        id="contenido"
-                        placeholder="contenido"
-                        value="{{ post.contenido }}"
-                        required
-                    />
-                    </div>
+                    <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                        <label for="text" class="form-label">Editar</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="contenido"
+                            id="contenido"
+                            placeholder="contenido"
+                            value="{{ post.contenido }}"
+                            required
+                        />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                            {%if liked_post%}
+                            <div class="actionBar">
+                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
+                                {%if post.total_likes > 1%}
+                                <span class="reaction-text">
+                                    {{post.total_likes}} Likes
+                                {%elif post.total_likes == 0 %}
+                                <span class="reaction-text"> Like
+                                </span>
+                                {%else%}
+                                <span class="reaction-text">
+                                    {{post.total_likes}} Like
+                                </span>
+                                    {%endif%}
+                            </div>
+                                
+                            {%else%}
+                                <div class="actionBar">
+                                    <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
+                                    <span class="reaction-text">{{post.total_likes}} 
+                                        {%if post.total_likes > 1%}
+                                            Likes
+                                        {%else%}
+                                            Like
+                                    </span>
+                                        {%endif%}
+                                </div>
+                            {%endif%}
+        
+                            </div>
+                        </div>
+                        {%if post.autor == request.user%}
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-2">
+                                <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                            
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                            </div>
+                        </div>
+                    </form>
+                {%endif%}
+                {%else%}
+                    <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
                     <div class="row">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
@@ -66,70 +115,21 @@
                                     {%endif%}
                             </div>
                         {%endif%}
-    
+
                         </div>
                     </div>
-                    {%if post.autor == request.user%}
+                {%if post.autor == request.user%}
                     <div class="row">
                         <div class="col-md-1"></div>
                         <div class="col-md-2">
-                            <input type="submit" value="Editar" class="btn btn-primary mt-3">
-                        
+                            <a href="{% url 'editar_post' 'Post' post.id %}?from=editar_post" class="btn btn-primary mt-3">Editar</a>
                         </div>
                         <div class="col-md-2">
                             <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                         </div>
                     </div>
-                </form>
-                    {%endif%}
-                {%else%}
-                <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
-                <div class="row">
-                    <div class="col-md-8"></div>
-                    <div class="col-md-4">
-                    {%if liked_post%}
-                    <div class="actionBar">
-                        <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
-                        {%if post.total_likes > 1%}
-                        <span class="reaction-text">
-                            {{post.total_likes}} Likes
-                        {%elif post.total_likes == 0 %}
-                        <span class="reaction-text"> Like
-                        </span>
-                        {%else%}
-                        <span class="reaction-text">
-                            {{post.total_likes}} Like
-                        </span>
-                            {%endif%}
-                    </div>
-                        
-                    {%else%}
-                        <div class="actionBar">
-                            <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
-                            <span class="reaction-text">{{post.total_likes}} 
-                                {%if post.total_likes > 1%}
-                                    Likes
-                                {%else%}
-                                    Like
-                            </span>
-                                {%endif%}
-                        </div>
-                    {%endif%}
-
-                    </div>
-                </div>
-                {%if post.autor == request.user%}
-                <div class="row">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-2">
-                        <a href="{% url 'editar_post' 'Post' post.id %}?from=editar_post" class="btn btn-primary mt-3">Editar</a>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                    </div>
-                </div>
                 {%endif%}
-            {%endif%}
+                {%endif%}
 
                 {%if post.comentarios%}
                 {%for com in comentarios%} 
@@ -145,8 +145,8 @@
                                     <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
                                 </div>
                             </div>
-                            {%if request.GET.from == "editar_comment"%}
-                            <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
+                            {% if request.GET.editar_comment == com.id|stringformat:"s" %}
+                            <form action="{% url 'editar_comentario' 'Comentario' com.id %}" id="edit" method="post" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                 <label for="text" class="form-label">Editar</label>
@@ -200,8 +200,11 @@
                                         <input type="submit" value="Editar" class="btn btn-primary mt-3">
                                     </div>
                                     <div class="col-md-2">
-                                        <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                                        <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
                                     </div>
+                                    <!-- <div class="col-md-2">
+                                        <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                                    </div> -->
                                 </div>
                                 </form>
                                 {%endif%}
@@ -244,8 +247,9 @@
                                 <div class="row">
                                     <div class="col-md-1"></div>
                                     <div class="col-md-2">
-                                        <a href="{% url 'editar_comentario' 'Comentario' com.id %}?from=editar_comment" class="btn btn-primary mt-3">Editar</a>
+                                        <a href="?editar_comment={{ com.id }}#edit" class="btn btn-primary mt-3">Editar</a>
                                     </div>
+
                                     <div class="col-md-2">
                                         <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                                     </div>
