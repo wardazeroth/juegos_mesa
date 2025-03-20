@@ -580,11 +580,16 @@ def categorias_group(req, id):
 
 @login_required
 def reaccionar(req, modelo, id):
+    if not req.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return JsonResponse({"error": "Invalid request"}, status=400)
     
     usuario = req.user
-    
     content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
     print(content_type)
+    
+    model_class = content_type.model_class()
+    objeto = model_class.objects.get(id = id)
+    
     liked = Like.objects.filter(content_type = content_type, object_id=id, usuario=usuario).exists()
     
     if liked:
@@ -595,7 +600,9 @@ def reaccionar(req, modelo, id):
         Like.objects.create(content_type= content_type, object_id=id, usuario=usuario) 
         
         liked = True
-    return redirect(f'/foro/{modelo}/{id}/detalle_post')
+        
+    
+    return JsonResponse({'liked':liked, 'total_likes': objeto.total_likes()})
 
 def editar_post(req, modelo, id):
     if req.method == 'GET':

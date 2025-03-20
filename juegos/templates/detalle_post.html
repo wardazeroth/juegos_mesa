@@ -38,9 +38,13 @@
                         <div class="row">
                             <div class="col-md-8"></div>
                             <div class="col-md-4">
-                            {%if liked_post%}
+                                
                             <div class="actionBar">
-                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
+                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
+                                {%if liked_post%}
+                                    <i class="fa-solid fa-thumbs-up like"></i>
+                                {%else%}
+                                    <i class="fa-regular fa-thumbs-up like"></i>
                                 {%if post.total_likes > 1%}
                                 <span class="reaction-text">
                                     {{post.total_likes}} Likes
@@ -52,19 +56,9 @@
                                     {{post.total_likes}} Like
                                 </span>
                                     {%endif%}
+                                </a>
                             </div>
-                                
-                            {%else%}
-                                <div class="actionBar">
-                                    <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
-                                    <span class="reaction-text">{{post.total_likes}} 
-                                        {%if post.total_likes > 1%}
-                                            Likes
-                                        {%else%}
-                                            Like
-                                    </span>
-                                        {%endif%}
-                                </div>
+
                             {%endif%}
         
                             </div>
@@ -87,32 +81,27 @@
                     <div class="row">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
-                        {%if liked_post%}
-                        <div class="actionBar">
-                            <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
-                            {%if post.total_likes > 1%}
-                            <span class="reaction-text">
-                                {{post.total_likes}} Likes
-                            {%elif post.total_likes == 0 %}
-                            <span class="reaction-text"> Like
-                            </span>
-                            {%else%}
-                            <span class="reaction-text">
-                                {{post.total_likes}} Like
-                            </span>
-                                {%endif%}
-                        </div>
-                            
-                        {%else%}
+
                             <div class="actionBar">
-                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
-                                <span class="reaction-text">{{post.total_likes}} 
-                                    {%if post.total_likes > 1%}
-                                        Likes
-                                    {%else%}
-                                        Like
-                                </span>
+                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
+                                {%if liked_post%}
+                                    <i class="fa-solid fa-thumbs-up like"></i>
+                                {%else%}
+                                    <i class="fa-regular fa-thumbs-up like"></i>
+                                {%if post.total_likes > 1%}
+                                <span class="reaction-text">
+                                    {{post.total_likes}}
+                                </span> Likes
+                                {%elif post.total_likes == 0 %}
+                                <span class="reaction-text">
+                                    {{post.total_likes}}
+                                </span>  Likes
+                                {%else%}
+                                <span class="reaction-text">
+                                    {{post.total_likes}}
+                                </span>  Like
                                     {%endif%}
+                                </a>
                             </div>
                         {%endif%}
 
@@ -163,34 +152,28 @@
                                 <div class="row">
                                     <div class="col-md-8"></div>
                                     <div class="col-md-4">
-                                    {%if liked_coments|get_item:com.id%}
-                                    <div class="actionBar">
-                                        <a href="{% url 'reaccionar' 'Comentario' com.id %}?from=like_com" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
-                                        {%if com.total_likes > 1%}
-                                        <span class="reaction-text">
-                                            {{com.total_likes}} Likes
-                                        {%elif com.total_likes == 0 %}
-                                        <span class="reaction-text"> Like
-                                        </span>
-                                        {%else%}
-                                        <span class="reaction-text">
-                                            {{com.total_likes}} Like
-                                        </span>
-                                            {%endif%}
-                                    </div>
-                                        
-                                    {%else%}
                                         <div class="actionBar">
-                                            <a href="{% url 'reaccionar' 'Comentario' com.id %}?from=like_com" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
-                                            <span class="reaction-text">{{com.total_likes}} 
+                                            <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                            {%if liked_coments|get_item:com.id%}
+                                                <i class="fa-solid fa-thumbs-up like"></i>
+                                            {% else %}
+                                                <i class="fa-regular fa-thumbs-up like"></i>
+                                            {%endif%}
                                                 {%if com.total_likes > 1%}
-                                                    Likes
+                                                <span class="reaction-text">
+                                                    {{com.total_likes}} 
+                                                </span> Likes
+                                                {%elif com.total_likes == 0 %}
+                                                <span class="reaction-text">
+                                                    {{com.total_likes}}
+                                                </span> Likes
                                                 {%else%}
-                                                    Like
-                                            </span>
-                                                {%endif%}
+                                                <span class="reaction-text">
+                                                    {{com.total_likes}} 
+                                                </span> Like
+                                                    {%endif%}
+                                            </a>
                                         </div>
-                                    {%endif%}
                                     </div>
                                 </div>
                                 {%if com.autor == request.user%}
@@ -213,34 +196,24 @@
                                 <div class="row">
                                     <div class="col-md-8"></div>
                                     <div class="col-md-4">
-                                    {%if liked_coments|get_item:com.id%}
-                                    <div class="actionBar">
-                                        <a href="{% url 'reaccionar' 'Comentario' com.id %}?from=like_com" class="reaccion"><i class="fa-solid fa-thumbs-up like"></i></a>
-                                        {%if com.total_likes > 1%}
+                                        <div class="actionBar">
+                                        <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo="Comentario">
+                                        {%if liked_coments|get_item:com.id%}
+                                            <i class="fa-solid fa-thumbs-up like"></i>
+                                        {% else %}
+                                            <i class="fa-regular fa-thumbs-up like"></i>
+                                        {%endif%}
+                                        {%if com.total_likes >= 0 %}
                                         <span class="reaction-text">
-                                            {{com.total_likes}} Likes
-                                        {%elif com.total_likes == 0 %}
-                                        <span class="reaction-text"> Like
-                                        </span>
+                                            {{com.total_likes}} 
+                                        </span> Likes
+
                                         {%else%}
                                         <span class="reaction-text">
-                                            {{com.total_likes}} Like
-                                        </span>
+                                            {{com.total_likes}}
+                                        </span> Like
                                             {%endif%}
-                                    </div>
-                                        
-                                    {%else%}
-                                        <div class="actionBar">
-                                            <a href="{% url 'reaccionar' 'Comentario' com.id %}?from=like_com" class="reaccion"><i class="fa-regular fa-thumbs-up like"></i></a>
-                                            <span class="reaction-text">{{com.total_likes}} 
-                                                {%if com.total_likes > 1%}
-                                                    Likes
-                                                {%else%}
-                                                    Like
-                                            </span>
-                                                {%endif%}
-                                        </div>
-                                    {%endif%}
+                                        </a>
                                     </div>
                                 </div>
                                 {%if com.autor == request.user%}
@@ -294,7 +267,7 @@
     {%if user.is_authenticated%}
     <div class="col-md-10"></div>
         <div class="col-md-2">
-            <a href="{% url 'detalle_post' 'Post' post.id %}?from=post#formulario" class="btn btn-primary mt-3">Responder</a>
+            <a href="{% url 'detalle_post' 'Post' post.id %}?from=post#formulario" class="responder btn btn-primary mt-3">Responder</a>
         </div>
     {%else%}
     <div class="col-8"></div>
@@ -333,6 +306,51 @@
             window.location.href = url
         }
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('.reaccion').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                let comentarioId = this.dataset.id;
+                let modelo= this.dataset.modelo;
+                let likeIcon = this.querySelector('i'); //ícono del botón)
+                let likeCount = this.querySelector('.reaction-text');
+
+                fetch(`/foro/${modelo}/${comentarioId}/like`, {
+                    method: 'POST',
+                    headers: {
+                    "X-CSRFToken": getCSRFToken(), // Necesario para Django
+                    "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar el número de likes
+                    likeCount.textContent = data.total_likes;
+
+                    //Cambiar la clase del ícono
+                    if (data.liked) {
+                        likeIcon.classList.remove('fa-regular');
+                        likeIcon.classList.add('fa-solid');
+                    }else {
+                        likeIcon.classList.remove('fa-solid');
+                        likeIcon.classList.add('fa-regular');
+                    }
+                })
+                .catch(error =>console.error('Error:', error));
+            });
+        });
+
+        function getCSRFToken() {
+            return document.querySelector("[name=csrfmiddlewaretoken]").value;
+        }
+    });
+
+
+
 </script>
 
 {%endblock%}
