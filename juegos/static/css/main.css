@@ -81,7 +81,7 @@ body {
 
 .card {
     background-color: transparent!important;
-    
+
 }
 
 .card-body {
@@ -381,3 +381,9 @@ ul {
     list-style: none;
 }
 
+#formulario, #edit-form {
+    display: none;
+}
+[id^="edit-comment-form-"] {
+    display: none;
+}

@@ -19,136 +19,268 @@
                         <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
                     </div>
                 </div>
-
-                {%if request.GET.from == "editar_post"%}
-                    <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                        <label for="text" class="form-label">Editar</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="contenido"
-                            id="contenido"
-                            placeholder="contenido"
-                            value="{{ post.contenido }}"
-                            required
-                        />
-                        </div>
+                <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
+                    {%if post.autor == request.user%}
+                    <section id="edit-form">
+                        <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                            <label for="text" class="form-label">Editar</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="contenido"
+                                id="contenido"
+                                placeholder="contenido"
+                                value="{{ post.contenido }}"
+                                required
+                            />
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8"></div>
+                                <div class="col-md-4">
+                                    <div class="actionBar">
+                                        <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
+                                        {%if liked_post%}
+                                            <i class="fa-solid fa-thumbs-up like"></i>
+                                        {%else%}
+                                            <i class="fa-regular fa-thumbs-up like"></i>
+                                        {%endif%}
+                                            {%if post.total_likes > 1%}
+                                            <span class="reaction-text">
+                                                {{post.total_likes}}
+                                            </span> Likes
+                                            {%elif post.total_likes == 0 %}
+                                            <span class="reaction-text"> 
+                                                {{post.total_likes}}
+                                            </span> Likes
+                                            {%else%}
+                                            <span class="reaction-text">
+                                                {{post.total_likes}}
+                                            </span> Like
+                                            {%endif%}
+                                        </a>
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-2">
+                                    <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="{% url 'detalle_post' 'Post' post.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                </div>
+                            </div>    
+                        </form>
+                    </section>
+                    <section id="extra">
                         <div class="row">
                             <div class="col-md-8"></div>
                             <div class="col-md-4">
-                                
-                            <div class="actionBar">
-                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
-                                {%if liked_post%}
-                                    <i class="fa-solid fa-thumbs-up like"></i>
-                                {%else%}
-                                    <i class="fa-regular fa-thumbs-up like"></i>
-                                {%if post.total_likes > 1%}
-                                <span class="reaction-text">
-                                    {{post.total_likes}} Likes
-                                {%elif post.total_likes == 0 %}
-                                <span class="reaction-text"> Like
-                                </span>
-                                {%else%}
-                                <span class="reaction-text">
-                                    {{post.total_likes}} Like
-                                </span>
+                                <div class="actionBar">
+                                    <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
+                                    {%if liked_post%}
+                                        <i class="fa-solid fa-thumbs-up like"></i>
+                                    {%else%}
+                                        <i class="fa-regular fa-thumbs-up like"></i>
                                     {%endif%}
-                                </a>
-                            </div>
-
-                            {%endif%}
-        
+                                        {%if post.total_likes > 1%}
+                                        <span class="reaction-text">
+                                            {{post.total_likes}}
+                                        </span> Likes
+                                        {%elif post.total_likes == 0 %}
+                                        <span class="reaction-text"> 
+                                            {{post.total_likes}}
+                                        </span> Likes
+                                        {%else%}
+                                        <span class="reaction-text">
+                                            {{post.total_likes}}
+                                        </span> Like
+                                        {%endif%}
+                                    </a>
+                                </div>
+                                    
                             </div>
                         </div>
-                        {%if post.autor == request.user%}
+                        
                         <div class="row">
                             <div class="col-md-1"></div>
                             <div class="col-md-2">
-                                <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                <input type="submit" value="Editar" class="btn btn-primary mt-3 edit-post">
                             
                             </div>
                             <div class="col-md-2">
                                 <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                             </div>
-                        </div>
-                    </form>
-                {%endif%}
-                {%else%}
-                    <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
+                        </div>    
+                    </section>
+
+                    
+                    {%else%}
                     <div class="row">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
-
                             <div class="actionBar">
                                 <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
                                 {%if liked_post%}
                                     <i class="fa-solid fa-thumbs-up like"></i>
                                 {%else%}
                                     <i class="fa-regular fa-thumbs-up like"></i>
-                                {%if post.total_likes > 1%}
-                                <span class="reaction-text">
-                                    {{post.total_likes}}
-                                </span> Likes
-                                {%elif post.total_likes == 0 %}
-                                <span class="reaction-text">
-                                    {{post.total_likes}}
-                                </span>  Likes
-                                {%else%}
-                                <span class="reaction-text">
-                                    {{post.total_likes}}
-                                </span>  Like
+                                {%endif%}
+                                    {%if post.total_likes > 1%}
+                                    <span class="reaction-text">
+                                        {{post.total_likes}}
+                                    </span> Likes
+                                    {%elif post.total_likes == 0 %}
+                                    <span class="reaction-text"> 
+                                        {{post.total_likes}}
+                                    </span> Likes
+                                    {%else%}
+                                    <span class="reaction-text">
+                                        {{post.total_likes}}
+                                    </span> Like
                                     {%endif%}
                                 </a>
                             </div>
-                        {%endif%}
-
+                                
                         </div>
                     </div>
-                {%if post.autor == request.user%}
-                    <div class="row">
-                        <div class="col-md-1"></div>
-                        <div class="col-md-2">
-                            <a href="{% url 'editar_post' 'Post' post.id %}?from=editar_post" class="btn btn-primary mt-3">Editar</a>
-                        </div>
-                        <div class="col-md-2">
-                            <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                        </div>
-                    </div>
-                {%endif%}
                 {%endif%}
 
                 {%if post.comentarios%}
                 {%for com in comentarios%} 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+
+                            
+                {%if request.user == com.autor%}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
+                                        <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
-                                    <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
-                                </div>
+                                <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+                                <section id="edit-comment-form-{{com.id}}">
+                                    <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="text" class="form-label">Editar</label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                name="mensaje"
+                                                id="mensaje"
+                                                placeholder="mensaje"
+                                                value="{{ com.mensaje }}"
+                                                required
+                                        />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8"></div>
+                                            <div class="col-md-4">
+                                                <div class="actionBar">
+                                                    <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                                    {%if liked_coments|get_item:com.id%}
+                                                        <i class="fa-solid fa-thumbs-up like"></i>
+                                                    {% else %}
+                                                        <i class="fa-regular fa-thumbs-up like"></i>
+                                                    {%endif%}
+                                                        {%if com.total_likes > 1%}
+                                                        <span class="reaction-text">
+                                                            {{com.total_likes}} 
+                                                        </span> Likes
+                                                        {%elif com.total_likes == 0 %}
+                                                        <span class="reaction-text">
+                                                            {{com.total_likes}}
+                                                        </span> Likes
+                                                        {%else%}
+                                                        <span class="reaction-text">
+                                                            {{com.total_likes}} 
+                                                        </span> Like
+                                                        {%endif%}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-2">
+                                                <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                            </div>
+                                        </div>
+                                        
+                                    </form>
+
+                                </section>
+                                <section id="extra-2-{{com.id}}">
+                                    <div class="row">
+                                        <div class="col-md-8"></div>
+                                        <div class="col-md-4">
+                                            <div class="actionBar">
+                                                <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                                {%if liked_coments|get_item:com.id%}
+                                                    <i class="fa-solid fa-thumbs-up like"></i>
+                                                {% else %}
+                                                    <i class="fa-regular fa-thumbs-up like"></i>
+                                                {%endif%}
+                                                    {%if com.total_likes > 1%}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}} 
+                                                    </span> Likes
+                                                    {%elif com.total_likes == 0 %}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}}
+                                                    </span> Likes
+                                                    {%else%}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}} 
+                                                    </span> Like
+                                                    {%endif%}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-2">
+                                            <a href="{% url 'editar_comentario' 'Comentario' com.id %}" class="btn btn-primary mt-3 edit-comment"  data-id="{{ com.id }}">Editar</a>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                                        </div>
+                                    </div>
+                                    
+                                </section>
                             </div>
-                            {% if request.GET.editar_comment == com.id|stringformat:"s" %}
-                            <form action="{% url 'editar_comentario' 'Comentario' com.id %}" id="edit" method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                <label for="text" class="form-label">Editar</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="mensaje"
-                                    id="mensaje"
-                                    placeholder="mensaje"
-                                    value="{{ com.mensaje }}"
-                                    required
-                                />
+                        
+                                {%else%}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
+                                        <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                    </div>
                                 </div>
+                                <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
                                 <div class="row">
                                     <div class="col-md-8"></div>
                                     <div class="col-md-4">
@@ -171,75 +303,23 @@
                                                 <span class="reaction-text">
                                                     {{com.total_likes}} 
                                                 </span> Like
-                                                    {%endif%}
+                                                {%endif%}
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                                {%if com.autor == request.user%}
-                                <div class="row">
-                                    <div class="col-md-1"></div>
-                                    <div class="col-md-2">
-                                        <input type="submit" value="Editar" class="btn btn-primary mt-3">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
-                                    </div>
-                                    <!-- <div class="col-md-2">
-                                        <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                                    </div> -->
-                                </div>
-                                </form>
-                                {%endif%}
-                            {%else%}
-                                <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
-                                <div class="row">
-                                    <div class="col-md-8"></div>
-                                    <div class="col-md-4">
-                                        <div class="actionBar">
-                                        <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo="Comentario">
-                                        {%if liked_coments|get_item:com.id%}
-                                            <i class="fa-solid fa-thumbs-up like"></i>
-                                        {% else %}
-                                            <i class="fa-regular fa-thumbs-up like"></i>
-                                        {%endif%}
-                                        {%if com.total_likes >= 0 %}
-                                        <span class="reaction-text">
-                                            {{com.total_likes}} 
-                                        </span> Likes
-
-                                        {%else%}
-                                        <span class="reaction-text">
-                                            {{com.total_likes}}
-                                        </span> Like
-                                            {%endif%}
-                                        </a>
-                                    </div>
-                                </div>
-                                {%if com.autor == request.user%}
-                                <div class="row">
-                                    <div class="col-md-1"></div>
-                                    <div class="col-md-2">
-                                        <a href="?editar_comment={{ com.id }}#edit" class="btn btn-primary mt-3">Editar</a>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                                    </div>
-                                </div>
-                                {%endif%}
                             </div>
-                        </div>
-
-                {%endif%}
+                            {%endif%}               
+            
                 </div>
-                {%endfor%}
-                {%endif%}
             </div>
+            {%endfor%}
+            {%endif%}
+        
+    
         </div>
-    </div>
 
-    {% if request.GET.from == "post"%}
+
     <section id="formulario">
         <div class="row">
             <div class="col-md-8 offset-md-3">
@@ -258,25 +338,23 @@
         </div>
     </section>
 
-    {%endif%}
-</div>
 
 
-<div class="row">
-    
-    {%if user.is_authenticated%}
-    <div class="col-md-10"></div>
-        <div class="col-md-2">
-            <a href="{% url 'detalle_post' 'Post' post.id %}?from=post#formulario" class="responder btn btn-primary mt-3">Responder</a>
-        </div>
-    {%else%}
-    <div class="col-8"></div>
-        <div class="col-md-4">
-                <a href="#" class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
-        </div>
+    <div class="row">
+        
+        {%if user.is_authenticated%}
+        <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <a href="{% url 'detalle_post' 'Post' post.id %}?from=post#formulario" class="responder btn btn-primary mt-3">Responder</a>
+            </div>
+        {%else%}
+        <div class="col-8"></div>
+            <div class="col-md-4">
+                    <a href="#" class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+            </div>
+        {%endif%}
     </div>
-    {%endif%}
-</div>
+    
 
 
 {%endblock%}
@@ -349,7 +427,36 @@
         }
     });
 
+        document.querySelector('.responder').addEventListener('click', function(event) {
+                event.preventDefault();
+                document.getElementById('formulario').style.display='block'
+        });
 
+        document.querySelectorAll('.edit-post').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                document.getElementById('edit-form').style.display='block'
+                document.getElementById('extra').style.display='none'
+        });
+        });
+
+    
+    document.querySelectorAll('.edit-comment').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            let comentarioId = this.dataset.id;
+            let formularioEdicion = document.getElementById(`edit-comment-form-${comentarioId}`);
+            let extra = document.getElementById(`extra-2-${comentarioId}`)
+            
+            if (formularioEdicion) {
+                formularioEdicion.style.display='block'
+                extra.style.display='none'
+            } else {
+                console.error(`No se encontró el formulario para el comentario con ID: ${comentarioId}`);
+            }
+                
+        });
+    });
 
 </script>
 
