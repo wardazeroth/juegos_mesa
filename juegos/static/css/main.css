@@ -387,3 +387,12 @@ ul {
 [id^="edit-comment-form-"] {
     display: none;
 }
+
+#post-cita, #comentario-cita, #post-cita-cuadro, #comentario-cita-cuadro{
+    background-color: rgba(0, 0, 0, 0.1); /* Color gris claro */
+    padding: 10px;
+    border-left: 4px solid #007bff; /* Línea azul a la izquierda */
+    font-style: italic;
+    margin-bottom: 10px;
+}
+

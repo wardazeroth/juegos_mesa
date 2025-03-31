@@ -38,7 +38,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-8"></div>
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <div class="actionBar">
                                         <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
                                         {%if liked_post%}
@@ -63,6 +63,9 @@
                                     </div>
                                         
                                 </div>
+                                <div class="col-md-2">
+                                    <a href="#" class="citar btn btn-primary" data-id="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
+                                </div>
                             </div>
                             
                             <div class="row">
@@ -80,7 +83,7 @@
                     <section id="extra">
                         <div class="row">
                             <div class="col-md-8"></div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="actionBar">
                                     <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
                                     {%if liked_post%}
@@ -105,6 +108,9 @@
                                 </div>
                                     
                             </div>
+                            <div class="col-md-2">
+                                <a href="{% url 'detalle_post' 'Post' post.id %}" class="citar btn btn-primary" data-postid="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
+                            </div>
                         </div>
                         
                         <div class="row">
@@ -123,7 +129,7 @@
                     {%else%}
                     <div class="row">
                         <div class="col-md-8"></div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <div class="actionBar">
                                 <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
                                 {%if liked_post%}
@@ -145,8 +151,10 @@
                                     </span> Like
                                     {%endif%}
                                 </a>
-                            </div>
-                                
+                            </div>                                
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'detalle_post' 'Post' post.id %}" class="citar btn btn-primary" data-postid="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
                         </div>
                     </div>
                 {%endif%}
@@ -168,25 +176,81 @@
                                         <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
                                     </div>
                                 </div>
-                                <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
-                                <section id="edit-comment-form-{{com.id}}">
-                                    <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
-                                        {% csrf_token %}
-                                        <div class="mb-3">
-                                            <label for="text" class="form-label">Editar</label>
-                                            <input
-                                                type="text"
-                                                class="form-control"
-                                                name="mensaje"
-                                                id="mensaje"
-                                                placeholder="mensaje"
-                                                value="{{ com.mensaje }}"
-                                                required
-                                        />
-                                        </div>
+                                {%if com.post_cita%}
+                                    <blockquote id="post-cita-cuadro" class="mt-3">
+                                        <h6>{{ com.post_cita.autor}} dijo:</h6>
+                                        <p>{{ com.post_cita.contenido}}</p>
+                                    </blockquote>
+                                {%elif com.comentario_cita%}
+                                <blockquote id="comentario-cita-cuadro" class="mt-3">
+                                    <h6>{{ com.comentario_cita.autor}} dijo:</h6>
+                                    <p>{{ com.comentario_cita.mensaje }}</p>
+                                </blockquote>
+                                {%endif%}
+                                    <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+                                    <section id="edit-comment-form-{{com.id}}">
+                                        <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                <label for="text" class="form-label">Editar</label>
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    name="mensaje"
+                                                    id="mensaje"
+                                                    placeholder="mensaje"
+                                                    value="{{ com.mensaje }}"
+                                                    required
+                                            />
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-8"></div>
+                                                <div class="col-md-2">
+                                                    <div class="actionBar">
+                                                        <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                                        {%if liked_coments|get_item:com.id%}
+                                                            <i class="fa-solid fa-thumbs-up like"></i>
+                                                        {% else %}
+                                                            <i class="fa-regular fa-thumbs-up like"></i>
+                                                        {%endif%}
+                                                            {%if com.total_likes > 1%}
+                                                            <span class="reaction-text">
+                                                                {{com.total_likes}} 
+                                                            </span> Likes
+                                                            {%elif com.total_likes == 0 %}
+                                                            <span class="reaction-text">
+                                                                {{com.total_likes}}
+                                                            </span> Likes
+                                                            {%else%}
+                                                            <span class="reaction-text">
+                                                                {{com.total_likes}} 
+                                                            </span> Like
+                                                            {%endif%}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-1"></div>
+                                                <div class="col-md-2">
+                                                    <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                                </div>
+                                            </div>
+                                            
+                                        </form>
+
+                                    </section>
+                                    <section id="extra-2-{{com.id}}">
                                         <div class="row">
                                             <div class="col-md-8"></div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-2">
                                                 <div class="actionBar">
                                                     <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
                                                     {%if liked_coments|get_item:com.id%}
@@ -210,63 +274,24 @@
                                                     </a>
                                                 </div>
                                             </div>
+                                            <div class="col-md-2">
+                                                <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
+                                            </div>
                                         </div>
-                                        
+                                    
                                         <div class="row">
                                             <div class="col-md-1"></div>
                                             <div class="col-md-2">
-                                                <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                                <a href="{% url 'editar_comentario' 'Comentario' com.id %}" class="btn btn-primary mt-3 edit-comment"  data-id="{{ com.id }}">Editar</a>
                                             </div>
                                             <div class="col-md-2">
-                                                <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                                <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                                             </div>
                                         </div>
                                         
-                                    </form>
-
-                                </section>
-                                <section id="extra-2-{{com.id}}">
-                                    <div class="row">
-                                        <div class="col-md-8"></div>
-                                        <div class="col-md-4">
-                                            <div class="actionBar">
-                                                <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
-                                                {%if liked_coments|get_item:com.id%}
-                                                    <i class="fa-solid fa-thumbs-up like"></i>
-                                                {% else %}
-                                                    <i class="fa-regular fa-thumbs-up like"></i>
-                                                {%endif%}
-                                                    {%if com.total_likes > 1%}
-                                                    <span class="reaction-text">
-                                                        {{com.total_likes}} 
-                                                    </span> Likes
-                                                    {%elif com.total_likes == 0 %}
-                                                    <span class="reaction-text">
-                                                        {{com.total_likes}}
-                                                    </span> Likes
-                                                    {%else%}
-                                                    <span class="reaction-text">
-                                                        {{com.total_likes}} 
-                                                    </span> Like
-                                                    {%endif%}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-2">
-                                            <a href="{% url 'editar_comentario' 'Comentario' com.id %}" class="btn btn-primary mt-3 edit-comment"  data-id="{{ com.id }}">Editar</a>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                                        </div>
-                                    </div>
-                                    
-                                </section>
-                            </div>
-                        
+                                    </section>
+                                </div>
+                            
                                 {%else%}
                     <div class="row">
                         <div class="col-md-12">
@@ -283,7 +308,7 @@
                                 <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
                                 <div class="row">
                                     <div class="col-md-8"></div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <div class="actionBar">
                                             <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
                                             {%if liked_coments|get_item:com.id%}
@@ -307,6 +332,9 @@
                                             </a>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <a href="" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
+                                    </div>
                                 </div>
                             </div>
                             {%endif%}               
@@ -317,40 +345,48 @@
             {%endif%}
         
     
-        </div>
-
+                    </div>
 
     <section id="formulario">
         <div class="row">
             <div class="col-md-8 offset-md-3">
-                <h3 class="text-center pt-5">Responder</h3>
-                <form action="{% url 'detalle_post' 'Post' post.id %}?from=post" method="post" enctype="multipart/form-data">
+                <h3 class="text-center pt-5 pb-3">Responder</h3>
+                
+                <form action= "" method="post" enctype="multipart/form-data">
                     {%csrf_token%}
-                    {%for field in form%}
+                    <input type="hidden" id="post_cita" name="post_cita">
+                    <input type="hidden" id="comentario_cita" name="comentario_cita">
+                    <div id="post-cita" style="display: none;" name="post_cita">
+                        <pre></pre>
+                    </div>
+                    <div id="comentario-cita" style="display: none;" name="comentario_cita">
+                        <pre></pre>
+                    </div>
+                    {%for field in form%}   
                         <div class="mb-3">
                             {{ field.label_tag }}
                             {{ field }}
                         </div>
-                    {%endfor%}
-                    <input type="submit" value="Enviar" class="btn btn-outline-success">
+                    {%endfor%}        
+                        <input type="submit" value="Enviar" class="btn btn-outline-success">
                 </form>
             </div>
         </div>
     </section>
 
 
-
     <div class="row">
         
         {%if user.is_authenticated%}
-        <div class="col-md-10"></div>
+
+    <div class="col-md-10"></div>
             <div class="col-md-2">
-                <a href="{% url 'detalle_post' 'Post' post.id %}?from=post#formulario" class="responder btn btn-primary mt-3">Responder</a>
+                <a href="" class="responder btn btn-primary mt-3">Responder</a>
             </div>
         {%else%}
         <div class="col-8"></div>
             <div class="col-md-4">
-                    <a href="#" class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+                    <a href=# class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
             </div>
         {%endif%}
     </div>
@@ -431,6 +467,37 @@
                 event.preventDefault();
                 document.getElementById('formulario').style.display='block'
         });
+
+        document.querySelectorAll('.citar').forEach(button => {
+            button.addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('formulario').style.display='block'
+            document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
+
+            let contenidoCita = this.dataset.texto;
+
+            let modelo = this.dataset.modelo
+            let autorCita = this.dataset.autor;
+            let cita = `${autorCita}:\n${contenidoCita}\n`
+
+            if (modelo == 'Post') {
+                let post_id = this.dataset.postid || None;
+                document.getElementById('post_cita').value = post_id
+
+                let citaTexto = document.getElementById('post-cita')
+                citaTexto.style.display='block';
+                citaTexto.querySelector('pre').textContent = cita
+            } else {
+                let comentario_id = this.dataset.comentarioid || None;
+                document.getElementById('comentario_cita').value = comentario_id
+
+                let citaTexto= document.getElementById('comentario-cita')
+                citaTexto.style.display='block';
+                citaTexto.querySelector('pre').textContent = cita
+            }
+            
+        });
+    });
 
         document.querySelectorAll('.edit-post').forEach(button => {
             button.addEventListener('click', function(event) {

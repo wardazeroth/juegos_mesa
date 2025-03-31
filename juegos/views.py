@@ -551,10 +551,30 @@ def detalle_post(req, modelo, id):
             comentario = form.save(commit=False)
             comentario.post = post
             comentario.autor = req.user
+            
+            post_cita_id = req.POST.get('post_cita')
+            comentario_cita_id = req.POST.get('comentario_cita')
+
+            print(post_cita_id)
+            print(comentario_cita_id)
+
+            if post_cita_id:
+                cita_post = Post.objects.get(id=post_cita_id)
+                comentario.post_cita = cita_post
+            else:
+                comentario.post_cita = None
+            
+            if comentario_cita_id:
+                com_post = Comentario.objects.get(id=comentario_cita_id)
+                comentario.comentario_cita = com_post
+            else:
+                comentario.comentario_cita = None
+                
             comentario.save()
         
         messages.success(req, 'Respuesta publicada con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post')
+
     
 def categorias(req):
     if req.method == 'GET':
@@ -600,8 +620,6 @@ def reaccionar(req, modelo, id):
         Like.objects.create(content_type= content_type, object_id=id, usuario=usuario) 
         
         liked = True
-        
-    
     return JsonResponse({'liked':liked, 'total_likes': objeto.total_likes()})
 
 def editar_post(req, modelo, id):

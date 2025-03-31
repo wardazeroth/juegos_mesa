@@ -171,7 +171,7 @@ class PostModelForm(ModelForm):
                 }
             ),
             
-            'contenido': forms.TextInput(
+            'contenido': forms.Textarea(
                 attrs={
                     'class': 'form-control'
                 }
@@ -190,18 +190,21 @@ class ComentarioModelForm(ModelForm):
         fields = ['mensaje']
         
         widgets= {
-        'mensaje': forms.TextInput(
+        'mensaje': forms.Textarea(
             attrs={
                 'class': 'form-control'
             }
         )     
-            }  
-# class ResultadoModelForm(ModelForm):
-#     class Meta:
-#         model = Resultado
-#         fields = ['ganador']
+            }
         
-#     def __init__(self, *args, partida=None, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         if partida  :
-#             self.fields['ganador'].queryset = User.objects.filter(jugadores_partida__partida = partida)
+        def clean_post_cita(self):
+            post_cita = self.cleaned_data.get('post_cita')
+            if post_cita == '':
+                post_cita = None
+            return post_cita
+        
+        def clean_comentario_cita(self):
+            comentario_cita = self.cleaned_data.get('comentario_cita')
+            if comentario_cita == '':
+                comentario_cita =  None
+            return comentario_cita

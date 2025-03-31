@@ -200,6 +200,8 @@ class Comentario(models.Model):
     mensaje = models.TextField()
     autor = models.ForeignKey(User, on_delete= models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    post_cita = models.ForeignKey(Post, null=True, blank=True, on_delete=models.SET_NULL)
+    comentario_cita = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
     likes = GenericRelation(Like)
     
     def total_likes(self):
