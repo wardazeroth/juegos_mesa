@@ -206,12 +206,11 @@ class Comentario(models.Model):
     
     def total_likes(self):
         return self.likes.count()  # Cuenta los likes relacionados
-
-
-# class Like(models.Model):
-#     post = models.ForeignKey(Post, on_delete= models.CASCADE, related_name= 'likes')
-#     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-#     fecha_creacion = models.DateTimeField(auto_now_add=True)
     
-#     class Meta:
-#         unique_together = ('post', 'usuario')  # Evita que un usuario dé más de un like a un post
+class ComentarioImagen(models.Model):
+    comentario= models.ForeignKey(Comentario, on_delete=models.CASCADE, related_name='imagenes')
+    imagen = models.ImageField(upload_to='juegos/', blank=True, null=True)
+    
+    def __str__(self):
+        return f"Imagen de {self.comentario.mensaje}"
+

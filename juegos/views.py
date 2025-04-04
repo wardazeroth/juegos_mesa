@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen
 from datetime import timedelta, date, datetime
 from django.db.models import Q
 
@@ -569,8 +569,13 @@ def detalle_post(req, modelo, id):
                 comentario.comentario_cita = com_post
             else:
                 comentario.comentario_cita = None
-                
             comentario.save()
+            
+            imagenes = req.FILES.getlist('imagenes', None)
+            print(imagenes) 
+            if imagenes:
+                for img in imagenes:
+                    ComentarioImagen.objects.create(comentario = comentario, imagen = img)
         
         messages.success(req, 'Respuesta publicada con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post')

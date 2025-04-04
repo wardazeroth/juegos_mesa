@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario, ComentarioImagen
 from datetime import date, time, datetime, timedelta
 
 class UserProfileForm(forms.ModelForm):
@@ -194,8 +194,15 @@ class ComentarioModelForm(ModelForm):
             attrs={
                 'class': 'form-control'
             }
-        )     
+        ),     
+        
+        'imagenes': forms.Select(
+            attrs={
+                'class': 'form-select',
+                'id': 'imagenes'
             }
+        )
+    }
         
         def clean_post_cita(self):
             post_cita = self.cleaned_data.get('post_cita')
@@ -208,3 +215,19 @@ class ComentarioModelForm(ModelForm):
             if comentario_cita == '':
                 comentario_cita =  None
             return comentario_cita
+        
+
+class ComentarioImagenForm(ModelForm):
+    class Meta:
+        model = ComentarioImagen
+        fields = ['imagen']
+        
+        widgets = {
+        'imagen': forms.Select(
+            attrs={
+                'class': 'form-select',
+                'id': 'imagen'
+            }
+        )
+    }
+        

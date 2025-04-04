@@ -187,6 +187,18 @@
                                     <p>{{ com.comentario_cita.mensaje }}</p>
                                 </blockquote>
                                 {%endif%}
+
+                                {%if com.imagenes%}
+                                <div class="row">
+                                    
+                                    {%for imagen in com.imagenes.all %} 
+                                    <div class="col-md-6 mt-3">                               
+                                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
+                                    </div>
+                                    {%endfor%}
+                                    
+                                </div>
+                                {%endif%}
                                     <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
                                     <section id="edit-comment-form-{{com.id}}">
                                         <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
@@ -356,19 +368,42 @@
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
                     <input type="hidden" id="comentario_cita" name="comentario_cita">
+                    <input
+                    type="file"
+                    class="form-control"
+                    name="imagenes"
+                    id="imagenes"
+                    style="display: none;"
+                    placeholder="nueva imagen"
+                    value="{{comentario.imagenes}}"
+                    multiple
+                    />
+
                     <div id="post-cita" style="display: none;" name="post_cita">
                         <pre></pre>
                     </div>
+
                     <div id="comentario-cita" style="display: none;" name="comentario_cita">
                         <pre></pre>
                     </div>
+                    <div id="imagen-prev"></div>
                     {%for field in form%}   
                         <div class="mb-3">
                             {{ field.label_tag }}
                             {{ field }}
                         </div>
-                    {%endfor%}        
-                        <input type="submit" value="Enviar" class="btn btn-outline-success">
+                    
+                    {%endfor%}
+                    <div class="row">
+                        <div class="col-md-8">
+                            <a href="#" id="add_archivo" class="btn btn-outline-primary mt-3"><i class="fa-solid fa-paperclip"></i> Añadir archivo</a>
+                        </div>
+                        
+                        <div class="col md-4">
+                            <input type="submit" value="Enviar" class="btn btn-outline-success mt-3">
+                        </div>
+                    </div>
+                    
                 </form>
             </div>
         </div>
@@ -381,12 +416,12 @@
 
     <div class="col-md-10"></div>
             <div class="col-md-2">
-                <a href="" class="responder btn btn-primary mt-3">Responder</a>
+                <button id="responder" class="btn btn-primary mt-3">Responder</button>
             </div>
         {%else%}
         <div class="col-8"></div>
             <div class="col-md-4">
-                    <a href=# class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+                    <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
             </div>
         {%endif%}
     </div>
@@ -423,6 +458,35 @@
 </script>
 
 <script>
+    let imagenes_list = []
+    document.getElementById('imagenes').addEventListener('change', function(event) {        
+        let imagenes = event.target.files;
+        let previsual = document.getElementById('imagen-prev')
+
+        for (let i=0; i < imagenes.length; i++) {
+            let reader = new FileReader();
+            let img = document.createElement('img');
+            img.style.maxWidth = "200px"; // Ajustar tamaño
+            img.style.margin = "10px";
+
+            reader.onload = function(e) {
+                // convert image file to base64 string
+                img.src = reader.result
+                previsual.appendChild(img)
+                previsual.style.display = 'block';
+                imagenes_list.push(imagenes[i])
+
+                let dataTransfer = new DataTransfer()
+                for (let file of imagenes_list) {
+                    dataTransfer.items.add(file)
+                }
+                document.getElementById('imagenes').files = dataTransfer.files
+            }
+            reader.readAsDataURL(imagenes[i]);
+    }
+
+});
+
     document.addEventListener('DOMContentLoaded', function(){
         document.querySelectorAll('.reaccion').forEach(button => {
             button.addEventListener('click', function(event) {
@@ -463,16 +527,22 @@
         }
     });
 
-        document.querySelector('.responder').addEventListener('click', function(event) {
+            document.addEventListener('DOMContentLoaded', function(){
+            document.getElementById('responder').addEventListener('click', function(event) {
                 event.preventDefault();
                 document.getElementById('formulario').style.display='block'
+                document.getElementById('responder').style.display= 'none';
         });
+    });
+
 
         document.querySelectorAll('.citar').forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
             document.getElementById('formulario').style.display='block'
             document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
+
+            document.getElementById('responder').style.display= 'none';
 
             let contenidoCita = this.dataset.texto;
 
@@ -495,7 +565,7 @@
                 citaTexto.style.display='block';
                 citaTexto.querySelector('pre').textContent = cita
             }
-            
+    
         });
     });
 
@@ -507,6 +577,12 @@
         });
         });
 
+        document.getElementById('add_archivo').addEventListener('click', function () {
+            event.preventDefault();
+            document.getElementById('imagenes').click();
+
+            
+        })
     
     document.querySelectorAll('.edit-comment').forEach(button => {
         button.addEventListener('click', function(event) {
