@@ -396,3 +396,34 @@ ul {
     margin-bottom: 10px;
 }
 
+.marco-editor {
+    padding: 1rem;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #000000;
+    border-radius: 5px;
+}
+
+.imagen-container {
+    position: relative;
+    display: inline-block;
+}
+
+.imagen-container img {
+    max-width: 150px;
+    margin: 10px;
+}
+
+.borrar-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 50%;
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 10;
+    transition: background 0.3s;
+}

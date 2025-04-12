@@ -189,20 +189,39 @@
                                 {%endif%}
 
                                 {%if com.imagenes%}
-                                <div class="row">
-                                    
-                                    {%for imagen in com.imagenes.all %} 
-                                    <div class="col-md-6 mt-3">                               
-                                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
+                                    <div class="row">                 
+                                        {%for imagen in com.imagenes.all %} 
+                                        <div class="col-md-6 mt-3">                               
+                                            <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                        </div>
+                                        {%endfor%}
                                     </div>
-                                    {%endfor%}
-                                    
-                                </div>
+
+                                    <div id="imagen-prev-edit"></div>
                                 {%endif%}
+
                                     <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+
                                     <section id="edit-comment-form-{{com.id}}">
+
+                                        {%if com.imagenes%}
+                                            {%for imagen in com.imagenes.all %}  
+                                                <div class="imagen-container">                          
+                                                    <img src="{{ imagen.imagen.url }}" class="imagen-container" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                                    <i class="bi bi-trash-fill borrar-icon"></i>
+                                                </div>
+                                            {%endfor%}
+                                        {%endif%}
+    
                                         <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
+        
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                                </div>
+                                            </div>
+
                                             <div class="mb-3">
                                                 <label for="text" class="form-label">Editar</label>
                                                 <input
@@ -214,6 +233,18 @@
                                                     value="{{ com.mensaje }}"
                                                     required
                                             />
+
+                                            <input
+                                            type="file"
+                                            class="imagenes-edit"
+                                            name="imagenes_edit"
+                                            id="imagenes_edit"
+                                            style="display: none;"
+                                            placeholder="nueva imagen"
+                                            value="{{comentario.imagenes}}"
+                                            multiple
+                                            />
+
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-8"></div>
@@ -255,8 +286,8 @@
                                                     <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
                                                 </div>
                                             </div>
-                                            
                                         </form>
+
 
                                     </section>
                                     <section id="extra-2-{{com.id}}">
@@ -349,8 +380,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {%endif%}               
-            
+                        {%endif%}               
                 </div>
             </div>
             {%endfor%}
@@ -361,9 +391,15 @@
 
     <section id="formulario">
         <div class="row">
+            
             <div class="col-md-8 offset-md-3">
                 <h3 class="text-center pt-5 pb-3">Responder</h3>
-                
+                <div class="marco-editor">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i></i> Añadir Imagen</a>
+                        </div>
+                    </div>
                 <form action= "" method="post" enctype="multipart/form-data">
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
@@ -386,27 +422,30 @@
                     <div id="comentario-cita" style="display: none;" name="comentario_cita">
                         <pre></pre>
                     </div>
+
                     <div id="imagen-prev"></div>
-                    {%for field in form%}   
+
+                        {%for field in form%}   
                         <div class="mb-3">
-                            {{ field.label_tag }}
                             {{ field }}
                         </div>
-                    
                     {%endfor%}
+                    
                     <div class="row">
                         <div class="col-md-8">
-                            <a href="#" id="add_archivo" class="btn btn-outline-primary mt-3"><i class="fa-solid fa-paperclip"></i> Añadir archivo</a>
+                            <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i></i></i> Añadir Archivo</a>
                         </div>
                         
                         <div class="col md-4">
-                            <input type="submit" value="Enviar" class="btn btn-outline-success mt-3">
+                            <input type="submit" value="Enviar" class="btn btn-outline-success mb-1">
                         </div>
                     </div>
                     
                 </form>
+            
             </div>
         </div>
+    </div>
     </section>
 
 
@@ -458,35 +497,6 @@
 </script>
 
 <script>
-    let imagenes_list = []
-    document.getElementById('imagenes').addEventListener('change', function(event) {        
-        let imagenes = event.target.files;
-        let previsual = document.getElementById('imagen-prev')
-
-        for (let i=0; i < imagenes.length; i++) {
-            let reader = new FileReader();
-            let img = document.createElement('img');
-            img.style.maxWidth = "200px"; // Ajustar tamaño
-            img.style.margin = "10px";
-
-            reader.onload = function(e) {
-                // convert image file to base64 string
-                img.src = reader.result
-                previsual.appendChild(img)
-                previsual.style.display = 'block';
-                imagenes_list.push(imagenes[i])
-
-                let dataTransfer = new DataTransfer()
-                for (let file of imagenes_list) {
-                    dataTransfer.items.add(file)
-                }
-                document.getElementById('imagenes').files = dataTransfer.files
-            }
-            reader.readAsDataURL(imagenes[i]);
-    }
-
-});
-
     document.addEventListener('DOMContentLoaded', function(){
         document.querySelectorAll('.reaccion').forEach(button => {
             button.addEventListener('click', function(event) {
@@ -535,7 +545,6 @@
         });
     });
 
-
         document.querySelectorAll('.citar').forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
@@ -565,9 +574,75 @@
                 citaTexto.style.display='block';
                 citaTexto.querySelector('pre').textContent = cita
             }
-    
         });
     });
+
+    let imagenes_list = []
+    document.getElementById('imagenes').addEventListener('change', function(event) {        
+        let imagenes = event.target.files;
+        let previsual = document.getElementById('imagen-prev')
+
+        for (let i=0; i < imagenes.length; i++) {
+            const file = imagenes[i]
+            const reader = new FileReader();
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+
+            console.log(imagenes_list)  
+
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+            trashIcono.addEventListener('click', function() {
+                container.remove();
+        
+                console.log(imagenes_list)
+                imagenes_list = imagenes_list.filter(f => f !== file)
+                let dataTransfer = new DataTransfer()
+                for (let f of imagenes_list) {
+                    dataTransfer.items.add(f)
+                }
+
+                document.getElementById('imagenes').files = dataTransfer.files
+            })
+
+            reader.onload = function(e) {
+                // convert image file to base64 string
+                img.src = reader.result
+                container.appendChild(img)
+                container.appendChild(trashIcono)
+                previsual.appendChild(container)
+
+                previsual.style.display = 'block';
+                imagenes_list.push(imagenes[i])
+
+                let dataTransfer = new DataTransfer()
+                for (let file of imagenes_list) {
+                    dataTransfer.items.add(file)
+                }
+                document.getElementById('imagenes').files = dataTransfer.files
+            }
+            reader.readAsDataURL(imagenes[i]);
+    }
+
+});
+    
+    document.addEventListener('DOMContentLoaded', function () {    
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('add-img-edit')) {
+                event.preventDefault();
+                images = document.getElementById('imagenes_edit')
+                
+                const form = event.target.closest('form');
+                const input = form.querySelector('.imagenes-edit');
+                if (input) {
+                    input.click();
+                }
+            }
+        });
+    });
+
 
         document.querySelectorAll('.edit-post').forEach(button => {
             button.addEventListener('click', function(event) {
@@ -575,29 +650,28 @@
                 document.getElementById('edit-form').style.display='block'
                 document.getElementById('extra').style.display='none'
         });
-        });
+    });
 
-        document.getElementById('add_archivo').addEventListener('click', function () {
-            event.preventDefault();
-            document.getElementById('imagenes').click();
 
-            
-        })
-    
+    document.getElementById('add_img').addEventListener('click', function () {
+        event.preventDefault();
+        document.getElementById('imagenes').click(); 
+    });
+
+
     document.querySelectorAll('.edit-comment').forEach(button => {
         button.addEventListener('click', function(event) {
             event.preventDefault();
             let comentarioId = this.dataset.id;
             let formularioEdicion = document.getElementById(`edit-comment-form-${comentarioId}`);
             let extra = document.getElementById(`extra-2-${comentarioId}`)
-            
+
             if (formularioEdicion) {
                 formularioEdicion.style.display='block'
                 extra.style.display='none'
             } else {
                 console.error(`No se encontró el formulario para el comentario con ID: ${comentarioId}`);
             }
-                
         });
     });
 
