@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, desinscripcion, ver_games, detalleJuego, edit_game, eliminar_game, ver_locales, edit_local, eliminar_local, detalleLocal, historial, detalles_partida, detalles_historial, ResultadosView, CrearPostView, foro, detalle_post, categorias, categorias_group, reaccionar, editar_post, eliminar_post, editar_comentario, eliminar_comentario
+from juegos.views import inicio, userprofile, change_password, edit_user, RegistroView, NuevaPartidaView, NuevoJuegoView, NuevoLocalView, partidas, InscripcionView, desinscripcion, ver_games, detalleJuego, edit_game, eliminar_game, ver_locales, edit_local, eliminar_local, detalleLocal, historial, detalles_partida, detalles_historial, ResultadosView, CrearPostView, foro, detalle_post, categorias, categorias_group, reaccionar, editar_post, eliminar_post, editar_comentario, eliminar_comentario, edit_foto
 from django.contrib.auth.views import LoginView, LogoutView
 
 
@@ -34,6 +34,7 @@ urlpatterns = [
     path('foro/<int:id>/eliminar_post', eliminar_post, name='eliminar_post'),
     path('foro/<str:modelo>/<int:id>/editar_comentario', editar_comentario, name='editar_comentario'),
     path('foro/<int:id>/eliminar_comentario', eliminar_comentario, name='eliminar_comentario'),
+    path('foro/<str:modelo>/<int:id>/edit-foto', edit_foto, name='edit_foto'),
     path('foro/categorias', categorias, name='categorias'),
     path('foro/<id>/categorias_group', categorias_group, name='categorias_group'),
     path('edit-user/', edit_user, name= 'edit_user'),

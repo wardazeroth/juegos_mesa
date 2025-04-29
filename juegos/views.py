@@ -12,6 +12,7 @@ from django.views import View
 from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen
 from datetime import timedelta, date, datetime
 from django.db.models import Q
+import json
 
 # Create your views here.
 
@@ -663,6 +664,7 @@ def eliminar_post(req, id):
     return redirect('/foro')
 
 def editar_comentario(req, modelo, id):
+
     if req.method == 'GET':
         post = Post.objects.get(comentarios__id= id)
         comentarios = Comentario.objects.filter(post=post)
@@ -691,10 +693,80 @@ def editar_comentario(req, modelo, id):
         mensaje = req.POST['mensaje']
         comentarios.mensaje = mensaje
         comentarios.save()
-        messages.success(req, 'Comentario editado con éxito')
-        return redirect(f'/foro/{modelo}/{id}/detalle_post') 
+        form= ComentarioModelForm(req.POST)
+        if form.is_valid():
+            imagenes = req.FILES.getlist('imagenes_edit', None)
+            print(imagenes) 
+            if imagenes:
+                for img in imagenes:
+                    ComentarioImagen.objects.create(comentario = comentarios, imagen = img)                    
+
+        imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
+
+        try:
+            imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
+        except json.JSONDecodeError:
+            imagenes_eliminadas = []
+        
+        for ruta in imagenes_eliminadas:
+            if ruta:
+                ComentarioImagen.objects.filter(imagen=ruta, comentario=comentarios).delete()    
+                print(imagenes_eliminadas)
+        
+        if req.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({'mensaje': 'Comentariusss editado con éxito'})
+        else:
+            messages.success(req, 'Comentario editado con éxito')
+            return redirect(f'/foro/{modelo}/{id}/detalle_post')
 
 def eliminar_comentario(req, id):
     Comentario.objects.get(id = id).delete()
     messages.success(req, 'Ha eliminado el comentario')
     return redirect('/foro')
+
+def edit_foto(req, modelo, id):
+    
+    if not req.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+    content_type = ContentType.objects.get(app_label= 'juegos', model = modelo)
+    print(content_type)
+    
+    model_class = content_type.model_class()
+    objeto = model_class.objects.get(id = id)
+    
+    images= []
+    
+    if req.method == 'GET':
+        if modelo == 'Post':
+            pass
+        if modelo == 'Comentario':
+            form= ComentarioModelForm(req.POST)
+            post = Post.objects.get(comentarios__id= id)
+            if form.is_valid():
+                comentario = form.save(commit=False)
+                comentario.post = post
+                comentario.autor = req.user
+
+            comentario = Comentario.objects.get(id = id)
+            imagenes = ComentarioImagen.objects.filter(comentario = comentario)
+            
+            imagenes = imagenes.values('imagen')
+            print(imagenes)
+            for i in imagenes:
+                images.append(i)
+                
+    else:
+        comentario = Comentario.objects.get(id = id)
+        imagenes = ComentarioImagen.objects.filter(comentario = comentario)
+        imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
+
+        try:
+            imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
+        except json.JSONDecodeError:
+            imagenes_eliminadas = []
+        
+        for ruta in imagenes_eliminadas:
+            if ruta:
+                ComentarioImagen.objects.filter(imagen=ruta, comentario=comentario).delete()    
+                print(imagenes_eliminadas)
+    return JsonResponse({'imagenes': images})
