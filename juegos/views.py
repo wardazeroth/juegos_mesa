@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen
 from datetime import timedelta, date, datetime
 from django.db.models import Q
 import json
@@ -492,6 +492,11 @@ class CrearPostView(View):
             post = form.save(commit=False)
             post.autor = req.user
             post.save()
+            imagenes = req.FILES.getlist('imagenes_edit', None)
+            print('éstas son imagenes de post', imagenes) 
+            if imagenes:
+                for img in imagenes:
+                    PostImagen.objects.create(post = post, imagen = img)  
         messages.success(req, 'Post publicado con éxito')
         return redirect('/foro')
 
@@ -655,6 +660,13 @@ def editar_post(req, modelo, id):
         contenido = req.POST['contenido']
         post.contenido = contenido
         post.save()
+        # form= PostModelForm(req.POST)
+        # if form.is_valid():
+        imagenes = req.FILES.getlist('imagenes_edit', None)
+        print('éstas son imaenes de post', imagenes) 
+        if imagenes:
+            for img in imagenes:
+                PostImagen.objects.create(post = post, imagen = img)      
         messages.success(req, 'Post editado con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post') 
 
@@ -700,19 +712,7 @@ def editar_comentario(req, modelo, id):
             if imagenes:
                 for img in imagenes:
                     ComentarioImagen.objects.create(comentario = comentarios, imagen = img)                    
-
-        imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
-
-        try:
-            imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
-        except json.JSONDecodeError:
-            imagenes_eliminadas = []
-        
-        for ruta in imagenes_eliminadas:
-            if ruta:
-                ComentarioImagen.objects.filter(imagen=ruta, comentario=comentarios).delete()    
-                print(imagenes_eliminadas)
-        
+                    
         if req.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse({'mensaje': 'Comentariusss editado con éxito'})
         else:
@@ -738,7 +738,20 @@ def edit_foto(req, modelo, id):
     
     if req.method == 'GET':
         if modelo == 'Post':
-            pass
+            form= PostModelForm(req.POST)
+            post = Post.objects.get(id = id)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.autor = req.user
+
+            imagenes = PostImagen.objects.filter(post = post)
+            print('vuelven:', imagenes)
+            
+            imagenes = imagenes.values('imagen')
+            print(imagenes)
+            for i in imagenes:
+                images.append(i)
+                
         if modelo == 'Comentario':
             form= ComentarioModelForm(req.POST)
             post = Post.objects.get(comentarios__id= id)
@@ -756,17 +769,36 @@ def edit_foto(req, modelo, id):
                 images.append(i)
                 
     else:
-        comentario = Comentario.objects.get(id = id)
-        imagenes = ComentarioImagen.objects.filter(comentario = comentario)
-        imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
+        if modelo == 'Post':
+            post = Post.objects.get(id = id)
+            imagenes = PostImagen.objects.filter(post = post)
+            imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
 
-        try:
-            imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
-        except json.JSONDecodeError:
-            imagenes_eliminadas = []
-        
-        for ruta in imagenes_eliminadas:
-            if ruta:
-                ComentarioImagen.objects.filter(imagen=ruta, comentario=comentario).delete()    
-                print(imagenes_eliminadas)
+            try:
+                imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
+            except json.JSONDecodeError:
+                imagenes_eliminadas = []
+            
+            print('ELIMNADASSSS...', imagenes_eliminadas)
+            for ruta in imagenes_eliminadas:
+                if ruta:
+                    PostImagen.objects.filter(imagen=ruta, post=post).delete()    
+                    print('ELIMNADASSSS...', imagenes_eliminadas)
+                    
+        else:
+            comentario = Comentario.objects.get(id = id)
+            imagenes = ComentarioImagen.objects.filter(comentario = comentario)
+            imagenes_eliminadas_json = req.POST.get('imagenes_eliminadas', '[]')
+
+            try:
+                imagenes_eliminadas = json.loads(imagenes_eliminadas_json)
+            except json.JSONDecodeError:
+                imagenes_eliminadas = []
+            
+            print('ELIMNADASSSS...', imagenes_eliminadas)
+            for ruta in imagenes_eliminadas:
+                if ruta:
+                    ComentarioImagen.objects.filter(imagen=ruta, comentario=comentario).delete()    
+                    print('ELIMNADASSSS...', imagenes_eliminadas)
+                
     return JsonResponse({'imagenes': images})

@@ -19,10 +19,29 @@
                         <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
                     </div>
                 </div>
+                {%if post.imagenes%}
+                <div class="row">                 
+                    {%for imagen in post.imagenes.all %} 
+                    <div class="col-md-6 mt-3">                               
+                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                    </div>
+                    {%endfor%}
+                </div>       
+                {%endif%}
+
                 <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
                     {%if post.autor == request.user%}
+                    
                     <section id="edit-form">
+                        <div id="imagen-prev-edit-post"></div>
                         <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                </div>
+                            </div>
+
                             {% csrf_token %}
                             <div class="mb-3">
                             <label for="text" class="form-label">Editar</label>
@@ -34,6 +53,16 @@
                                 placeholder="contenido"
                                 value="{{ post.contenido }}"
                                 required
+                            />
+                            <input
+                            type="file"
+                            class="imagenes-edit"
+                            name="imagenes_edit"
+                            id="imagenes_edit_post"
+                            style="display: none;"
+                            placeholder="nueva imagen"
+                            value="{{post.imagenes}}"
+                            multiple
                             />
                             </div>
                             <div class="row">
@@ -116,16 +145,14 @@
                         <div class="row">
                             <div class="col-md-1"></div>
                             <div class="col-md-2">
-                                <input type="submit" value="Editar" class="btn btn-primary mt-3 edit-post">
+                                <a href="{% url 'editar_post' 'Post' post.id %}" class="btn btn-primary mt-3 edit-post"  data-id="{{ post.id }}" data-modelo="Post">Editar</a>
                             
                             </div>
                             <div class="col-md-2">
                                 <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                             </div>
                         </div>    
-                    </section>
-
-                    
+                    </section>         
                     {%else%}
                     <div class="row">
                         <div class="col-md-8"></div>
@@ -393,6 +420,7 @@
                         </div>
                     </div>
                 <form action= "" method="post" enctype="multipart/form-data">
+                    <div id="previsual_resp"></div>
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
                     <input type="hidden" id="comentario_cita" name="comentario_cita">
@@ -429,7 +457,7 @@
                         </div>
                         
                         <div class="col md-4">
-                            <input type="submit" value="Enviar" class="btn btn-outline-success mb-1">
+                            <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Enviar"  class="btn btn-outline-success mb-1">
                         </div>
                     </div>
                     
@@ -534,8 +562,85 @@
                 event.preventDefault();
                 document.getElementById('formulario').style.display='block'
                 document.getElementById('responder').style.display= 'none';
+                
         });
     });
+
+    const imagenes_resp = document.getElementById('imagenes')
+    const prev_resp = document.getElementById('previsual_resp')
+    const fomularioRespuesta = document.getElementById('formulario')
+
+    let agregar_img = []
+    let elim_resp = []
+
+    imagenes_resp.addEventListener('change', () => {
+        let archivos = imagenes_resp.files
+        for (let i=0; i < archivos.length; i++) {
+            
+            console.log('hay lista: ', agregar_img)
+            const file = archivos[i]
+            const reader = new FileReader();    
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            elim_resp.push(archivos[i])
+            console.log('eliminando: ', elim_resp)
+        })
+
+        reader.onload = function(e) {
+            // convert image file to base64 string
+            img.src = reader.result
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            previsual.appendChild(container)
+            previsual.style.display = 'block';
+            agregar_img.push(archivos[i])
+
+            console.log('cargadas para enviar', agregar_img)
+            let dataTransfer = new DataTransfer()
+            for (let file of imagenes_add) {
+                dataTransfer.items.add(file)
+            }
+            imagenes_edit.files = dataTransfer.files
+        }
+        reader.readAsDataURL(archivos[i]);
+        }
+    });
+
+    document.getElementById("add_img").addEventListener('click', function (e) {
+        e.preventDefault();
+        imagenes_resp.click()
+    });
+
+    fomularioRespuesta.addEventListener('submit', function enviarForm(e) {
+        const id = this.dataset.id;
+        console.log('eliminadas: ', elim_resp);
+        let form = e.target                  
+        let formData = new FormData(form);
+
+        formData.append('imagenes_eliminadas', JSON.stringify(elim_resp));
+
+        fetch(`/foro/${modelo}/${id}/edit-foto`,  {
+        method: 'POST',
+        body: formData,
+        headers: {
+        "X-CSRFToken": getCSRFToken(),
+        "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('imágenes actualizadas')
+    })
+    .catch(error=> {
+        console.log('Error:', error)});   
+});
+
 
         document.querySelectorAll('.citar').forEach(button => {
             button.addEventListener('click', function(event) {
@@ -635,67 +740,45 @@
         });
     });
 
-
         document.querySelectorAll('.edit-post').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
-                document.getElementById('edit-form').style.display='block'
-                document.getElementById('extra').style.display='none'
+                let postId = this.dataset.id;
+                let formularioEdicionPost = document.getElementById('edit-form');
+                let extra = document.getElementById('extra')
+                let modelo = this.dataset.modelo
+                let imagenes_edit = document.getElementById('imagenes_edit_post')
+                let previsual = document.getElementById('imagen-prev-edit-post')
+                
+                abrirEditorComentario({ modelo: modelo, id: postId, formularioEdicion: formularioEdicionPost, extra: extra, imagenes_edit: imagenes_edit, previsual: previsual });
         });
     });
-
-
-
 
     document.querySelectorAll('.edit-comment').forEach(button => {
         button.addEventListener('click', function(event) {
             event.preventDefault();
             let comentarioId = this.dataset.id;
-            let formularioEdicion = document.getElementById(`edit-comment-form-${comentarioId}`);
+            let formularioEdicionComment = document.getElementById(`edit-comment-form-${comentarioId}`);
             let extra = document.getElementById(`extra-2-${comentarioId}`)
             let modelo = this.dataset.modelo
             let imagenes_edit = document.getElementById(`imagenes_edit-${comentarioId}`)
             let previsual = document.getElementById(`imagen-prev-edit-${comentarioId}`)
 
+            abrirEditorComentario({ modelo: modelo, id: comentarioId, formularioEdicion: formularioEdicionComment, extra: extra, imagenes_edit: imagenes_edit, previsual: previsual });
+        });
+    });
+    
+    function abrirEditorComentario({modelo, id, formularioEdicion, extra, imagenes_edit, previsual}) {
+        if (formularioEdicion) {
+                formularioEdicion.style.display='block'
+                extra.style.display='none'            
+            } else {
+                console.error(`No se encontró el formulario para el comentario con ID: ${id}`);
+            }
             let imagenes_add = []
-            let eliminar_img= []    
+            let eliminar_img= []
 
-            fetch(`/foro/${modelo}/${comentarioId}/edit-foto`,  {
-                    method: 'GET',
-                    headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "X-Requested-With": "XMLHttpRequest"
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    let images = data.imagenes
-                    if (images) {
-                        for (let imgData of images) {
-                            const container = document.createElement('div');
-                            container.classList.add('imagen-container')
-
-                            const img = document.createElement('img');
-                            img.src = `/media/${imgData.imagen}`
-                            const trashIcono = document.createElement('i')
-                            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
-                            container.appendChild(img)
-                            container.appendChild(trashIcono)
-                            previsual.appendChild(container)
-
-                            previsual.style.display = 'block';
-
-                            trashIcono.addEventListener('click', function() {
-                                container.remove();
-                                eliminar_img.push(imgData.imagen)                       
-                        })
-                }
-            }
-        }).catch(error =>console.error('Error:', error));
-                
-            function getCSRFToken() {
-                return document.querySelector("[name=csrfmiddlewaretoken]").value;
-            }
+            obtener_imagenes_backend({modelo: modelo, id:id, previsual:previsual, eliminar_img: eliminar_img});
 
             imagenes_edit.addEventListener('change', () => {
                 let archivos = imagenes_edit.files
@@ -734,21 +817,15 @@
                 reader.readAsDataURL(archivos[i]);
                 }
             })
-        
-            if (formularioEdicion) {
-                formularioEdicion.style.display='block'
-                extra.style.display='none'
-                
-                formularioEdicion.addEventListener('submit', function enviarForm(e) {
-                    
-                    console.log('eliminadas', eliminar_img);
 
-                    const form = e.target;
+                formularioEdicion.addEventListener('submit', function enviarForm(e) {
+                    console.log('eliminadas: ', eliminar_img);
+                    let form = e.target                  
                     let formData = new FormData(form);
 
                     formData.append('imagenes_eliminadas', JSON.stringify(eliminar_img));
 
-                    fetch(`/foro/${modelo}/${comentarioId}/edit-foto`,  {
+                    fetch(`/foro/${modelo}/${id}/edit-foto`,  {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -763,13 +840,47 @@
                 .catch(error=> {
                     console.log('Error:', error)});   
             });
+    }
 
-            } else {
-                console.error(`No se encontró el formulario para el comentario con ID: ${comentarioId}`);
+    function obtener_imagenes_backend({modelo, id, previsual, eliminar_img}) {
+        fetch(`/foro/${modelo}/${id}/edit-foto`,  {
+                    method: 'GET',
+                    headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let images = data.imagenes
+                    if (images) {
+                        for (let imgData of images) {
+                            const container = document.createElement('div');
+                            container.classList.add('imagen-container')
+
+                            const img = document.createElement('img');
+                            img.src = `/media/${imgData.imagen}`
+                            const trashIcono = document.createElement('i')
+                            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+                            container.appendChild(img)
+                            container.appendChild(trashIcono)
+                            previsual.appendChild(container)
+
+                            previsual.style.display = 'block';
+
+                            trashIcono.addEventListener('click', function() {
+                                container.remove();
+                                eliminar_img.push(imgData.imagen)
+                                console.log("Lista actual de eliminadas:", eliminar_img);                       
+                        })
+                }
             }
+        }).catch(error =>console.error('Error:', error));
+    }       
 
-        });
-    });
+function getCSRFToken() {
+    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
 
 </script>
 

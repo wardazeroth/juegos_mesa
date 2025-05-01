@@ -2,22 +2,135 @@
 {%block content%}
 {%load static%}
 <div class="marco">
-    <div class="row">
-        <div class="col-8 col-md-4 offset-md-2">
-            <h3 class="text-center pt-5">Escribe tu post</h3>
-            <form action="{% url 'crear_post' %}" method="post" enctype="multipart/form-data">
-                {%csrf_token%}
-                {%for field in form%}
+    
+        <section id="post-form">
+            <div class="row">
+            <div class="col-8 col-md-4 offset-md-2">
+                <h3 class="text-center pt-5">Escribe tu post</h3>
+                <form action="{% url 'crear_post' %}" method="post" enctype="multipart/form-data">
+                    {%csrf_token%}
+                    {%for field in form%}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                        </div>
+                    {%endfor%}
                     <div class="mb-3">
-                        {{ field.label_tag }}
-                        {{ field }}
+                        <label for="" class="form-label">Agrega una imagen</label>
+                        <input
+                            type="file"
+                            class="imagenes-edit"
+                            name="imagenes_edit"
+                            id="imagenes_edit"
+                            style="display: none;"
+                            placeholder="nueva imagen"
+                            value="{{post.imagenes}}"
+                            multiple
+                        />
                     </div>
-                {%endfor%}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <a href="#" class="add-img-edit btn btn-outline-primary mb-3" id="boton_foto" data-id="{{post.id}}" data-modelo="{{Post}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                        </div>
+                    </div>
 
-                <input type="submit" value="Enviar" class="btn btn-outline-success">
-            </form>
+                    <input type="submit" value="Enviar" class="btn btn-outline-success">
+            </div>
+
+            <div class="col-4" style="margin-top: 8rem;">
+                <div id="imagen-prev-edit-post"></div>
+            </div>
+        </form>
         </div>
-    </div>
+    </section>
 </div>
+
+<script>
+    const imagenes_edit = document.getElementById('imagenes_edit')
+    const previsual = document.getElementById('imagen-prev-edit-post')
+    const formularioEdicionPost = document.getElementById('post-form');
+
+
+    let imagenes_add = []
+    let eliminar_img= []
+
+
+    imagenes_edit.addEventListener('change', () => {
+        let archivos = imagenes_edit.files
+
+
+        for (let i=0; i < archivos.length; i++) {
+            
+            console.log('hay lista: ', imagenes_add)
+            const file = archivos[i]
+            const reader = new FileReader();    
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            eliminar_img.push(archivos[i])
+            console.log('eliminando: ', eliminar_img)
+        })
+
+        reader.onload = function(e) {
+            // convert image file to base64 string
+            img.src = reader.result
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            previsual.appendChild(container)
+            previsual.style.display = 'block';
+            imagenes_add.push(archivos[i])
+
+            console.log('cargadas para enviar', imagenes_add)
+            let dataTransfer = new DataTransfer()
+            for (let file of imagenes_add) {
+                dataTransfer.items.add(file)
+            }
+            imagenes_edit.files = dataTransfer.files
+        }
+        reader.readAsDataURL(archivos[i]);
+        }
+    })
+
+    document.querySelector('.add-img-edit').addEventListener('click', function (event) {
+            event.preventDefault();
+            
+            imagenes_edit.click()        
+    });
+
+
+    formularioEdicion.addEventListener('submit', function enviarForm(e) {
+        const id = this.dataset.id;
+        console.log('eliminadas: ', eliminar_img);
+        let form = e.target                  
+        let formData = new FormData(form);
+
+        formData.append('imagenes_eliminadas', JSON.stringify(eliminar_img));
+
+        fetch(`/foro/${modelo}/${id}/edit-foto`,  {
+        method: 'POST',
+        body: formData,
+        headers: {
+        "X-CSRFToken": getCSRFToken(),
+        "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('imágenes actualizadas')
+    })
+    .catch(error=> {
+        console.log('Error:', error)});   
+});
+
+function getCSRFToken() {
+    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
+
+</script>
 
 {%endblock%}

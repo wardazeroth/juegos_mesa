@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario, ComentarioImagen
+from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario, ComentarioImagen, PostImagen
 from datetime import date, time, datetime, timedelta
 
 class UserProfileForm(forms.ModelForm):
@@ -181,8 +181,9 @@ class PostModelForm(ModelForm):
                 attrs={
                     'class': 'form-select'
                 }
-            )
-                }
+            ),
+
+    }
         
 class ComentarioModelForm(ModelForm):
     class Meta:
@@ -220,6 +221,20 @@ class ComentarioModelForm(ModelForm):
 class ComentarioImagenForm(ModelForm):
     class Meta:
         model = ComentarioImagen
+        fields = ['imagen']
+        
+        widgets = {
+        'imagen': forms.Select(
+            attrs={
+                'class': 'form-select',
+                'id': 'imagen'
+            }
+        )
+    }
+        
+class PostImagenForm(ModelForm):
+    class Meta:
+        model = PostImagen
         fields = ['imagen']
         
         widgets = {

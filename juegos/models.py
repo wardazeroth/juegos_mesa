@@ -173,7 +173,7 @@ class Like(models.Model):
 class Post(models.Model):
     titulo = models.CharField(max_length=255, unique= True)
     contenido = models.TextField()
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name= 'posts')
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=False, blank=False)
     autor = models.ForeignKey(User, on_delete=models.CASCADE, related_name= 'posts')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     respuestas = models.IntegerField(null=True, blank= True)
@@ -194,6 +194,13 @@ class Post(models.Model):
     
     def __str__(self):
         return f'{self.titulo}'
+    
+class PostImagen(models.Model):
+    post= models.ForeignKey(Post, on_delete=models.CASCADE, related_name='imagenes')
+    imagen = models.ImageField(upload_to='juegos/', blank=True, null=True)
+    
+    def __str__(self):
+        return f"Imagen de {self.post.contenido}"
     
 class Comentario(models.Model):
     post = models.ForeignKey(Post, on_delete= models.CASCADE, related_name = 'comentarios')
