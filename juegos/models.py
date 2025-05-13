@@ -234,4 +234,17 @@ class ComentarioUrl(models.Model):
     
     def __str__(self):
         return self.url
+    
+class LinkPost(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='links')
+    link = models.URLField(blank=True, null=True, max_length=500)
+    
+    def __str__(self):
+        return self.link
 
+class LinkComment(models.Model):
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE, related_name='links')
+    link = models.URLField(blank=True, null=True, max_length=500)
+    
+    def __str__(self):
+        return self.link

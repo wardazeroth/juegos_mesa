@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl, LinkPost, LinkComment
 from datetime import timedelta, date, datetime
 from django.db.models import Q
 import json
@@ -678,6 +678,13 @@ def editar_post(req, modelo, id):
             for url in urls:
                 if url.strip():
                     PostUrl.objects.create(post= post, url = url.strip())
+                    
+        links = req.POST.getlist("link-post", None)
+        print('los links: ', links)
+        if links:
+            for link in links:
+                LinkPost.objects.create(post= post, link= link)
+        
         messages.success(req, 'Post editado con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post') 
 
