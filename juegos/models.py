@@ -202,6 +202,13 @@ class PostImagen(models.Model):
     def __str__(self):
         return f"Imagen de {self.post.contenido}"
     
+class PostUrl(models.Model):
+    post= models.ForeignKey(Post, on_delete=models.CASCADE, related_name='urls')
+    url = models.URLField(blank=True, null=True, max_length=500)
+    
+    def __str__(self):
+        return self.url
+    
 class Comentario(models.Model):
     post = models.ForeignKey(Post, on_delete= models.CASCADE, related_name = 'comentarios')
     mensaje = models.TextField()
@@ -220,4 +227,11 @@ class ComentarioImagen(models.Model):
     
     def __str__(self):
         return f"Imagen de {self.comentario.mensaje}"
+    
+class ComentarioUrl(models.Model):
+    comentario= models.ForeignKey(Comentario, on_delete=models.CASCADE, related_name='urls')
+    url = models.URLField(blank=True, null=True, max_length=500)
+    
+    def __str__(self):
+        return self.url
 

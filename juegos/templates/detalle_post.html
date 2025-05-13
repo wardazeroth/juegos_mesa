@@ -19,30 +19,50 @@
                         <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
                     </div>
                 </div>
+
                 {%if post.imagenes%}
                 <div class="row">                 
                     {%for imagen in post.imagenes.all %} 
                     <div class="col-md-6 mt-3">                               
-                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
                     </div>
-                    {%endfor%}
-                </div>       
+                    {%endfor%}      
                 {%endif%}
+
+                {%if post.urls%}
+                    {%for url in post.urls.all %} 
+                        <div class="col-md-6 mt-3">                               
+                            <img src="{{ url }}" class="d-block w-100" id="img_post" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                        </div>
+                    {%endfor%}
+                </div>
+                {%endif%}
+
 
                 <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
                     {%if post.autor == request.user%}
                     
                     <section id="edit-form">
-                        <div id="imagen-prev-edit-post"></div>
                         <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-
+                            <div id="imagen-prev-edit-post"></div>
+                            {% csrf_token %}
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="#" id="add_url_post" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
                                 </div>
                             </div>
 
-                            {% csrf_token %}
+                            
+                            <div class="col-md-6 add_url_post" style="display: none; margin: 0 4rem">
+                                <label for="url" class="form-label">URL</label>
+                                <input name="url_post" type="url" class="form-control" id="url_post" data-model="post" placeholder="Inserte URL de la imagen">
+                                <button type="button" id="add_url_post" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                            </div>
+
+                            
                             <div class="mb-3">
                             <label for="text" class="form-label">Editar</label>
                             <input
@@ -221,8 +241,16 @@
                                         <div class="col-md-6 mt-3">                               
                                             <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
                                         </div>
+                                        {%endfor%}                                  
+                                {%endif%}
+
+                                {%if com.urls%}
+                                        {%for url in com.urls.all %} 
+                                        <div class="col-md-6 mt-3">                               
+                                            <img src="{{ url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                        </div>
                                         {%endfor%}
-                                    </div>       
+                                    </div>
                                 {%endif%}
 
                                     <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
@@ -235,10 +263,21 @@
                                             {% csrf_token %}
         
                                             <div class="row">
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                                                 </div>
+
+                                                <div class="col-md-6">
+                                                    <a href="#" class="btn btn-outline-primary mb-3 add_url_btn" data-id="{{com.id}}"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
+                                                </div>
                                             </div>
+
+                                            <div class="col-md-6 add_url_com" style="display: none; margin: 0 4rem" data-id="{{com.id}}">
+                                                <label for="url" class="form-label">URL</label>
+                                                <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
+                                                <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                            </div>
+                
 
                                             <div class="mb-3">
                                                 <label for="text" class="form-label">Editar</label>
@@ -415,11 +454,15 @@
                 <h3 class="text-center pt-5 pb-3">Responder</h3>
                 <div class="marco-editor">
                     <div class="row">
-                        <div class="col-md-12">
-                            <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i></i> Añadir Imagen</a>
+                        <div class="col-md-6">
+                            <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
                         </div>
                     </div>
-                <form action= "" method="post" enctype="multipart/form-data">
+                <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
                     <div id="previsual_resp"></div>
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
@@ -435,25 +478,29 @@
                     multiple
                     />
 
+                    <div class="mb-3 add_url" style="display: none; margin: 0 4rem">
+                        <label for="url" class="form-label">URL</label>
+                        <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
+                        <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                    </div>
+
                     <div id="post-cita" style="display: none;" name="post_cita">
                         <pre></pre>
-                    </div>
+                    </div> 
 
                     <div id="comentario-cita" style="display: none;" name="comentario_cita">
                         <pre></pre>
                     </div>
 
-                    <div id="imagen-prev"></div>
-
                         {%for field in form%}   
                         <div class="mb-3">
                             {{ field }}
                         </div>
-                    {%endfor%}
+                        {%endfor%}
                     
                     <div class="row">
                         <div class="col-md-8">
-                            <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i></i></i> Añadir Archivo</a>
+                            <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
                         </div>
                         
                         <div class="col md-4">
@@ -473,15 +520,15 @@
         
         {%if user.is_authenticated%}
 
-    <div class="col-md-10"></div>
-            <div class="col-md-2">
-                <button id="responder" class="btn btn-primary mt-3">Responder</button>
-            </div>
+        <div class="col-md-10"></div>
+                <div class="col-md-2">
+                    <button id="responder" class="btn btn-primary mt-3">Responder</button>
+                </div>
         {%else%}
-        <div class="col-8"></div>
-            <div class="col-md-4">
-                    <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
-            </div>
+            <div class="col-8"></div>
+                <div class="col-md-4">
+                        <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+                </div>
         {%endif%}
     </div>
     
@@ -597,16 +644,16 @@
             img.src = reader.result
             container.appendChild(img)
             container.appendChild(trashIcono)
-            previsual.appendChild(container)
-            previsual.style.display = 'block';
+            prev_resp.appendChild(container)
+            prev_resp.style.display = 'block';
             agregar_img.push(archivos[i])
 
             console.log('cargadas para enviar', agregar_img)
             let dataTransfer = new DataTransfer()
-            for (let file of imagenes_add) {
+            for (let file of agregar_img) {
                 dataTransfer.items.add(file)
             }
-            imagenes_edit.files = dataTransfer.files
+            imagenes_resp.files = dataTransfer.files
         }
         reader.readAsDataURL(archivos[i]);
         }
@@ -853,13 +900,19 @@
                 .then(response => response.json())
                 .then(data => {
                     let images = data.imagenes
+                    
                     if (images) {
                         for (let imgData of images) {
                             const container = document.createElement('div');
                             container.classList.add('imagen-container')
 
                             const img = document.createElement('img');
-                            img.src = `/media/${imgData.imagen}`
+                            if (imgData['tipo'] == 'file') {
+                                img.src =  `/media/${imgData.src}`
+                            } else {
+                                img.src = imgData.src
+                            }
+                            
                             const trashIcono = document.createElement('i')
                             trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
                             container.appendChild(img)
@@ -870,7 +923,7 @@
 
                             trashIcono.addEventListener('click', function() {
                                 container.remove();
-                                eliminar_img.push(imgData.imagen)
+                                eliminar_img.push(imgData)
                                 console.log("Lista actual de eliminadas:", eliminar_img);                       
                         })
                 }
@@ -880,6 +933,152 @@
 
 function getCSRFToken() {
     return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
+
+
+    document.querySelectorAll('.add_url_btn').forEach(btn => {
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            const id = this.dataset.id;
+
+            bloque = document.querySelector(`.add_url_com[data-id="${id}"]`)
+            if (bloque) {
+                bloque.style.display = 'block';
+            }
+        })
+    } )
+
+    document.getElementById('add_url').addEventListener('click', function(e){
+        e.preventDefault();
+        let url_add =document.querySelector('.add_url');
+        url_add.style.display = 'block';
+    })
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const addUrlPost = document.getElementById('add_url_post')
+
+        if (addUrlPost) {
+            addUrlPost.addEventListener('click', function(e) {
+                e.preventDefault();
+                let url_add =document.querySelector('.add_url_post');
+                url_add.style.display = 'block';
+            })
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input[type="url"]');
+
+        inputs.forEach((input) =>{
+            input.addEventListener('input', (event) => {
+                const inputId = event.target.id
+                const dataId = event.target.dataset.id
+                const modelo = event.target.dataset.model
+                let inputPrincipal = null
+                let previsual_form = null
+
+                if (modelo === 'post') {
+                    inputPrincipal = document.getElementById('url_post')
+                    previsual_form = document.getElementById('imagen-prev-edit-post')
+                } else if (modelo === 'comentario') {
+                    inputPrincipal = document.getElementById(`url_com_${dataId}`)
+                    previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
+                } else if(modelo === 'respuesta') {
+                    inputPrincipal = document.getElementById('url')
+                    previsual_form = document.getElementById('previsual_resp')
+                }
+                
+            previsual_form.style.display = 'block';
+            const url = inputPrincipal.value;
+
+            if (!url) return;
+
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            img.src = url;
+
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+            trashIcono.addEventListener('click', function() {
+                container.remove();
+                input.value = '';
+                })
+                container.appendChild(img)
+                container.appendChild(trashIcono)
+                previsual_form.appendChild(container)
+                previsual_form.style.display = 'block';
+                })
+            })
+        });
+
+    function agregarCampo(event) {
+        const boton = event.target
+        const modelo = event.target.dataset.model
+        const dataId = event.target.dataset.id
+        let previsual_form = null;
+        let contenedor = null;
+        const input = document.createElement('input')
+
+            if ( modelo === 'post') {
+        // if (boton.id === 'add_url_post') {
+            contenedor = document.querySelector('.add_url_post');
+            previsual_form = document.getElementById('imagen-prev-edit-post')
+            input.type = 'url';
+            input.name = 'url_post';
+            input.class = "form-control"
+            input.style = "margin: 5px 5px; border-radius: 5px"
+            input.placeholder = 'URL de imagen';
+            contenedor.appendChild(input)
+
+            } else if ( modelo === 'comentario') {
+        // }else if (boton.id === 'add_url_com') {
+            contenedor = document.querySelector(`.add_url_com[data-id="${dataId}"]`);
+            previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
+            input.type = 'url';
+            input.name = 'url_com';
+            input.class = "form-control"
+            input.style = "margin: 5px 5px; border-radius: 5px"
+            input.placeholder = 'URL de imagen';
+            contenedor.appendChild(input)
+            
+            } else if ( modelo === 'respuesta') {
+        // } else if (boton.id === 'add_url_com_btn') {
+            contenedor = document.querySelector('.add_url');
+            previsual_form = document.getElementById('previsual_resp')
+            input.type = 'url';
+            input.name = 'url';
+            input.class = "form-control"
+            input.style = "margin: 5px 5px; border-radius: 5px"
+            input.placeholder = 'URL de imagen';
+            contenedor.appendChild(input)
+        }
+
+        previsual_form.style.display = 'block';
+        input.addEventListener('input', () => {
+            const url = input.value;
+
+            if (!url) return;
+
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            img.src = url;
+
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+            trashIcono.addEventListener('click', function() {
+                container.remove();
+                input.value = '';
+            })
+                container.appendChild(img)
+                container.appendChild(trashIcono)
+                previsual_form.appendChild(container)
+                previsual_form.style.display = 'block';
+        });
+
     }
 
 </script>

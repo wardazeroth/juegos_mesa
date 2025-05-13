@@ -232,17 +232,5 @@ class ComentarioImagenForm(ModelForm):
         )
     }
         
-class PostImagenForm(ModelForm):
-    class Meta:
-        model = PostImagen
-        fields = ['imagen']
-        
-        widgets = {
-        'imagen': forms.Select(
-            attrs={
-                'class': 'form-select',
-                'id': 'imagen'
-            }
-        )
-    }
+
         
