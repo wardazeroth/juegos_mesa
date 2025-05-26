@@ -225,9 +225,8 @@
                 {%endif%}
 
                 {%if post.comentarios%}
-                {%for com in comentarios%} 
-
-                            
+                {%for com in comentarios%}
+                        
                 {%if request.user == com.autor%}
                     <div class="row">
                         <div class="col-md-12">
@@ -271,21 +270,34 @@
                                     </div>
                                 {%endif%}
 
+                                {%if com.links%}
+                                    {%for link in com.links.all %} 
+                                        <div class="col-md-12 mt-3">                               
+                                            <a href="{{link}}" target="_blank">{{link}}</a>
+                                        </div>
+                                    {%endfor%}
+                                {%endif%}
+
                                     <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
 
                                     <section id="edit-comment-form-{{com.id}}">
 
                                         <div id="imagen-prev-edit-{{com.id}}"></div>
+                                        <div id="link-prev-edit-{{com.id}}" style="padding: 2rem 0"></div>
     
                                         <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
         
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
+                                                    <a href="#" id="add-link-com" class="btn btn-outline-primary add-link-com" data-id="{{com.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                                </div>
+
+                                                <div class="col-md-4">
                                                     <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                                                 </div>
 
-                                                <div class="col-md-6">
+                                                <div class="col-md-4">
                                                     <a href="#" class="btn btn-outline-primary mb-3 add_url_btn" data-id="{{com.id}}"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
                                                 </div>
                                             </div>
@@ -295,7 +307,12 @@
                                                 <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
                                                 <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
                                             </div>
-                
+
+                                            <div class="col-md-5 add-link-com-cuadro" style="display: none; margin: 0 2rem" data-id="{{com.id}}">
+                                                <label for="link" class="form-label">Link</label>
+                                                <input type="url" id="link-com-{{com.id}}" class="form-control" name="link-com" data-model="comentario" data-id="{{com.id}}" placeholder="Inserte un link">
+                                                <button type="button" id="add_link_com" onclick="agregarLink(event)" data-model="comentario" data-id="{{com.id}}" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                            </div>
 
                                             <div class="mb-3">
                                                 <label for="text" class="form-label">Editar</label>
@@ -472,16 +489,21 @@
                 <h3 class="text-center pt-5 pb-3">Responder</h3>
                 <div class="marco-editor">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                        </div>
+
+                        <div class="col-md-4">
                             <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
                         </div>
                     </div>
                 <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
                     <div id="previsual_resp"></div>
+                    <div id="link-prev-resp" style="padding: 2rem 0"></div>
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
                     <input type="hidden" id="comentario_cita" name="comentario_cita">
@@ -500,6 +522,12 @@
                         <label for="url" class="form-label">URL</label>
                         <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
                         <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                    </div>
+
+                    <div class="col-md-5 add-link" style="display: none; margin: 0 2rem">
+                        <label for="link" class="form-label">Link</label>
+                        <input type="url" id="link-resp" class="form-control" name="link-resp" data-model="respuesta" placeholder="Inserte un link">
+                        <button type="button" id="add_link_respuesta" onclick="agregarLink(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
                     </div>
 
                     <div id="post-cita" style="display: none;" name="post_cita">
@@ -964,7 +992,17 @@ function getCSRFToken() {
                 bloque.style.display = 'block';
             }
         })
-    } )
+    });
+
+    document.querySelectorAll('.add-link-com').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const id= this.dataset.id;
+            console.log('holaaa chwee')
+            let add_link_com = document.querySelector(`.add-link-com-cuadro[data-id="${id}"]`)
+            add_link_com.style.display = 'block'
+        })
+    })
 
     document.getElementById('add_url').addEventListener('click', function(e){
         e.preventDefault();
@@ -983,6 +1021,17 @@ function getCSRFToken() {
             })
         }
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const addLink = document.getElementById('add-link')
+        if (addLink) {
+            addLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                let add_link = document.querySelector('.add-link');
+                add_link.style.display = 'block';
+            })
+        }
+    })
 
     document.addEventListener('DOMContentLoaded', () => {
         const addUrlPost = document.getElementById('add_url_post')
@@ -1018,9 +1067,13 @@ function getCSRFToken() {
                 } else if (modelo === 'comentario') {
                     inputPrincipal = document.getElementById(`url_com_${dataId}`)
                     previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
+                    inputLink = document.getElementById(`link-com-${dataId}`)
+                    prevLink = document.getElementById(`link-prev-edit-${dataId}`)
                 } else if(modelo === 'respuesta') {
                     inputPrincipal = document.getElementById('url')
                     previsual_form = document.getElementById('previsual_resp')
+                    inputLink = document.getElementById('link-resp')
+                    prevLink = document.getElementById('link-prev-resp')
                 }
                 
             previsual_form.style.display = 'block';
@@ -1141,25 +1194,25 @@ function getCSRFToken() {
 
             } else if ( modelo === 'comentario') {
         // }else if (boton.id === 'add_url_com') {
-            // contenedor = document.querySelector(`.add_url_com[data-id="${dataId}"]`);
-            // previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
-            // input.type = 'url';
-            // input.name = 'url_com';
-            // input.class = "form-control"
-            // input.style = "margin: 5px 5px; border-radius: 5px"
-            // input.placeholder = 'URL de imagen';
-            // contenedor.appendChild(input)
+            contenedor = document.querySelector(`.add-link-com-cuadro[data-id="${dataId}"]`);
+            previsual_form = document.getElementById(`link-prev-edit-${dataId}`)
+            input.type = 'url';
+            input.name = 'link-com';
+            input.class = "form-control"
+            input.style = "margin: 5px 5px; border-radius: 5px"
+            input.placeholder = 'Inserte un nuevo link';
+            contenedor.appendChild(input)
             
             } else if ( modelo === 'respuesta') {
         // } else if (boton.id === 'add_url_com_btn') {
-            // contenedor = document.querySelector('.add_url');
-            // previsual_form = document.getElementById('previsual_resp')
-            // input.type = 'url';
-            // input.name = 'url';
-            // input.class = "form-control"
-            // input.style = "margin: 5px 5px; border-radius: 5px"
-            // input.placeholder = 'URL de imagen';
-            // contenedor.appendChild(input)
+            contenedor = document.querySelector('.add-link');
+            previsual_form = document.getElementById("link-prev-resp")
+            input.type = 'url';
+            input.name = 'link-resp';
+            input.class = "form-control"
+            input.style = "margin: 5px 5px; border-radius: 5px"
+            input.placeholder = 'URL de imagen';
+            contenedor.appendChild(input)
         }
 
         previsual_form.style.display = 'block';
@@ -1179,7 +1232,6 @@ function getCSRFToken() {
             previsual_form.style.display = 'block';
         });
     }
-
 
 </script>
 

@@ -586,6 +586,12 @@ def detalle_post(req, modelo, id):
                 for url in urls:
                     if url.strip():
                         ComentarioUrl.objects.create(comentario= comentario, url = url.strip())
+                        
+            links = req.POST.getlist("link-resp", None)
+            print('los links: ', links)
+            if links:
+                for link in links:
+                    LinkComment.objects.create(comentario= comentario, link= link)
             
         messages.success(req, 'Respuesta publicada con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post')
@@ -737,6 +743,12 @@ def editar_comentario(req, modelo, id):
                 for url in urls:
                     if url.strip():
                         ComentarioUrl.objects.create(comentario= comentarios, url = url.strip())
+                        
+        links = req.POST.getlist("link-com", None)
+        print('los links: ', links)
+        if links:
+            for link in links:
+                LinkComment.objects.create(comentario= comentarios, link= link)
             
         if req.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse({'mensaje': 'Comentariusss editado con éxito'})
