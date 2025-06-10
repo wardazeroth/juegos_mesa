@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 import requests
+import os
 
 # Create your models here.
 
@@ -248,3 +249,22 @@ class LinkComment(models.Model):
     
     def __str__(self):
         return self.link
+
+class ArchivoAdjuntoPost(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='adjuntos')
+    archivo = models.FileField(upload_to='adjuntos/')
+    
+    @property
+    def extension(self):
+        name = self.archivo.name.lower()
+        return os.path.splitext(name)[1]
+    
+class ArchivoAdjuntoComentario(models.Model):
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE, related_name='adjuntos')
+    archivo = models.FileField(upload_to='adjuntos/')
+    
+    @property
+    def extension(self):
+        name = self.archivo.name.lower()
+        return os.path.splitext(name)[1]
+    

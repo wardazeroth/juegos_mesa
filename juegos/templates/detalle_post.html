@@ -46,6 +46,29 @@
                     {%endfor%}
                 {%endif%}
 
+                {%if post.adjuntos%}
+                                    {%for archivo in post.adjuntos.all%}
+                                        <div class="col-md-12 mt-3">
+                                            <ui>
+                                                {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
+                                                    <i class="fas fa-file-image"></i>
+                                                {% elif archivo.extension == '.pdf' %}
+                                                    <i class="fas fa-file-pdf"></i>
+                                                {% elif archivo.extension == '.txt' %}
+                                                    <i class="fas fa-file-alt"></i>
+                                                {% elif archivo.extension == '.zip' %}
+                                                    <i class="fa-regular fa-file-zipper"></i>
+                                                {% elif archivo.extension == '.docx' %}
+                                                    <i class="fa-regular fa-file-word"></i>
+                                                {% else %}
+                                                    <i class="fas fa-file"></i>
+                                                {% endif %}
+                                                <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                                            </ui>
+                                        </div>
+                                    {%endfor%}
+                                {%endif%}
+
 
                 <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
                     {%if post.autor == request.user%}
@@ -54,17 +77,24 @@
                         <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
                             <div id="imagen-prev-edit-post"></div>
                             <div id="link-prev-post" style="padding: 2rem 0"></div>
+                            <div id="file-prev-post" style="padding: 2rem 0"></div>
+
                             {% csrf_token %}
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <a href="#" id="add-link-post" class="btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <a href="#" id="add_url_post" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir URL</a>
                                 </div>
+                                <input type="file" name="archivo" id="archivo_post" style="display: none;" data-model="post" multiple>
+                                <div class="col-md-3">
+                                    <a href="#" id="add_archivo_post" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                </div>
+                                
                             </div>
 
                             <div class="row">
@@ -278,29 +308,59 @@
                                     {%endfor%}
                                 {%endif%}
 
+                                {%if com.adjuntos%}
+                                    {%for archivo in com.adjuntos.all%}
+                                        <div class="col-md-12 mt-3">
+                                            <ui>
+                                                {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
+                                                    <i class="fas fa-file-image"></i>
+                                                {% elif archivo.extension == '.pdf' %}
+                                                    <i class="fas fa-file-pdf"></i>
+                                                {% elif archivo.extension == '.txt' %}
+                                                    <i class="fas fa-file-alt"></i>
+                                                {% elif archivo.extension == '.zip' %}
+                                                    <i class="fa-regular fa-file-zipper"></i>
+                                                {% elif archivo.extension == '.docx' %}
+                                                    <i class="fa-regular fa-file-word"></i>
+                                                {% else %}
+                                                    <i class="fas fa-file"></i>
+                                                {% endif %}
+                                                <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                                            </ui>
+                                        </div>
+                                    {%endfor%}
+                                {%endif%}
+
                                     <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
 
                                     <section id="edit-comment-form-{{com.id}}">
 
                                         <div id="imagen-prev-edit-{{com.id}}"></div>
                                         <div id="link-prev-edit-{{com.id}}" style="padding: 2rem 0"></div>
+                                        <div id="file-prev-com-{{com.id}}" style="padding: 2rem 0"></div>
     
                                         <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
                                             {% csrf_token %}
         
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <a href="#" id="add-link-com" class="btn btn-outline-primary add-link-com" data-id="{{com.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
                                                 </div>
 
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                                                 </div>
 
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <a href="#" class="btn btn-outline-primary mb-3 add_url_btn" data-id="{{com.id}}"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
                                                 </div>
+        
+                                                <div class="col-md-3">
+                                                    <button type="button" id="add_archivo_com" class="add_archivo_com btn btn-outline-primary mb-1" data-id="{{com.id}}"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                                </div>
                                             </div>
+
+                                            <input type="file" name="archivo" id="archivo_com-{{com.id}}" style="display: none;" data-model="comentario" data-id="{{com.id}}" multiple>
 
                                             <div class="col-md-6 add_url_com" style="display: none; margin: 0 4rem" data-id="{{com.id}}">
                                                 <label for="url" class="form-label">URL</label>
@@ -379,7 +439,6 @@
                                                 </div>
                                             </div>
                                         </form>
-
 
                                     </section>
 
@@ -504,6 +563,8 @@
                 <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
                     <div id="previsual_resp"></div>
                     <div id="link-prev-resp" style="padding: 2rem 0"></div>
+                    <div id="file-prev-resp" style="padding: 2rem 0"></div>
+
                     {%csrf_token%}
                     <input type="hidden" id="post_cita" name="post_cita">
                     <input type="hidden" id="comentario_cita" name="comentario_cita">
@@ -545,6 +606,8 @@
                         {%endfor%}
                     
                     <div class="row">
+                        <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
+
                         <div class="col-md-8">
                             <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
                         </div>
@@ -560,7 +623,6 @@
         </div>
     </div>
     </section>
-
 
     <div class="row">
         
@@ -981,7 +1043,6 @@ function getCSRFToken() {
     return document.querySelector("[name=csrfmiddlewaretoken]").value;
     }
 
-
     document.querySelectorAll('.add_url_btn').forEach(btn => {
         btn.addEventListener('click', function(e){
             e.preventDefault();
@@ -1047,6 +1108,7 @@ function getCSRFToken() {
 
     document.addEventListener('DOMContentLoaded', () => {
         const inputs = document.querySelectorAll('input[type="url"]');
+        const inputs_file = document.querySelectorAll('input[type="file"]')
 
         inputs.forEach((input) =>{
             input.addEventListener('input', (event) => {
@@ -1104,6 +1166,71 @@ function getCSRFToken() {
                 })
             })
         });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs_file = document.querySelectorAll('input[type="file"]')
+
+        inputs_file.forEach((input) =>{
+            input.addEventListener('input', (event) => {
+                const inputId = event.target.id     
+                const dataId = event.target.dataset.id
+                const modelo = event.target.dataset.model
+                let inputAdjunto = null
+                let prevFile = null
+                const extensionesValidas =['.jpg', '.png', '.pdf', '.txt', '.zip', '.docx'];
+
+                if (modelo == 'post') {
+                    inputAdjunto = document.getElementById('archivo_post')
+                    prevFile = document.getElementById("file-prev-post")
+                }
+                else if (modelo == 'comentario') {
+                    inputAdjunto = document.getElementById(`archivo_com-${dataId}`)
+                    prevFile = document.getElementById(`file-prev-com-${dataId}`)
+                }else if(modelo === 'respuesta') {
+                    inputAdjunto = document.getElementById('archivo')
+                    prevFile = document.getElementById("file-prev-resp")
+                }
+
+            const archivos= inputAdjunto.files;
+            Array.from(archivos).forEach((archivo) => {
+                const extension = archivo.name.substring(archivo.name.lastIndexOf('.')).toLowerCase(); // Extrae .pdf, .jpg, etc.
+                if (!extensionesValidas.includes(extension)) {
+                    alert(`Extensión ${extension} no permitida. Solo se aceptan ${extensionesValidas.join(', ')}`)
+                } else {
+                    prevFile.style.display = 'block'
+                    const container = document.createElement('div');
+                    const icono = document.createElement('i');
+                    // <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                    if (extension == '.pdf') {
+                        icono.classList.add('fas', 'fa-file-pdf')
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.jpg' || extension === '.jpeg' || extension === '.png') {
+                        icono.classList.add('fas', 'fa-file-image');
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.txt') {
+                        icono.classList.add('fas', 'fa-file-alt');
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.docx') {
+                        icono.classList.add('fas', 'fa-file-word')
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.zip') {
+                        icono.classList.add('fas', 'fa-file-zipper')
+                        icono.style.fontSize = '2rem'
+                    } else {
+                        icono.classList.add('fas', 'fa-file');
+                        icono.style.fontSize = '2rem'
+                    }
+                    let nombre_archivo = archivo.name
+                    console.log('los adjuntos: ', archivo)
+                    container.appendChild(icono)
+                    prevFile.innerHTML = nombre_archivo
+                    prevFile.appendChild(container);
+                    }
+            })
+
+            })
+        })
+    })
 
     function agregarCampo(event) {
         const boton = event.target
@@ -1169,9 +1296,8 @@ function getCSRFToken() {
                 container.appendChild(trashIcono)
                 previsual_form.appendChild(container)
                 previsual_form.style.display = 'block';
-        });
-
-    }
+        }
+    )};
 
     function agregarLink(event) {
         const boton = event.target
@@ -1232,6 +1358,27 @@ function getCSRFToken() {
             previsual_form.style.display = 'block';
         });
     }
+
+    document.getElementById('add_archivo').addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo')
+        input_archivo.click()
+    });
+    
+    document.getElementById('add_archivo_post').addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo_post')
+        input_archivo.click()
+    });
+
+    document.querySelectorAll('.add_archivo_com').forEach(btn => {
+        btn.addEventListener('click', function(e){
+        e.preventDefault()
+        const id= this.dataset.id;
+        let input_archivo = document.getElementById(`archivo_com-${id}`)
+        input_archivo.click()
+        })
+    });
 
 </script>
 

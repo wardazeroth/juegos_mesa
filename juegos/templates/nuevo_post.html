@@ -2,58 +2,87 @@
 {%block content%}
 {%load static%}
 <div class="marco">
-    
-        <section id="post-form">
-            <div class="row">
-            <div class="col-8 col-md-4 offset-md-2">
-                <h3 class="text-center pt-5">Escribe tu post</h3>
+    <section id="post-form">
+            <h3 class="text-center pt-5">Escribe tu post</h3>
                 <form action="{% url 'crear_post' %}" method="post" enctype="multipart/form-data">
-                    {%csrf_token%}
-                    {%for field in form%}
+                <div class="row">
+                    <div class="col-md-5 offset-md-1">
+                        {%csrf_token%}
+                        {%for field in form%}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {%endfor%}
                         <div class="mb-3">
-                            {{ field.label_tag }}
-                            {{ field }}
-                        </div>
-                    {%endfor%}
-                    <div class="mb-3">
-                        <label for="" class="form-label">Agrega una imagen</label>
-                        <input
-                            type="file"
-                            class="imagenes-edit"
-                            name="imagenes_edit"
-                            id="imagenes_edit"
-                            style="display: none;"
-                            placeholder="nueva imagen"
-                            value="{{post.imagenes}}"
-                            multiple
-                        />
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a href="#" class="add-img-edit btn btn-outline-primary mb-3" id="boton_foto" data-id="{{post.id}}" data-modelo="{{Post}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
-                        </div>
+                            <input
+                                type="file"
+                                class="imagenes-edit"
+                                name="imagenes_edit"
+                                id="imagenes_edit"
+                                style="display: none;"
+                                placeholder="nueva imagen"
+                                value="{{post.imagenes}}"
+                                multiple
+                            />
+                        </div>                       
                     </div>
 
-                    <input type="submit" value="Enviar" class="btn btn-outline-success">
-            </div>
+                    <div class="col-md-5">
+                        <label for="" class="form-label" style="margin-bottom: 1rem;">Agrega imágenes o enlaces</label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="#" class="add-img-edit btn btn-outline-primary mb-3" id="boton_foto" data-id="{{post.id}}" data-modelo="{{Post}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                            </div>
 
-            <div class="col-4" style="margin-top: 8rem;">
-                <div id="imagen-prev-edit-post"></div>
+                            <div class="col-md-3">
+                                <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
+                            </div>
+
+                            <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
+                            <div class="col-md-3">
+                                <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 add_url" style="display: none; margin: 0 2rem">
+                                <label for="url" class="form-label">URL</label>
+                                <input name="url-post" type="url" class="form-control" id="url" data-model="post" placeholder="Inserte URL de la imagen">
+                                <button type="button" id="add_url" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                            </div>
+
+                            <div class="col-md-12 add-link" style="display: none; margin: 0 2rem">
+                                <label for="link" class="form-label">Link</label>
+                                <input type="url" id="link-post" class="form-control" name="link-post" data-model="post" placeholder="Inserte un link">
+                                <button type="button" id="add_link_post" onclick="agregarLink(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div id="imagen-prev-edit-post"></div>
+                                <div id="link-prev-post"></div>
+                                <div id="file-prev-resp" style="padding: 2rem 0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" value="Enviar" class="btn btn-outline-success">                    
+                    </div>
+                </form>
             </div>
-        </form>
-        </div>
     </section>
 </div>
 
 <script>
     const imagenes_edit = document.getElementById('imagenes_edit')
     const previsual = document.getElementById('imagen-prev-edit-post')
-    const formularioEdicionPost = document.getElementById('post-form');
-
+    const formularioEdicion = document.getElementById('post-form');
 
     let imagenes_add = []
     let eliminar_img= []
-
 
     imagenes_edit.addEventListener('change', () => {
         let archivos = imagenes_edit.files
@@ -130,6 +159,193 @@
 function getCSRFToken() {
     return document.querySelector("[name=csrfmiddlewaretoken]").value;
     }
+
+document.getElementById('add_url').addEventListener('click', function(e){
+    e.preventDefault();
+    let url_add =document.querySelector('.add_url');
+    url_add.style.display = 'block';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('input[type="url"]');
+
+    inputs.forEach((input) =>{
+        input.addEventListener('input', (event) => {
+            const modelo = event.target.dataset.model
+            let inputPrincipal = document.getElementById('url')
+            let inputLink = document.getElementById('link-post')
+            let prevLink = document.getElementById("link-prev-post")
+            
+        previsual.style.display = 'block';
+        const url = inputPrincipal.value;
+        const link = inputLink.value;
+        prevLink.style.display = 'block'
+        const linked = `<a href="${link}" target="_blank">${link}</a>`
+        prevLink.innerHTML = linked
+
+        if (!url) return;
+
+        const container = document.createElement('div');
+        container.classList.add('imagen-container')
+        const img = document.createElement('img');
+        img.src = url;
+
+        const trashIcono = document.createElement('i')
+        trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            input.value = '';
+            })
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            previsual.appendChild(container)
+            previsual.style.display = 'block';
+            })
+        })
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs_file = document.querySelectorAll('input[type="file"]')
+
+        inputs_file.forEach((input) =>{
+            input.addEventListener('input', (event) => {
+                const inputId = event.target.id     
+                const dataId = event.target.dataset.id
+                const modelo = event.target.dataset.model
+                let inputAdjunto = null
+                let prevFile = null
+                const extensionesValidas =['.jpg', '.png', '.pdf', '.txt', '.zip', '.docx'];
+
+                if(modelo === 'respuesta') {
+                    inputAdjunto = document.getElementById('archivo')
+                    prevFile = document.getElementById("file-prev-resp")
+                }
+
+            const archivos= inputAdjunto.files;
+            Array.from(archivos).forEach((archivo) => {
+                const extension = archivo.name.substring(archivo.name.lastIndexOf('.')).toLowerCase(); // Extrae .pdf, .jpg, etc.
+                if (!extensionesValidas.includes(extension)) {
+                    alert(`Extensión ${extension} no permitida. Solo se aceptan ${extensionesValidas.join(', ')}`)
+                } else {
+                    prevFile.style.display = 'block'
+                    const container = document.createElement('div');
+                    const icono = document.createElement('i');
+                    // <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                    if (extension == '.pdf') {
+                        icono.classList.add('fas', 'fa-file-pdf')
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.jpg' || extension === '.jpeg' || extension === '.png') {
+                        icono.classList.add('fas', 'fa-file-image');
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.txt') {
+                        icono.classList.add('fas', 'fa-file-alt');
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.docx') {
+                        icono.classList.add('fas', 'fa-file-word')
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.zip') {
+                        icono.classList.add('fas', 'fa-file-zipper')
+                        icono.style.fontSize = '2rem'
+                    } else {
+                        icono.classList.add('fas', 'fa-file');
+                        icono.style.fontSize = '2rem'
+                    }
+                    let nombre_archivo = archivo.name
+                    console.log('los adjuntos: ', archivo)
+                    container.appendChild(icono)
+                    prevFile.innerHTML = nombre_archivo
+                    prevFile.appendChild(container);
+                    }
+            })
+
+            })
+        })
+    });
+
+function agregarCampo(event) {
+    const boton = event.target
+    let previsual_form = document.getElementById('imagen-prev-edit-post')
+    let contenedor = document.querySelector('.add_url');
+    const input = document.createElement('input')
+    input.type = 'url';
+    input.name = 'url-post';
+    input.classList.add("form-control")
+    input.style = "margin: 5px 5px; border-radius: 5px"
+    input.placeholder = 'Nuevo URL de imagen';
+    contenedor.appendChild(input)
+    
+    previsual_form.style.display = 'block';
+    input.addEventListener('input', () => {
+    const url = input.value;
+
+    if (!url) return;
+
+    const container = document.createElement('div');
+    container.classList.add('imagen-container')
+    const img = document.createElement('img');
+    img.src = url;
+
+    const trashIcono = document.createElement('i')
+    trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+    trashIcono.addEventListener('click', function() {
+        container.remove();
+        input.value = '';
+    })
+        container.appendChild(img)
+        container.appendChild(trashIcono)
+        previsual_form.appendChild(container)
+        previsual_form.style.display = 'block';
+    });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const addLink = document.getElementById('add-link')
+    if (addLink) {
+        addLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            let add_link = document.querySelector('.add-link');
+            add_link.style.display = 'block';
+        })
+    }
+})
+
+    function agregarLink(event) {
+        const boton = event.target
+        const input = document.createElement('input')
+        let contenedor = document.querySelector('.add-link');
+        let previsual_form = document.getElementById('link-prev-post')
+        input.type = 'url';
+        input.name = 'link-post';
+        input.classList.add("form-control")
+        input.style = "margin: 5px 5px; border-radius: 5px"
+        input.placeholder = 'Inserte un nuevo link';
+        contenedor.appendChild(input)
+        previsual_form.style.display = 'block';
+
+        input.addEventListener('input', () => {
+            const url = input.value;
+
+            if (!url) return;
+
+            const container = document.createElement('div');
+            const enlace = document.createElement('a')
+            enlace.href = url
+            enlace.textContent = url;
+            enlace.target = "_blank";
+            container.appendChild(enlace)
+            container.style = 'padding: 1rem 0'
+            previsual_form.appendChild(container)
+            previsual_form.style.display = 'block';
+        });
+    }
+
+    document.getElementById('add_archivo').addEventListener('click', function(e) {
+    e.preventDefault()
+    let input_archivo = document.getElementById('archivo')
+    input_archivo.click()
+    });
 
 </script>
 

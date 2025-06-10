@@ -9,9 +9,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl, LinkPost, LinkComment
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl, LinkPost, LinkComment, ArchivoAdjuntoComentario, ArchivoAdjuntoPost
 from datetime import timedelta, date, datetime
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 import json
 
 # Create your views here.
@@ -496,9 +497,41 @@ class CrearPostView(View):
             print('éstas son imagenes de post', imagenes) 
             if imagenes:
                 for img in imagenes:
-                    PostImagen.objects.create(post = post, imagen = img)  
+                    PostImagen.objects.create(post = post, imagen = img) 
+                    
+            urls = req.POST.getlist('url-post', None)
+            print('son las urls', urls)
+            if urls:
+                for url in urls:
+                    if url.strip():
+                        PostUrl.objects.create(post= post, url = url.strip())
+                        
+            links = req.POST.getlist("link-post", None)
+            print('los links: ', links)
+            if links:
+                for link in links:
+                    LinkPost.objects.create(post= post, link= link)
+                    
+            adjuntos = req.FILES.getlist('archivo')            
+            print('son los adjuntos: ', adjuntos)
+            print("Archivos recibidos:", [a.name for a in adjuntos])
+            if adjuntos:
+                for archivo in adjuntos:
+                    if (validar_extension(req, archivo)):   
+                        ArchivoAdjuntoPost.objects.create( post=post, archivo = archivo)
+            
+                    
         messages.success(req, 'Post publicado con éxito')
         return redirect('/foro')
+    
+def validar_extension(req, archivo):
+    extensiones_validas = ['.jpg', '.png', '.pdf', '.txt', '.zip', '.docx']
+    from os.path import splitext
+    ext = splitext(archivo.name)[1].lower()
+    if ext not in extensiones_validas:
+        messages.warning(req, 'Extensión de archivo no permitida')
+        return False
+    return True
 
 def detalle_post(req, modelo, id):
     if req.method == 'GET':
@@ -592,10 +625,17 @@ def detalle_post(req, modelo, id):
             if links:
                 for link in links:
                     LinkComment.objects.create(comentario= comentario, link= link)
+                    
+            adjuntos = req.FILES.getlist('archivo')
+            print('son los adjuntos: ', adjuntos)
+            print("Archivos recibidos:", [a.name for a in adjuntos])
+            if adjuntos:
+                for archivo in adjuntos:
+                    if (validar_extension(req, archivo)):   
+                        ArchivoAdjuntoComentario.objects.create(comentario = comentario, archivo = archivo)
             
         messages.success(req, 'Respuesta publicada con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post')
-
     
 def categorias(req):
     if req.method == 'GET':
@@ -691,6 +731,14 @@ def editar_post(req, modelo, id):
             for link in links:
                 LinkPost.objects.create(post= post, link= link)
         
+        adjuntos = req.FILES.getlist('archivo')
+        print('son los adjuntos: ', adjuntos)
+        print("Archivos recibidos:", [a.name for a in adjuntos])
+        if adjuntos:
+            for archivo in adjuntos:
+                if (validar_extension(req, archivo)):   
+                    ArchivoAdjuntoPost.objects.create(post = post, archivo = archivo)
+        
         messages.success(req, 'Post editado con éxito')
         return redirect(f'/foro/{modelo}/{id}/detalle_post') 
 
@@ -749,6 +797,14 @@ def editar_comentario(req, modelo, id):
         if links:
             for link in links:
                 LinkComment.objects.create(comentario= comentarios, link= link)
+        
+        adjuntos = req.FILES.getlist('archivo')
+        print('son los adjuntos: ', adjuntos)
+        print("Archivos recibidos:", [a.name for a in adjuntos])
+        if adjuntos:
+            for archivo in adjuntos:
+                if (validar_extension(req, archivo)):   
+                    ArchivoAdjuntoComentario.objects.create(comentario = comentarios, archivo = archivo)
             
         if req.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse({'mensaje': 'Comentariusss editado con éxito'})
