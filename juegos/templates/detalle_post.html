@@ -98,13 +98,13 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-5 add_url_post" style="display: none; margin: 0 2rem">
+                                <div class="col-md-6 add_url_post" style="display: none">
                                     <label for="url" class="form-label">URL</label>
                                     <input name="url_post" type="url" class="form-control" id="url_post" data-model="post" placeholder="Inserte URL de la imagen">
                                     <button type="button" id="add_url_post" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
                                 </div>
     
-                                <div class="col-md-5 add-link-post" style="display: none; margin: 0 2rem">
+                                <div class="col-md-6 add-link-post" style="display: none">
                                     <label for="link" class="form-label">Link</label>
                                     <input type="url" id="link-post" class="form-control" name="link-post" data-model="post" placeholder="Inserte un link">
                                     <button type="button" id="add_link_post" onclick="agregarLink(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
@@ -362,16 +362,18 @@
 
                                             <input type="file" name="archivo" id="archivo_com-{{com.id}}" style="display: none;" data-model="comentario" data-id="{{com.id}}" multiple>
 
-                                            <div class="col-md-6 add_url_com" style="display: none; margin: 0 4rem" data-id="{{com.id}}">
-                                                <label for="url" class="form-label">URL</label>
-                                                <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
-                                                <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
-                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 add_url_com" style="display: none;" data-id="{{com.id}}">
+                                                    <label for="url" class="form-label">URL</label>
+                                                    <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
+                                                    <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                                </div>
 
-                                            <div class="col-md-5 add-link-com-cuadro" style="display: none; margin: 0 2rem" data-id="{{com.id}}">
-                                                <label for="link" class="form-label">Link</label>
-                                                <input type="url" id="link-com-{{com.id}}" class="form-control" name="link-com" data-model="comentario" data-id="{{com.id}}" placeholder="Inserte un link">
-                                                <button type="button" id="add_link_com" onclick="agregarLink(event)" data-model="comentario" data-id="{{com.id}}" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                                <div class="col-md-6 add-link-com-cuadro" style="display: none;" data-id="{{com.id}}">
+                                                    <label for="link" class="form-label">Link</label>
+                                                    <input type="url" id="link-com-{{com.id}}" class="form-control" name="link-com" data-model="comentario" data-id="{{com.id}}" placeholder="Inserte un link">
+                                                    <button type="button" id="add_link_com" onclick="agregarLink(event)" data-model="comentario" data-id="{{com.id}}" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                                </div>
                                             </div>
 
                                             <div class="mb-3">
@@ -579,13 +581,13 @@
                     multiple
                     />
 
-                    <div class="mb-3 add_url" style="display: none; margin: 0 4rem">
+                    <div class="mb-3 add_url" style="display: none; margin: 0 2rem">
                         <label for="url" class="form-label">URL</label>
                         <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
                         <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
                     </div>
 
-                    <div class="col-md-5 add-link" style="display: none; margin: 0 2rem">
+                    <div class="mb-3 add-link" style="display: none; margin: 0 2rem">
                         <label for="link" class="form-label">Link</label>
                         <input type="url" id="link-resp" class="form-control" name="link-resp" data-model="respuesta" placeholder="Inserte un link">
                         <button type="button" id="add_link_respuesta" onclick="agregarLink(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
@@ -1246,7 +1248,7 @@ function getCSRFToken() {
             previsual_form = document.getElementById('imagen-prev-edit-post')
             input.type = 'url';
             input.name = 'url_post';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
             input.placeholder = 'URL de imagen';
             contenedor.appendChild(input)
@@ -1257,7 +1259,7 @@ function getCSRFToken() {
             previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
             input.type = 'url';
             input.name = 'url_com';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
             input.placeholder = 'URL de imagen';
             contenedor.appendChild(input)
@@ -1268,7 +1270,7 @@ function getCSRFToken() {
             previsual_form = document.getElementById('previsual_resp')
             input.type = 'url';
             input.name = 'url';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
             input.placeholder = 'URL de imagen';
             contenedor.appendChild(input)
@@ -1313,7 +1315,7 @@ function getCSRFToken() {
             previsual_form = document.getElementById('link-prev-post')
             input.type = 'url';
             input.name = 'link-post';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
             input.placeholder = 'Inserte un nuevo link';
             contenedor.appendChild(input)
@@ -1324,7 +1326,7 @@ function getCSRFToken() {
             previsual_form = document.getElementById(`link-prev-edit-${dataId}`)
             input.type = 'url';
             input.name = 'link-com';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
             input.placeholder = 'Inserte un nuevo link';
             contenedor.appendChild(input)
@@ -1335,9 +1337,9 @@ function getCSRFToken() {
             previsual_form = document.getElementById("link-prev-resp")
             input.type = 'url';
             input.name = 'link-resp';
-            input.class = "form-control"
+            input.classList.add("form-control")
             input.style = "margin: 5px 5px; border-radius: 5px"
-            input.placeholder = 'URL de imagen';
+            input.placeholder = 'Inserte un nuevo link';
             contenedor.appendChild(input)
         }
 

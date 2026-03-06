@@ -24,8 +24,6 @@ def inicio(req):
     hoy = date.today()
     ahora = datetime.now().time()
     ahora_mas_una = (datetime.combine(datetime.today(), ahora) + timedelta(hours=1)).time()
-
-
     
     partida_lunes = Partida.objects.filter(fecha = week_day[0]).order_by('hora')
     partida_martes = Partida.objects.filter(fecha = week_day[1]).order_by('hora')
@@ -554,7 +552,7 @@ def detalle_post(req, modelo, id):
                 'comentarios': comentarios, 
                 'liked_post': liked_post,
                 'liked_coments': liked_coments
-            }
+                }
             return render(req, 'detalle_post.html', context)
         else:
             post = Post.objects.get(comentarios__id= id)

@@ -1,7 +1,6 @@
 @import url("fontawesome-all.min.css");
 
 .navbar {
-    
     display: flex;
     align-items: center;
     background-color: transparent;
@@ -12,12 +11,20 @@
     width: 100%;
     z-index: 1050;
     font-size: 12px;
+    position: fixed!important;
+    transition: all 300ms;
 }
 
 body {
     background: #4568DC;
     background: -webkit-linear-gradient(to right, #080808, #001044);
     background: linear-gradient(to right, #000000, #010f3d);
+    width: 100%;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 .saludo {
@@ -31,7 +38,6 @@ body {
     z-index: -1;
 }
 
-
 .full-width-carousel {
     position: relative;
     width: 100vw;  /* Hace que el carrusel ocupe todo el ancho de la pantalla */
@@ -41,8 +47,6 @@ body {
     z-index: 1;
 }
 
-
-
 .full-width-carousel .carousel-inner,
 .full-width-carousel .carousel-item img {
     width: 100vw;
@@ -50,16 +54,24 @@ body {
     object-fit: cover; /* Mantiene la proporción de la imagen */
 }
 
-
-
 .marco{
-    background: rgba(255, 255, 255, 0.1); /* Ajusta el último valor (0.5) para controlar la opacidad */
-    backdrop-filter: blur(5px); /* Opcional: agrega un efecto de desenfoque */
-    padding: 10px; /* Ajusta el espaciado según necesidad */
-    border-radius: 10px; /* Bordes redondeados opcionales */
+    background: rgba(255, 255, 255, 0.096);
+    backdrop-filter: blur(5px);
+    padding: 10px;
+    border-radius: 10px;
     color: #ffff;
     text-align: center;
 }
+
+.marco2{
+    background: rgba(7, 0, 0, 0.418);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    color: #ffff;
+    text-align: center;
+}
+
+
 
 .marco h3 {
     color: darkturquoise;
@@ -246,8 +258,6 @@ max-width: 100vw; /* Asegura que no se exceda del ancho total */
     animation: loopText 6s linear infinite;
     width: max-content;
     margin-top: 1rem;
-
-            
 }
 
 @keyframes loopText {
@@ -318,25 +328,41 @@ a {
 	}
 
 #sidebar.active {
-    left: -12em;
+    left: -11em;
 }
 
-/* #sidebar + .container {
-    margin-left: 13em;
-}
-
-#sidebar.active + .container {
+/* #sidebar.active + .container {
     margin: auto;
-} */
+} */ */
 
-#sidebar + .wrapper{
-    margin-left: 14em;
+#sidebar.active + .wrapper .navbar {
+    left: 4em !important;
+    width: 100% !important;
+} 
+
+#sidebar + .wrapper .navbar {
+    left: 18.5em !important;
+    width: calc(100% - 18.5em) !important;
 }
+
+#sidebar + .wrapper {
+    margin-left: 14em!important;
+    width: calc(100% - 14em)!important;
+    transition: all 300ms;
+} 
 
 #sidebar.active + .wrapper{
-    margin: auto;
+    margin-left: 1.5em !important;
+    width: 100% !important;
+    transition: all 300ms;
 }
 
+#sidebar.active + .wrapper .navbar {
+    margin-left: -15em !important;
+    width: 100% !important;
+    transition: all 300ms;
+    width: calc(100% - 3.5em) !important;
+}
 
 #sidebar .identificacion {
     margin-bottom: 3em;

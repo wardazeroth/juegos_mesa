@@ -3,6 +3,9 @@ from django.forms import ModelForm
 from juegos.models import Partida, Juego, Local, PartidaJugador, JuegoImagen, UserProfile, Resultado, User, Post, Comentario, ComentarioImagen, PostImagen
 from datetime import date, time, datetime, timedelta
 
+class MultiFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
 class UserProfileForm(forms.ModelForm):
 
     class Meta:
@@ -38,19 +41,6 @@ class UserProfileForm(forms.ModelForm):
     )
 }
 
-
-# @staticmethod
-# def generar_opciones_horas():
-#     return [
-#         ('15:00', '15:00 PM'),
-#         ('16:00', '16:00 PM'),
-#         ('17:00', '17:00 PM'),
-#         ('18:00', '18:00 PM'),
-#         ('19:00', '19:00 PM'),
-#         ('20:00', '20:00 PM'),
-#         ('21:00', '21:00 PM'),
-#     ]
-        
 class PartidaModelForm(ModelForm):
     hora_inicio = time(9,0)
     hora_fin = time(21, 0)
@@ -58,8 +48,6 @@ class PartidaModelForm(ModelForm):
     class Meta:
         model = Partida
         fields = ['fecha', 'hora', 'local', 'juego']
-        
-        
         
         widgets = {
             'fecha': forms.DateInput(
@@ -88,8 +76,6 @@ class PartidaModelForm(ModelForm):
                 }
             )
         }
-        
-
         
 class JuegoModelForm(ModelForm):
     class Meta:
@@ -129,14 +115,11 @@ class JuegoImagenForm(ModelForm):
         model = JuegoImagen
         fields = ['imagen']
         
-class JuegoImagenMultipleForm(ModelForm):
-    imagen = forms.FileField(
-        widget=forms.ClearableFileInput(
-            attrs={
-                'multiple': True
-            }
-        )
+class JuegoImagenMultipleForm(forms.ModelForm):
+    imagen = forms.ImageField(
+        widget=MultiFileInput(attrs={'multiple': True})
     )
+
     class Meta:
         model = JuegoImagen
         fields = ['imagen']
@@ -182,7 +165,6 @@ class PostModelForm(ModelForm):
                     'class': 'form-select'
                 }
             ),
-
     }
         
 class ComentarioModelForm(ModelForm):
@@ -216,7 +198,6 @@ class ComentarioModelForm(ModelForm):
             if comentario_cita == '':
                 comentario_cita =  None
             return comentario_cita
-        
 
 class ComentarioImagenForm(ModelForm):
     class Meta:
