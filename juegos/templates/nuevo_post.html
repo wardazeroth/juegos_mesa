@@ -2,8 +2,9 @@
 {%block content%}
 {%load static%}
 <div class="marco">
+    <div id="particles-js"></div> 
     <section id="post-form">
-            <h3 class="text-center pt-5">Escribe tu post</h3>
+            <h3 class="text-center">Escribe tu post</h3>
                 <form action="{% url 'crear_post' %}" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-5 offset-md-1">
