@@ -156,7 +156,9 @@ class PostModelForm(ModelForm):
             
             'contenido': forms.Textarea(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control',
+                    'rows': 6,
+                    'placeholder': 'Escribe el contenido de tu post aquí...'
                 }
             ),
             

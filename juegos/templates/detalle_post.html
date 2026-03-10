@@ -4,135 +4,179 @@
 {%load custom_filters%}
 
 <div class="pt-3">
-<div class="marco">
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10"> 
-            <h3 class="pt-3">{{ post.titulo }}</h3> 
-            <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
-                
-                <div class="row">
-                    <div class="col-md-2">
-                        <img src="{{post.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+    <div class="marco">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10"> 
+                <h3 class="pt-3">{{ post.titulo }}</h3> 
+                <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <img src="{{post.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="card-text" style="text-align: left;">{{ post.autor.usuario.alias}}</h3>
+                            <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h3 class="card-text" style="text-align: left;">{{ post.autor.usuario.alias}}</h3>
-                        <p class="card-text" style="text-align: left;">{{ post.fecha_creacion}}</p>    
-                    </div>
-                </div>
 
-                {%if post.imagenes%}
-                <div class="row">                 
-                    {%for imagen in post.imagenes.all %} 
-                    <div class="col-md-6 mt-3">                               
-                        <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
-                    </div>
-                    {%endfor%}      
-                {%endif%}
-
-                {%if post.urls%}
-                    {%for url in post.urls.all %} 
+                    {%if post.imagenes%}
+                    <div class="row">                 
+                        {%for imagen in post.imagenes.all %} 
                         <div class="col-md-6 mt-3">                               
-                            <img src="{{ url }}" class="d-block w-100" id="img_post" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                            <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
                         </div>
-                    {%endfor%}
-                </div>
-                {%endif%}
+                        {%endfor%}      
+                    {%endif%}
 
-                {%if post.links%}
-                    {%for link in post.links.all %} 
-                        <div class="col-md-12 mt-3">                               
-                            <a href="{{link}}" target="_blank">{{link}}</a>
-                        </div>
-                    {%endfor%}
-                {%endif%}
+                    {%if post.urls%}
+                        {%for url in post.urls.all %} 
+                            <div class="col-md-6 mt-3">                               
+                                <img src="{{ url }}" class="d-block w-100" id="img_post" data-imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                            </div>
+                        {%endfor%}
+                    </div>
+                    {%endif%}
 
-                {%if post.adjuntos%}
-                                    {%for archivo in post.adjuntos.all%}
-                                        <div class="col-md-12 mt-3">
-                                            <ui>
-                                                {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
-                                                    <i class="fas fa-file-image"></i>
-                                                {% elif archivo.extension == '.pdf' %}
-                                                    <i class="fas fa-file-pdf"></i>
-                                                {% elif archivo.extension == '.txt' %}
-                                                    <i class="fas fa-file-alt"></i>
-                                                {% elif archivo.extension == '.zip' %}
-                                                    <i class="fa-regular fa-file-zipper"></i>
-                                                {% elif archivo.extension == '.docx' %}
-                                                    <i class="fa-regular fa-file-word"></i>
-                                                {% else %}
-                                                    <i class="fas fa-file"></i>
-                                                {% endif %}
-                                                <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
-                                            </ui>
+                    {%if post.links%}
+                        {%for link in post.links.all %} 
+                            <div class="col-md-12 mt-3">                               
+                                <a href="{{link}}" target="_blank">{{link}}</a>
+                            </div>
+                        {%endfor%}
+                    {%endif%}
+
+                    {%if post.adjuntos%}
+                                        {%for archivo in post.adjuntos.all%}
+                                            <div class="col-md-12 mt-3">
+                                                <ui>
+                                                    {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
+                                                        <i class="fas fa-file-image"></i>
+                                                    {% elif archivo.extension == '.pdf' %}
+                                                        <i class="fas fa-file-pdf"></i>
+                                                    {% elif archivo.extension == '.txt' %}
+                                                        <i class="fas fa-file-alt"></i>
+                                                    {% elif archivo.extension == '.zip' %}
+                                                        <i class="fa-regular fa-file-zipper"></i>
+                                                    {% elif archivo.extension == '.docx' %}
+                                                        <i class="fa-regular fa-file-word"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-file"></i>
+                                                    {% endif %}
+                                                    <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                                                </ui>
+                                            </div>
+                                        {%endfor%}
+                                    {%endif%}
+
+                    <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
+                        {%if post.autor == request.user%}
+                        
+                        <section id="edit-form">
+                            <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+                                <div id="imagen-prev-edit-post"></div>
+                                <div id="link-prev-post" style="padding: 2rem 0"></div>
+                                <div id="file-prev-post" style="padding: 2rem 0"></div>
+
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <a href="#" id="add-link-post" class="btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="#" id="add_url_post" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir URL</a>
+                                    </div>
+                                    <input type="file" name="archivo" id="archivo_post" style="display: none;" data-model="post" multiple>
+                                    <div class="col-md-3">
+                                        <a href="#" id="add_archivo_post" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 add_url_post" style="display: none">
+                                        <label for="url" class="form-label">URL</label>
+                                        <input name="url_post" type="url" class="form-control" id="url_post" data-model="post" placeholder="Inserte URL de la imagen">
+                                        <button type="button" id="add_url_post" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                    </div>
+        
+                                    <div class="col-md-6 add-link-post" style="display: none">
+                                        <label for="link" class="form-label">Link</label>
+                                        <input type="url" id="link-post" class="form-control" name="link-post" data-model="post" placeholder="Inserte un link">
+                                        <button type="button" id="add_link_post" onclick="agregarLink(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                <label for="text" class="form-label">Editar</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="contenido"
+                                    id="contenido"
+                                    placeholder="contenido"
+                                    value="{{ post.contenido }}"
+                                    required
+                                />
+                                <input
+                                type="file"
+                                class="imagenes-edit"
+                                name="imagenes_edit"
+                                id="imagenes_edit_post"
+                                style="display: none;"
+                                placeholder="nueva imagen"
+                                value="{{post.imagenes}}"
+                                multiple
+                                />
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8"></div>
+                                    <div class="col-md-2">
+                                        <div class="actionBar">
+                                            <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
+                                            {%if liked_post%}
+                                                <i class="fa-solid fa-thumbs-up like"></i>
+                                            {%else%}
+                                                <i class="fa-regular fa-thumbs-up like"></i>
+                                            {%endif%}
+                                                {%if post.total_likes > 1%}
+                                                <span class="reaction-text">
+                                                    {{post.total_likes}}
+                                                </span> Likes
+                                                {%elif post.total_likes == 0 %}
+                                                <span class="reaction-text"> 
+                                                    {{post.total_likes}}
+                                                </span> Likes
+                                                {%else%}
+                                                <span class="reaction-text">
+                                                    {{post.total_likes}}
+                                                </span> Like
+                                                {%endif%}
+                                            </a>
                                         </div>
-                                    {%endfor%}
-                                {%endif%}
-
-                <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
-                    {%if post.autor == request.user%}
-                    
-                    <section id="edit-form">
-                        <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                            <div id="imagen-prev-edit-post"></div>
-                            <div id="link-prev-post" style="padding: 2rem 0"></div>
-                            <div id="file-prev-post" style="padding: 2rem 0"></div>
-
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <a href="#" id="add-link-post" class="btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{post.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
-                                </div>
-                                <div class="col-md-3">
-                                    <a href="#" id="add_url_post" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir URL</a>
-                                </div>
-                                <input type="file" name="archivo" id="archivo_post" style="display: none;" data-model="post" multiple>
-                                <div class="col-md-3">
-                                    <a href="#" id="add_archivo_post" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                            
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a href="#" class="citar btn btn-primary" data-id="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
+                                    </div>
                                 </div>
                                 
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 add_url_post" style="display: none">
-                                    <label for="url" class="form-label">URL</label>
-                                    <input name="url_post" type="url" class="form-control" id="url_post" data-model="post" placeholder="Inserte URL de la imagen">
-                                    <button type="button" id="add_url_post" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
-                                </div>
-    
-                                <div class="col-md-6 add-link-post" style="display: none">
-                                    <label for="link" class="form-label">Link</label>
-                                    <input type="url" id="link-post" class="form-control" name="link-post" data-model="post" placeholder="Inserte un link">
-                                    <button type="button" id="add_link_post" onclick="agregarLink(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                            <label for="text" class="form-label">Editar</label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                name="contenido"
-                                id="contenido"
-                                placeholder="contenido"
-                                value="{{ post.contenido }}"
-                                required
-                            />
-                            <input
-                            type="file"
-                            class="imagenes-edit"
-                            name="imagenes_edit"
-                            id="imagenes_edit_post"
-                            style="display: none;"
-                            placeholder="nueva imagen"
-                            value="{{post.imagenes}}"
-                            multiple
-                            />
-                            </div>
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-2">
+                                        <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                    
+                                    </div>
+                                    <div class="col-md-2">
+                                        <a href="{% url 'detalle_post' 'Post' post.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                    </div>
+                                </div>    
+                            </form>
+                        </section>
+                        <section id="extra">
                             <div class="row">
                                 <div class="col-md-8"></div>
                                 <div class="col-md-2">
@@ -161,23 +205,22 @@
                                         
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="#" class="citar btn btn-primary" data-id="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
+                                    <a href="{% url 'detalle_post' 'Post' post.id %}" class="citar btn btn-primary" data-postid="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-2">
-                                    <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                    <a href="{% url 'editar_post' 'Post' post.id %}" class="btn btn-primary mt-3 edit-post"  data-id="{{ post.id }}" data-modelo="Post">Editar</a>
                                 
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="{% url 'detalle_post' 'Post' post.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                    <a href="" class="btn btn-danger mt-3" id="eliminar_post"><i class="bi bi-trash-fill"></i>Eliminar</a>
                                 </div>
                             </div>    
-                        </form>
-                    </section>
-                    <section id="extra">
+                        </section>         
+                        {%else%}
                         <div class="row">
                             <div class="col-md-8"></div>
                             <div class="col-md-2">
@@ -202,204 +245,205 @@
                                         </span> Like
                                         {%endif%}
                                     </a>
-                                </div>
-                                    
+                                </div>                                
                             </div>
                             <div class="col-md-2">
                                 <a href="{% url 'detalle_post' 'Post' post.id %}" class="citar btn btn-primary" data-postid="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
                             </div>
                         </div>
-                        
-                        <div class="row">
-                            <div class="col-md-1"></div>
-                            <div class="col-md-2">
-                                <a href="{% url 'editar_post' 'Post' post.id %}" class="btn btn-primary mt-3 edit-post"  data-id="{{ post.id }}" data-modelo="Post">Editar</a>
+                    {%endif%}
+
+                    {%if post.comentarios%}
+                    {%for com in comentarios%}
                             
-                            </div>
-                            <div class="col-md-2">
-                                <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3" onclick="eliminar_post(event, '{{ post.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                            </div>
-                        </div>    
-                    </section>         
-                    {%else%}
-                    <div class="row">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-2">
-                            <div class="actionBar">
-                                <a href="{% url 'reaccionar' 'Post' post.id %}?from=like_post" data-id="{{post.id}}" data-modelo="Post" class="reaccion">
-                                {%if liked_post%}
-                                    <i class="fa-solid fa-thumbs-up like"></i>
-                                {%else%}
-                                    <i class="fa-regular fa-thumbs-up like"></i>
-                                {%endif%}
-                                    {%if post.total_likes > 1%}
-                                    <span class="reaction-text">
-                                        {{post.total_likes}}
-                                    </span> Likes
-                                    {%elif post.total_likes == 0 %}
-                                    <span class="reaction-text"> 
-                                        {{post.total_likes}}
-                                    </span> Likes
-                                    {%else%}
-                                    <span class="reaction-text">
-                                        {{post.total_likes}}
-                                    </span> Like
-                                    {%endif%}
-                                </a>
-                            </div>                                
-                        </div>
-                        <div class="col-md-2">
-                            <a href="{% url 'detalle_post' 'Post' post.id %}" class="citar btn btn-primary" data-postid="{{post.id}}" data-texto="{{post.contenido}}" data-autor="{{post.autor}}" data-modelo="Post">Citar</a>
-                        </div>
-                    </div>
-                {%endif%}
-
-                {%if post.comentarios%}
-                {%for com in comentarios%}
-                        
-                {%if request.user == com.autor%}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                    {%if request.user == com.autor%}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
+                                            <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
-                                        <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
-                                    </div>
-                                </div>
-                                {%if com.post_cita%}
-                                    <blockquote id="post-cita-cuadro" class="mt-3">
-                                        <h6>{{ com.post_cita.autor}} dijo:</h6>
-                                        <p>{{ com.post_cita.contenido}}</p>
+                                    {%if com.post_cita%}
+                                        <blockquote id="post-cita-cuadro" class="mt-3">
+                                            <h6>{{ com.post_cita.autor}} dijo:</h6>
+                                            <p>{{ com.post_cita.contenido}}</p>
+                                        </blockquote>
+                                    {%elif com.comentario_cita%}
+                                    <blockquote id="comentario-cita-cuadro" class="mt-3">
+                                        <h6>{{ com.comentario_cita.autor}} dijo:</h6>
+                                        <p>{{ com.comentario_cita.mensaje }}</p>
                                     </blockquote>
-                                {%elif com.comentario_cita%}
-                                <blockquote id="comentario-cita-cuadro" class="mt-3">
-                                    <h6>{{ com.comentario_cita.autor}} dijo:</h6>
-                                    <p>{{ com.comentario_cita.mensaje }}</p>
-                                </blockquote>
-                                {%endif%}
+                                    {%endif%}
 
-                                {%if com.imagenes%}
-                                    <div class="row">                 
-                                        {%for imagen in com.imagenes.all %} 
-                                        <div class="col-md-6 mt-3">                               
-                                            <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
-                                        </div>
-                                        {%endfor%}                                  
-                                {%endif%}
+                                    {%if com.imagenes%}
+                                        <div class="row">                 
+                                            {%for imagen in com.imagenes.all %} 
+                                            <div class="col-md-6 mt-3">                               
+                                                <img src="{{ imagen.imagen.url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                            </div>
+                                            {%endfor%}                                  
+                                    {%endif%}
 
-                                {%if com.urls%}
-                                        {%for url in com.urls.all %} 
-                                        <div class="col-md-6 mt-3">                               
-                                            <img src="{{ url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                    {%if com.urls%}
+                                            {%for url in com.urls.all %} 
+                                            <div class="col-md-6 mt-3">                               
+                                                <img src="{{ url }}" class="d-block w-100" id="img_comentario" data.imgid = "{{ imagen.imagen.id}}" alt="imagen">
+                                            </div>
+                                            {%endfor%}
                                         </div>
+                                    {%endif%}
+
+                                    {%if com.links%}
+                                        {%for link in com.links.all %} 
+                                            <div class="col-md-12 mt-3">                               
+                                                <a href="{{link}}" target="_blank">{{link}}</a>
+                                            </div>
                                         {%endfor%}
-                                    </div>
-                                {%endif%}
+                                    {%endif%}
 
-                                {%if com.links%}
-                                    {%for link in com.links.all %} 
-                                        <div class="col-md-12 mt-3">                               
-                                            <a href="{{link}}" target="_blank">{{link}}</a>
-                                        </div>
-                                    {%endfor%}
-                                {%endif%}
-
-                                {%if com.adjuntos%}
-                                    {%for archivo in com.adjuntos.all%}
-                                        <div class="col-md-12 mt-3">
-                                            <ui>
-                                                {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
-                                                    <i class="fas fa-file-image"></i>
-                                                {% elif archivo.extension == '.pdf' %}
-                                                    <i class="fas fa-file-pdf"></i>
-                                                {% elif archivo.extension == '.txt' %}
-                                                    <i class="fas fa-file-alt"></i>
-                                                {% elif archivo.extension == '.zip' %}
-                                                    <i class="fa-regular fa-file-zipper"></i>
-                                                {% elif archivo.extension == '.docx' %}
-                                                    <i class="fa-regular fa-file-word"></i>
-                                                {% else %}
-                                                    <i class="fas fa-file"></i>
-                                                {% endif %}
-                                                <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
-                                            </ui>
-                                        </div>
-                                    {%endfor%}
-                                {%endif%}
-
-                                    <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
-
-                                    <section id="edit-comment-form-{{com.id}}">
-
-                                        <div id="imagen-prev-edit-{{com.id}}"></div>
-                                        <div id="link-prev-edit-{{com.id}}" style="padding: 2rem 0"></div>
-                                        <div id="file-prev-com-{{com.id}}" style="padding: 2rem 0"></div>
-    
-                                        <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
-                                            {% csrf_token %}
-        
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <a href="#" id="add-link-com" class="btn btn-outline-primary add-link-com" data-id="{{com.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
-                                                </div>
-
-                                                <div class="col-md-3">
-                                                    <a href="#" class="btn btn-outline-primary mb-3 add_url_btn" data-id="{{com.id}}"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
-                                                </div>
-        
-                                                <div class="col-md-3">
-                                                    <button type="button" id="add_archivo_com" class="add_archivo_com btn btn-outline-primary mb-1" data-id="{{com.id}}"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
-                                                </div>
+                                    {%if com.adjuntos%}
+                                        {%for archivo in com.adjuntos.all%}
+                                            <div class="col-md-12 mt-3">
+                                                <ui>
+                                                    {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
+                                                        <i class="fas fa-file-image"></i>
+                                                    {% elif archivo.extension == '.pdf' %}
+                                                        <i class="fas fa-file-pdf"></i>
+                                                    {% elif archivo.extension == '.txt' %}
+                                                        <i class="fas fa-file-alt"></i>
+                                                    {% elif archivo.extension == '.zip' %}
+                                                        <i class="fa-regular fa-file-zipper"></i>
+                                                    {% elif archivo.extension == '.docx' %}
+                                                        <i class="fa-regular fa-file-word"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-file"></i>
+                                                    {% endif %}
+                                                    <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                                                </ui>
                                             </div>
+                                        {%endfor%}
+                                    {%endif%}
 
-                                            <input type="file" name="archivo" id="archivo_com-{{com.id}}" style="display: none;" data-model="comentario" data-id="{{com.id}}" multiple>
+                                        <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
 
-                                            <div class="row">
-                                                <div class="col-md-6 add_url_com" style="display: none;" data-id="{{com.id}}">
-                                                    <label for="url" class="form-label">URL</label>
-                                                    <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
-                                                    <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                        <section id="edit-comment-form-{{com.id}}">
+
+                                            <div id="imagen-prev-edit-{{com.id}}"></div>
+                                            <div id="link-prev-edit-{{com.id}}" style="padding: 2rem 0"></div>
+                                            <div id="file-prev-com-{{com.id}}" style="padding: 2rem 0"></div>
+        
+                                            <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+            
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <a href="#" id="add-link-com" class="btn btn-outline-primary add-link-com" data-id="{{com.id}}"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <a href="#" class="add-img-edit btn btn-outline-primary" data-id="{{com.id}}"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        <a href="#" class="btn btn-outline-primary mb-3 add_url_btn" data-id="{{com.id}}"><i class="fa-solid fa-images"></i></i> Añadir URL</a>
+                                                    </div>
+            
+                                                    <div class="col-md-3">
+                                                        <button type="button" id="add_archivo_com" class="add_archivo_com btn btn-outline-primary mb-1" data-id="{{com.id}}"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                                    </div>
                                                 </div>
 
-                                                <div class="col-md-6 add-link-com-cuadro" style="display: none;" data-id="{{com.id}}">
-                                                    <label for="link" class="form-label">Link</label>
-                                                    <input type="url" id="link-com-{{com.id}}" class="form-control" name="link-com" data-model="comentario" data-id="{{com.id}}" placeholder="Inserte un link">
-                                                    <button type="button" id="add_link_com" onclick="agregarLink(event)" data-model="comentario" data-id="{{com.id}}" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
-                                                </div>
-                                            </div>
+                                                <input type="file" name="archivo" id="archivo_com-{{com.id}}" style="display: none;" data-model="comentario" data-id="{{com.id}}" multiple>
 
-                                            <div class="mb-3">
-                                                <label for="text" class="form-label">Editar</label>
+                                                <div class="row">
+                                                    <div class="col-md-6 add_url_com" style="display: none;" data-id="{{com.id}}">
+                                                        <label for="url" class="form-label">URL</label>
+                                                        <input name="url_com" type="url" class="form-control" id="url_com_{{com.id}}" data-id="{{com.id}}" data-model="comentario" placeholder="Inserte URL de la imagen">
+                                                        <button type="button" id="add_url_btn" onclick="agregarCampo(event)" data-id="{{com.id}}" data-model="comentario" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                                    </div>
+
+                                                    <div class="col-md-6 add-link-com-cuadro" style="display: none;" data-id="{{com.id}}">
+                                                        <label for="link" class="form-label">Link</label>
+                                                        <input type="url" id="link-com-{{com.id}}" class="form-control" name="link-com" data-model="comentario" data-id="{{com.id}}" placeholder="Inserte un link">
+                                                        <button type="button" id="add_link_com" onclick="agregarLink(event)" data-model="comentario" data-id="{{com.id}}" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="text" class="form-label">Editar</label>
+                                                    <input
+                                                        type="text"
+                                                        class="form-control"
+                                                        name="mensaje"
+                                                        id="mensaje"
+                                                        placeholder="mensaje"
+                                                        value="{{ com.mensaje }}"
+                                                        required
+                                                />
+
                                                 <input
-                                                    type="text"
-                                                    class="form-control"
-                                                    name="mensaje"
-                                                    id="mensaje"
-                                                    placeholder="mensaje"
-                                                    value="{{ com.mensaje }}"
-                                                    required
-                                            />
+                                                type="file"
+                                                class="imagenes-edit"
+                                                name="imagenes_edit"
+                                                id="imagenes_edit-{{com.id}}"
+                                                style="display: none;"
+                                                placeholder="nueva imagen"
+                                                value="{{comentario.imagenes}}"
+                                                multiple
+                                                />
 
-                                            <input
-                                            type="file"
-                                            class="imagenes-edit"
-                                            name="imagenes_edit"
-                                            id="imagenes_edit-{{com.id}}"
-                                            style="display: none;"
-                                            placeholder="nueva imagen"
-                                            value="{{comentario.imagenes}}"
-                                            multiple
-                                            />
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-8"></div>
+                                                    <div class="col-md-2">
+                                                        <div class="actionBar">
+                                                            <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                                            {%if liked_coments|get_item:com.id%}
+                                                                <i class="fa-solid fa-thumbs-up like"></i>
+                                                            {% else %}
+                                                                <i class="fa-regular fa-thumbs-up like"></i>
+                                                            {%endif%}
+                                                                {%if com.total_likes > 1%}
+                                                                <span class="reaction-text">
+                                                                    {{com.total_likes}} 
+                                                                </span> Likes
+                                                                {%elif com.total_likes == 0 %}
+                                                                <span class="reaction-text">
+                                                                    {{com.total_likes}}
+                                                                </span> Likes
+                                                                {%else%}
+                                                                <span class="reaction-text">
+                                                                    {{com.total_likes}} 
+                                                                </span> Like
+                                                                {%endif%}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-1"></div>
+                                                    <div class="col-md-2">
+                                                        <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                                    </div>
+                                                </div>
+                                            </form>
 
-                                            </div>
+                                        </section>
+
+                                        <section id="extra-2-{{com.id}}">
                                             <div class="row">
                                                 <div class="col-md-8"></div>
                                                 <div class="col-md-2">
@@ -430,216 +474,193 @@
                                                     <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
                                                 </div>
                                             </div>
-                                            
+                                        
                                             <div class="row">
                                                 <div class="col-md-1"></div>
                                                 <div class="col-md-2">
-                                                    <input type="submit" value="Editar" class="btn btn-primary mt-3">
+                                                    <a href="{% url 'editar_comentario' 'Comentario' com.id %}" class="btn btn-primary mt-3 edit-comment"  data-id="{{ com.id }}" data-modelo="Comentario">Editar</a>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="btn btn-danger mt-3" >Cancelar</a>
+                                                    <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
                                                 </div>
                                             </div>
-                                        </form>
-
-                                    </section>
-
-                                    <section id="extra-2-{{com.id}}">
-                                        <div class="row">
-                                            <div class="col-md-8"></div>
-                                            <div class="col-md-2">
-                                                <div class="actionBar">
-                                                    <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
-                                                    {%if liked_coments|get_item:com.id%}
-                                                        <i class="fa-solid fa-thumbs-up like"></i>
-                                                    {% else %}
-                                                        <i class="fa-regular fa-thumbs-up like"></i>
-                                                    {%endif%}
-                                                        {%if com.total_likes > 1%}
-                                                        <span class="reaction-text">
-                                                            {{com.total_likes}} 
-                                                        </span> Likes
-                                                        {%elif com.total_likes == 0 %}
-                                                        <span class="reaction-text">
-                                                            {{com.total_likes}}
-                                                        </span> Likes
-                                                        {%else%}
-                                                        <span class="reaction-text">
-                                                            {{com.total_likes}} 
-                                                        </span> Like
-                                                        {%endif%}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <a href="{% url 'detalle_post' 'Comentario' com.id %}" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
-                                            </div>
-                                        </div>
-                                    
-                                        <div class="row">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-2">
-                                                <a href="{% url 'editar_comentario' 'Comentario' com.id %}" class="btn btn-primary mt-3 edit-comment"  data-id="{{ com.id }}" data-modelo="Comentario">Editar</a>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <a href="{% url 'eliminar_comentario' com.id %}" class="btn btn-danger mt-3" onclick="eliminar_comment(event, '{{ com.id }}')"><i class="bi bi-trash-fill"></i>Eliminar</a>
-                                            </div>
-                                        </div>
-                                        
-                                    </section>
-                                </div>
-                            
-                                {%else%}
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                            
+                                        </section>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
-                                        <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                
+                                    {%else%}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <img src="{{com.autor.usuario.avatar.url}}" class="img-jugador" alt="">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h3 class="card-text" style="text-align: left;">{{ com.autor.usuario.alias}}</h3>
+                                            <p class="card-text" style="text-align: left;">{{ com.fecha_creacion}}</p>    
+                                        </div>
                                     </div>
-                                </div>
-                                <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
-                                <div class="row">
-                                    <div class="col-md-8"></div>
-                                    <div class="col-md-2">
-                                        <div class="actionBar">
-                                            <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
-                                            {%if liked_coments|get_item:com.id%}
-                                                <i class="fa-solid fa-thumbs-up like"></i>
-                                            {% else %}
-                                                <i class="fa-regular fa-thumbs-up like"></i>
-                                            {%endif%}
-                                                {%if com.total_likes > 1%}
-                                                <span class="reaction-text">
-                                                    {{com.total_likes}} 
-                                                </span> Likes
-                                                {%elif com.total_likes == 0 %}
-                                                <span class="reaction-text">
-                                                    {{com.total_likes}}
-                                                </span> Likes
-                                                {%else%}
-                                                <span class="reaction-text">
-                                                    {{com.total_likes}} 
-                                                </span> Like
+                                    <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+                                    <div class="row">
+                                        <div class="col-md-8"></div>
+                                        <div class="col-md-2">
+                                            <div class="actionBar">
+                                                <a href="{% url 'reaccionar' 'Comentario' com.id %}" class="reaccion" data-id="{{ com.id }}" data-modelo = 'Comentario'>
+                                                {%if liked_coments|get_item:com.id%}
+                                                    <i class="fa-solid fa-thumbs-up like"></i>
+                                                {% else %}
+                                                    <i class="fa-regular fa-thumbs-up like"></i>
                                                 {%endif%}
-                                            </a>
+                                                    {%if com.total_likes > 1%}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}} 
+                                                    </span> Likes
+                                                    {%elif com.total_likes == 0 %}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}}
+                                                    </span> Likes
+                                                    {%else%}
+                                                    <span class="reaction-text">
+                                                        {{com.total_likes}} 
+                                                    </span> Like
+                                                    {%endif%}
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a href="" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
-                                        <a href="" class="citar btn btn-primary" data-comentarioid="{{com.id}}" data-texto="{{com.mensaje}}" data-autor="{{com.autor}}" data-modelo="Comentario">Citar</a>
-                                    </div>
                                 </div>
-                            </div>
-                        {%endif%}               
+                            {%endif%}               
+                    </div>
                 </div>
+                {%endfor%}
+                {%endif%}
             </div>
-            {%endfor%}
-            {%endif%}
-        
-    
-                    </div>
 
-    <section id="formulario">
-        <div class="row">
-            
-            <div class="col-md-8 offset-md-3">
-                <h3 class="text-center pt-5 pb-3">Responder</h3>
-                <div class="marco-editor">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+        <section id="formulario">
+            <div class="row">
+                
+                <div class="col-md-8 offset-md-3">
+                    <h3 class="text-center pt-5 pb-3">Responder</h3>
+                    <div class="marco-editor">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
+                            </div>
+                        </div>
+                    <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+                        <div id="previsual_resp"></div>
+                        <div id="link-prev-resp" style="padding: 2rem 0"></div>
+                        <div id="file-prev-resp" style="padding: 2rem 0"></div>
+
+                        {%csrf_token%}
+                        <input type="hidden" id="post_cita" name="post_cita">
+                        <input type="hidden" id="comentario_cita" name="comentario_cita">
+                        <input
+                        type="file"
+                        class="form-control"
+                        name="imagenes"
+                        id="imagenes"
+                        style="display: none;"
+                        placeholder="nueva imagen"
+                        value="{{comentario.imagenes}}"
+                        multiple
+                        />
+
+                        <div class="mb-3 add_url" style="display: none; margin: 0 2rem">
+                            <label for="url" class="form-label">URL</label>
+                            <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
+                            <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
                         </div>
 
-                        <div class="col-md-4">
-                            <a href="#" id="add_img" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                        <div class="mb-3 add-link" style="display: none; margin: 0 2rem">
+                            <label for="link" class="form-label">Link</label>
+                            <input type="url" id="link-resp" class="form-control" name="link-resp" data-model="respuesta" placeholder="Inserte un link">
+                            <button type="button" id="add_link_respuesta" onclick="agregarLink(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
                         </div>
 
-                        <div class="col-md-4">
-                            <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
+                        <div id="post-cita" style="display: none;" name="post_cita">
+                            <pre></pre>
+                        </div> 
+
+                        <div id="comentario-cita" style="display: none;" name="comentario_cita">
+                            <pre></pre>
                         </div>
-                    </div>
-                <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                    <div id="previsual_resp"></div>
-                    <div id="link-prev-resp" style="padding: 2rem 0"></div>
-                    <div id="file-prev-resp" style="padding: 2rem 0"></div>
 
-                    {%csrf_token%}
-                    <input type="hidden" id="post_cita" name="post_cita">
-                    <input type="hidden" id="comentario_cita" name="comentario_cita">
-                    <input
-                    type="file"
-                    class="form-control"
-                    name="imagenes"
-                    id="imagenes"
-                    style="display: none;"
-                    placeholder="nueva imagen"
-                    value="{{comentario.imagenes}}"
-                    multiple
-                    />
+                            {%for field in form%}   
+                            <div class="mb-3">
+                                {{ field }}
+                            </div>
+                            {%endfor%}
+                        
+                        <div class="row">
+                            <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
 
-                    <div class="mb-3 add_url" style="display: none; margin: 0 2rem">
-                        <label for="url" class="form-label">URL</label>
-                        <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
-                        <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
-                    </div>
-
-                    <div class="mb-3 add-link" style="display: none; margin: 0 2rem">
-                        <label for="link" class="form-label">Link</label>
-                        <input type="url" id="link-resp" class="form-control" name="link-resp" data-model="respuesta" placeholder="Inserte un link">
-                        <button type="button" id="add_link_respuesta" onclick="agregarLink(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
-                    </div>
-
-                    <div id="post-cita" style="display: none;" name="post_cita">
-                        <pre></pre>
-                    </div> 
-
-                    <div id="comentario-cita" style="display: none;" name="comentario_cita">
-                        <pre></pre>
-                    </div>
-
-                        {%for field in form%}   
-                        <div class="mb-3">
-                            {{ field }}
-                        </div>
-                        {%endfor%}
-                    
-                    <div class="row">
-                        <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
-
-                        <div class="col-md-8">
-                            <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                            <div class="col-md-8">
+                                <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                            </div>
+                            
+                            <div class="col md-4">
+                                <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Enviar"  class="btn btn-outline-success mb-1">
+                            </div>
                         </div>
                         
-                        <div class="col md-4">
-                            <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Enviar"  class="btn btn-outline-success mb-1">
-                        </div>
-                    </div>
-                    
-                </form>
-            
+                    </form>
+                </div>
             </div>
         </div>
+        </section>
+
+        <div class="row">
+            
+            {%if user.is_authenticated%}
+
+            <div class="col-md-10"></div>
+                    <div class="col-md-2">
+                        <button id="responder" class="btn btn-primary mt-3">Responder</button>
+                    </div>
+            {%else%}
+                <div class="col-8"></div>
+                    <div class="col-md-4">
+                            <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+                    </div>
+            {%endif%}
+        </div>
     </div>
-    </section>
 
-    <div class="row">
-        
-        {%if user.is_authenticated%}
+                </div>
+            </div>
+        </div> 
+    </div>
+</div>
 
-        <div class="col-md-10"></div>
-                <div class="col-md-2">
-                    <button id="responder" class="btn btn-primary mt-3">Responder</button>
-                </div>
-        {%else%}
-            <div class="col-8"></div>
-                <div class="col-md-4">
-                        <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
-                </div>
-        {%endif%}
+<div class="modal" id="ModalEliminarPost" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: rgb(44, 44, 44);">
+            <div class="modal-header">
+                <h5 class="modal-title">¿Está seguro de eliminar este post?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-top-static p-3">
+                <div class="marco">
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <a href="" class="btn btn-primary mt-3">Cancelar</a>
+                        <a href="{% url 'eliminar_post' post.id %}" class="btn btn-danger mt-3"><i class="bi bi-trash-fill"></i>Eliminar</a>
+                    </div>
+                </div>  
+            </div>  
+        </div>
     </div>
 </div>
 
@@ -647,16 +668,13 @@
 
 {%block js%}
 <script>
-    function eliminar_post(event, id) {
-        event.preventDefault()
-        const url = '/foro/' + id +'/eliminar_post'
+    const ModalEliminar = document.getElementById('ModalEliminarPost');
+    const myModalDelete = new bootstrap.Modal(ModalEliminar);
 
-        debugger
-        const confirmacion = confirm('¿Está seguro que desea eliminar este post?')
-        if (confirmacion == true) {
-            window.location.href = url
-        }
-    }
+    document.getElementById("eliminar_post").addEventListener('click', function (e) {
+        e.preventDefault();
+        myModalDelete.show();
+    });
 </script>
 
 <script>

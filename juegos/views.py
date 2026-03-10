@@ -465,11 +465,14 @@ class ResultadosView(View):
         return redirect(f'/accounts/historial/{id}/detalles') 
     
 def foro(req):
-    posteos = Post.objects.all()
+    posteos = Post.objects.all().order_by('-fecha_creacion')
     for p in posteos:
         p.obtener_respuestas()
+        
+    form = PostModelForm()
     context = {
         'posteos': posteos, 
+        'form': form
     }
     return render(req, 'foro.html', context)
 
@@ -477,13 +480,6 @@ class CrearPostView(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-    #El get carga el template
-    def get(self, req):
-        form = PostModelForm()
-        context = {
-            'form': form
-        }       
-        return render(req, 'nuevo_post.html', context)
     
     def post(self, req):
         form= PostModelForm(req.POST)
