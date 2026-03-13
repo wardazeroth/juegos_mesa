@@ -177,7 +177,10 @@ class ComentarioModelForm(ModelForm):
         widgets= {
         'mensaje': forms.Textarea(
             attrs={
-                'class': 'form-control'
+                'class': 'form-control',
+                'rows': 6,
+                'placeholder': 'Escribe el contenido de tu comentario aquí...'
+                
             }
         ),     
         
