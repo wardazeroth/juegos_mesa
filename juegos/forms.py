@@ -150,21 +150,22 @@ class PostModelForm(ModelForm):
         widgets= {
             'titulo': forms.TextInput(
                 attrs={
-                    'class': 'form-control'
+                    'class': 'form-control textarea-post'
                 }
             ),
             
             'contenido': forms.Textarea(
                 attrs={
-                    'class': 'form-control',
+                    'class': 'form-control textarea-post',
                     'rows': 6,
-                    'placeholder': 'Escribe el contenido de tu post aquí...'
+                    'placeholder': 'Escribe el contenido de tu post aquí...',
                 }
             ),
             
             'categoria': forms.Select(
                 attrs={
-                    'class': 'form-select'
+                    'class': 'form-select',
+                    'style': 'background-color: #454e75; color: #FFFFFF'
                 }
             ),
     }
@@ -175,9 +176,10 @@ class ComentarioModelForm(ModelForm):
         fields = ['mensaje']
         
         widgets= {
+            
         'mensaje': forms.Textarea(
             attrs={
-                'class': 'form-control',
+                'class': 'form-control textarea-com',
                 'rows': 6,
                 'placeholder': 'Escribe el contenido de tu comentario aquí...'
                 
@@ -186,8 +188,8 @@ class ComentarioModelForm(ModelForm):
         
         'imagenes': forms.Select(
             attrs={
-                'class': 'form-select',
-                'id': 'imagenes'
+                'class': 'form-select', 
+                'id': 'imagenes',
             }
         )
     }

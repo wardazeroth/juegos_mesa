@@ -572,7 +572,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-top-static p-3">
-                <div class="marco">
+
+                <div class="marco"> 
+
                     <p id="mensajeModal"></p>
                     <div class="d-flex flex-column flex-sm-row gap-2">
                         <a href="" class="btn btn-primary mt-3">Cancelar</a>
@@ -600,7 +602,8 @@
                                     <div class="marco-editor">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <a href="#" id="add-link" class="btn btn-outline-primary" data-model="respuesta"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                                <a href="#" id="add-link" data-model="respuesta" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+
                                             </div>
 
                                             <div class="col-md-4">
@@ -608,10 +611,10 @@
                                             </div>
 
                                             <div class="col-md-4">
-                                                <button type="button" id="add_url" class="btn btn-outline-primary mb-2"><i class="fa-solid fa-images"></i>Añadir URL</button>
+                                                <button type="button" id="add_url" data-model="respuesta" class="btn btn-outline-primary mb-2"><i class="fa-solid fa-images"></i>Añadir URL</button>
                                             </div>
                                         </div>
-                                        <form action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
+                                        <form class="form-respuesta" action= "{% url 'detalle_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
                                             <div id="previsual_resp"></div>
                                             <div id="link-prev-resp"></div>
                                             <div id="file-prev-resp"></div>
@@ -659,13 +662,16 @@
                                             <div class="row">
                                                 <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
 
-                                                <div class="col-md-8">
+                                                <div class="col-md-6">
                                                     <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
                                                 </div>
                                                 
-                                                <div class="col md-4">
-                                                    <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Enviar"  class="btn btn-outline-success mb-1">
+                                                <div class="col-md-6 d-flex flex-column flex-sm-row gap-3">
+                                                    <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Responder"  class="btn btn-outline-success">
+                                                    <a href="" class="btn btn-outline-danger">Cancelar</a>
                                                 </div>
+
+                                                
                                             </div>
                                         </form>
                                     </div>
@@ -814,7 +820,9 @@
         imagenes_resp.click()
     });
 
-    if (formularioRespuesta) {
+
+    if (fomularioRespuesta) {
+
         fomularioRespuesta.addEventListener('submit', function enviarForm(e) {
             const id = this.dataset.id;
             console.log('eliminadas: ', elim_resp);
@@ -837,15 +845,18 @@
         })
         .catch(error=> {
             console.log('Error:', error)});   
-    });        
+
+    });
+
     }
 
         document.querySelectorAll('.citar').forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
-            document.getElementById('ModalResponderPrincipal').style.display='block'
 
-            document.getElementById('responder').style.display= 'none';
+            const modalElement = document.getElementById('ModalResponderPrincipal');
+            const instanciaModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);           
+            instanciaModal.show()
 
             let contenidoCita = this.dataset.texto;
 
@@ -1310,7 +1321,9 @@ function getCSRFToken() {
             
             } else if ( modelo === 'respuesta') {
         // } else if (boton.id === 'add_url_com_btn') {
-            contenedor = contenedorRaiz.querySelector('.add_url');
+
+            contenedor = contenedorRaiz.querySelector('div.add_url');
+
             previsual_form = document.getElementById('previsual_resp')
             input.type = 'url';
             input.name = 'url';
@@ -1380,7 +1393,9 @@ function getCSRFToken() {
             
             } else if ( modelo === 'respuesta') {
         // } else if (boton.id === 'add_url_com_btn') {
-            contenedor = contenedor.querySelector('.add-link');
+
+            contenedor = contenedorRaiz.querySelector('div.add-link');
+
             previsual_form = document.getElementById("link-prev-resp")
             input.type = 'url';
             input.name = 'link-resp';
