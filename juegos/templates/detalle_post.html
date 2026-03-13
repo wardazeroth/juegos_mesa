@@ -572,7 +572,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-top-static p-3">
-                <div class="marco" id="formulario">
+                <div class="marco">
                     <p id="mensajeModal"></p>
                     <div class="d-flex flex-column flex-sm-row gap-2">
                         <a href="" class="btn btn-primary mt-3">Cancelar</a>
@@ -600,11 +600,11 @@
                                     <div class="marco-editor">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                                <a href="#" id="add-link" class="btn btn-outline-primary" data-model="respuesta"><i class="fa-solid fa-link"></i> Añadir Link</a>
                                             </div>
 
                                             <div class="col-md-4">
-                                                <a href="#" id="add_img" class="btn btn-outline-primary mb-2"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                                <a href="#" id="add_img" class="btn btn-outline-primary mb-2" data-model="respuesta"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
                                             </div>
 
                                             <div class="col-md-4">
@@ -632,13 +632,13 @@
 
                                             <div class="mb-3 add_url" style="display: none;">
                                                 <label for="url" class="form-label">URL</label>
-                                                <input name="url" type="url" class="form-control" id="url" data-model="respuesta" placeholder="Inserte URL de la imagen">
+                                                <input name="url" type="url" class="form-control" id="url" placeholder="Inserte URL de la imagen">
                                                 <button type="button" id="add_url_resp" onclick="agregarCampo(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
                                             </div>
 
                                             <div class="mb-3 add-link" style="display: none;">
                                                 <label for="link" class="form-label">Link</label>
-                                                <input type="url" id="link-resp" class="form-control" name="link-resp" data-model="respuesta" placeholder="Inserte un link">
+                                                <input type="url" id="link-resp" class="form-control" name="link-resp" placeholder="Inserte un link">
                                                 <button type="button" id="add_link_respuesta" onclick="agregarLink(event)" data-model="respuesta" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
                                             </div>
 
@@ -814,36 +814,36 @@
         imagenes_resp.click()
     });
 
-    fomularioRespuesta.addEventListener('submit', function enviarForm(e) {
-        const id = this.dataset.id;
-        console.log('eliminadas: ', elim_resp);
-        let form = e.target                  
-        let formData = new FormData(form);
+    if (formularioRespuesta) {
+        fomularioRespuesta.addEventListener('submit', function enviarForm(e) {
+            const id = this.dataset.id;
+            console.log('eliminadas: ', elim_resp);
+            let form = e.target                  
+            let formData = new FormData(form);
 
-        formData.append('imagenes_eliminadas', JSON.stringify(elim_resp));
+            formData.append('imagenes_eliminadas', JSON.stringify(elim_resp));
 
-        fetch(`/foro/${modelo}/${id}/edit-foto`,  {
-        method: 'POST',
-        body: formData,
-        headers: {
-        "X-CSRFToken": getCSRFToken(),
-        "X-Requested-With": "XMLHttpRequest"
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('imágenes actualizadas')
-    })
-    .catch(error=> {
-        console.log('Error:', error)});   
-});
-
+            fetch(`/foro/${modelo}/${id}/edit-foto`,  {
+            method: 'POST',
+            body: formData,
+            headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('imágenes actualizadas')
+        })
+        .catch(error=> {
+            console.log('Error:', error)});   
+    });        
+    }
 
         document.querySelectorAll('.citar').forEach(button => {
             button.addEventListener('click', function(event) {
             event.preventDefault();
-            document.getElementById('formulario').style.display='block'
-            document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('ModalResponderPrincipal').style.display='block'
 
             document.getElementById('responder').style.display= 'none';
 
@@ -1274,17 +1274,21 @@ function getCSRFToken() {
         })
     })
 
+    const formularioRespuesta = document.getElementById('formulario') || document.querySelector('.form-respuesta');
+
     function agregarCampo(event) {
-        const boton = event.target
+        const boton = event.target.closest('a, button')
         const modelo = event.target.dataset.model
         const dataId = event.target.dataset.id
+
+        const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
+
         let previsual_form = null;
-        let contenedor = null;
         const input = document.createElement('input')
 
             if ( modelo === 'post') {
         // if (boton.id === 'add_url_post') {
-            contenedor = document.querySelector('.add_url_post');
+            contenedor = contenedorRaiz.querySelector('.add_url_post');
             previsual_form = document.getElementById('imagen-prev-edit-post')
             input.type = 'url';
             input.name = 'url_post';
@@ -1295,7 +1299,7 @@ function getCSRFToken() {
 
             } else if ( modelo === 'comentario') {
         // }else if (boton.id === 'add_url_com') {
-            contenedor = document.querySelector(`.add_url_com[data-id="${dataId}"]`);
+            contenedor = contenedorRaiz.querySelector(`.add_url_com[data-id="${dataId}"]`);
             previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
             input.type = 'url';
             input.name = 'url_com';
@@ -1306,7 +1310,7 @@ function getCSRFToken() {
             
             } else if ( modelo === 'respuesta') {
         // } else if (boton.id === 'add_url_com_btn') {
-            contenedor = document.querySelector('.add_url');
+            contenedor = contenedorRaiz.querySelector('.add_url');
             previsual_form = document.getElementById('previsual_resp')
             input.type = 'url';
             input.name = 'url';
@@ -1342,16 +1346,19 @@ function getCSRFToken() {
     )};
 
     function agregarLink(event) {
-        const boton = event.target
+        const boton = event.target.closest('a, button');
         const modelo = event.target.dataset.model
         const dataId = event.target.dataset.id
+
+        const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
+
         let previsual_form = null;
         let contenedor = null;
         const input = document.createElement('input')
 
         if ( modelo === 'post') {
         // if (boton.id === 'add_url_post') {
-            contenedor = document.querySelector('.add-link-post');
+            contenedor = contenedorRaiz.querySelector('.add-link-post');
             previsual_form = document.getElementById('link-prev-post')
             input.type = 'url';
             input.name = 'link-post';
@@ -1362,7 +1369,7 @@ function getCSRFToken() {
 
             } else if ( modelo === 'comentario') {
         // }else if (boton.id === 'add_url_com') {
-            contenedor = document.querySelector(`.add-link-com-cuadro[data-id="${dataId}"]`);
+            contenedor = contenedorRaiz.querySelector(`.add-link-com-cuadro[data-id="${dataId}"]`);
             previsual_form = document.getElementById(`link-prev-edit-${dataId}`)
             input.type = 'url';
             input.name = 'link-com';
@@ -1373,7 +1380,7 @@ function getCSRFToken() {
             
             } else if ( modelo === 'respuesta') {
         // } else if (boton.id === 'add_url_com_btn') {
-            contenedor = document.querySelector('.add-link');
+            contenedor = contenedor.querySelector('.add-link');
             previsual_form = document.getElementById("link-prev-resp")
             input.type = 'url';
             input.name = 'link-resp';
