@@ -9,6 +9,22 @@
             <div class="col-md-1"></div>
             <div class="col-md-10"> 
                 <h3 class="pt-3">{{ post.titulo }}</h3> 
+                    <div class="row">
+                        
+                        {%if user.is_authenticated%}
+
+                        <div class="col-md-10"></div>
+                                <div class="col-md-2">
+                                    <button id="responder" class="btn btn-primary mt-3 responder">Responder</button>
+                                </div>
+                        {%else%}
+                            <div class="col-8"></div>
+                                <div class="col-md-4">
+                                        <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
+                                </div>
+                        {%endif%}
+                        
+                    </div>
                 <div class="card text-light" style="margin-top:3rem; padding: 2rem;">
                     <div class="row">
                         <div class="col-md-2">
@@ -74,9 +90,9 @@
                         
                         <section id="edit-form">
                             <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                                <div id="imagen-prev-edit-post"></div>
-                                <div id="link-prev-post" style="padding: 2rem 0"></div>
-                                <div id="file-prev-post" style="padding: 2rem 0"></div>
+                                <div id="imagen-prev-edit-post"  style="padding: 0 0 1rem 0"></div>
+                                <div id="link-prev-post"></div>
+                                <div id="file-prev-post"></div>
 
                                 {% csrf_token %}
                                 <div class="row">
@@ -93,7 +109,6 @@
                                     <div class="col-md-3">
                                         <a href="#" id="add_archivo_post" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
                                     </div>
-                                    
                                 </div>
 
                                 <div class="row">
@@ -547,7 +562,7 @@
 
             <div class="col-md-10"></div>
                     <div class="col-md-2">
-                        <button id="responder" class="btn btn-primary mt-3">Responder</button>
+                        <button id="responder" class="btn btn-primary mt-3 responder">Responder</button>
                     </div>
             {%else%}
                 <div class="col-8"></div>
@@ -555,6 +570,7 @@
                             <a href='#' class="btn btn-primary mt-3">Debes estar autenticado para responder</a>
                     </div>
             {%endif%}
+
         </div>
     </div>
 
@@ -661,17 +677,13 @@
                                             
                                             <div class="row">
                                                 <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
-
                                                 <div class="col-md-6">
                                                     <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
-                                                </div>
-                                                
+                                                </div>                          
                                                 <div class="col-md-6 d-flex flex-column flex-sm-row gap-3">
                                                     <input type="submit" data-id="{{com.id}}" data-modelo="{{Comentario}}" value="Responder"  class="btn btn-outline-success">
                                                     <a href="" class="btn btn-outline-danger">Cancelar</a>
-                                                </div>
-
-                                                
+                                                </div>                                      
                                             </div>
                                         </form>
                                     </div>
@@ -759,15 +771,16 @@
             document.addEventListener('DOMContentLoaded', function(){
                 const modalResponder = document.getElementById('ModalResponderPrincipal');
                 const myModalResp = new bootstrap.Modal(modalResponder);
-            document.getElementById('responder').addEventListener('click', function(event) {
-                event.preventDefault();
+                document.querySelectorAll('.responder').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault()
 
-                myModalResp.show()
-                // document.getElementById('formulario').style.display='block'
-                // document.getElementById('responder').style.display= 'none';
-                
-        });
-    });
+                    myModalResp.show()
+                    // document.getElementById('formulario').style.display='block'
+                    // document.getElementById('responder').style.display= 'none';
+                    });
+                });
+            });
 
     const imagenes_resp = document.getElementById('imagenes')
     const prev_resp = document.getElementById('previsual_resp')

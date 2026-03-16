@@ -3,7 +3,7 @@
 <div class="marco">
     <div class="row">
         <div class="col-md-1"></div>
-        <div class="col-md-5 card" style="width: 30rem; margin-top: 30rem; margin-top:5rem">
+        <div class="col-md-5 card mt-3" style="width: 30rem;">
             <div class="card-body">
                 <h3 class="card-title">{{ partida.juego.nombre}}</h3>
                 <p class="card-text">{{ partida.juego.descripcion}}</p>
@@ -55,7 +55,7 @@
         <div class="col-md-5">
             <form action="{% url 'editar_resultados' partida.id %}" method="post">
             {% csrf_token %}
-            <div class="mb-3">
+            <div class="mb-3 mt-3">
                 <h5>Si no hay puntajes en el juego puedes</h5>
                 <label for="ganador" class="form-label mb-4">seleccionar un ganador</label>
                 <select name="ganador_{{jugador.id}}" id="ganador" class="form-select">
