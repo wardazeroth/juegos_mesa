@@ -496,10 +496,6 @@ ul {
     border: none !important;
 }
 
-#chat-log {
-    display: none;
-}
-
 #chat-message-input {
     border-radius: 5px;
     width: 30rem;

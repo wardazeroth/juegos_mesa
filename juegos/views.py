@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
 from django.views import View
-from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl, LinkPost, LinkComment, ArchivoAdjuntoComentario, ArchivoAdjuntoPost
+from juegos.models import UserProfile, Partida, PartidaJugador, JuegoImagen, Juego, Local, LocalImagen, Resultado, Post, Comentario, Categoria, Like, ComentarioImagen, PostImagen, PostUrl, ComentarioUrl, LinkPost, LinkComment, ArchivoAdjuntoComentario, ArchivoAdjuntoPost, ChatMessage
 from datetime import timedelta, date, datetime
 from django.db.models import Q
 from django.core.exceptions import ValidationError
@@ -33,6 +33,8 @@ def inicio(req):
     partida_sabado = Partida.objects.filter(fecha = week_day[5]).order_by('hora')
     partida_domingo = Partida.objects.filter(fecha = week_day[6]).order_by('hora')
     
+    mensajes = ChatMessage.objects.all()
+    
     context = {
         'partidas': partidas,
         'partida_lunes': partida_lunes,
@@ -44,8 +46,8 @@ def inicio(req):
         'partida_domingo': partida_domingo,
         'week_day': week_day,
         'hoy': hoy,
-        'ahora_mas_una': ahora
-        
+        'ahora_mas_una': ahora,
+        'mensajes': mensajes
     }
     return render(req, 'index.html', context)
 

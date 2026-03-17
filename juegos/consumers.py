@@ -1,7 +1,8 @@
 import json
 from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from channels.db import database_sync_to_async
+from .models import ChatMessage   
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -30,11 +31,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        user = self.scope["user"].get_username() if self.scope["user"].is_authenticated else "Anónimo"
+        user = self.scope["user"]
         
         utc_now = timezone.now()
         hora_local = timezone.localtime(utc_now)
         ahora = hora_local.strftime('%d/%m %H:%M')
+        
+        #Guardar mensaje en bd relacional
+        if user.is_authenticated:
+            await self.save_message(user, message, self.room_group_name, ahora)
+            username = user.username
+        else:
+            username = 'Anónimo'
         
         #Enviar el mensaje al grupo en redis
         await self.channel_layer.group_send(
@@ -42,9 +50,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'user': user,
+                'user': username,
                 'datetime': ahora
             }
+        )
+        
+    @database_sync_to_async
+    def save_message(self, user, message, room, ahora):
+        return ChatMessage.objects.create(
+            user=user,
+            content=message,
+            room_name=room,
+            timestamp= ahora
         )
         
     #REcibe el mensaje desde Redis y lo mada al navegador

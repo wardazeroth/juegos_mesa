@@ -268,3 +268,14 @@ class ArchivoAdjuntoComentario(models.Model):
         name = self.archivo.name.lower()
         return os.path.splitext(name)[1]
     
+class ChatMessage(models.Model):
+    content = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room_name = models.CharField(max_length=255, default='general')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['timestamp']
+        
+    def __str__ (self):
+        return f'{self.user.username}: {self.content[:20]}'

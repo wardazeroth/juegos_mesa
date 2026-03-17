@@ -294,11 +294,24 @@
         <div class="col-md-7">
             <div class="marco">
                 <h3 class="mb-3">Chat de la comunidad</h3>
-                <div id="chat-log"></div>
-                <div class="d-flex align-items-center justify-content-center gap-3">
-                    <input id="chat-message-input" class="mt-3" type="text" placeholder="Pregunta lo que quieras...">
-                    <button id="chat-message-submit" class='btn btn-outline-primary mt-3'>Enviar</button>
+                <div id="chat-log">
+                    {%for mensaje in mensajes%}
+                        <div>
+                            <small class='text-muted'>[{{mensaje.timestamp|date:"d/m H:i"}}]</small><strong> {{mensaje.user.username}}: </strong>{{mensaje.content}}
+                        </div>
+                    {%endfor%}    
                 </div>
+
+                {%if user.is_authenticated%}
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <input id="chat-message-input" class="mt-3" type="text" placeholder="Pregunta lo que quieras...">
+                        <button id="chat-message-submit" class='btn btn-outline-primary mt-3'>Enviar</button>
+                    </div>
+                {%else%}
+                    <div class="alert alert-info mt-3">
+                        Debes <a href="{% url 'login' %}">iniciar sesión</a> para participar en el chat.
+                    </div>
+                {%endif%}
             </div>
         </div>
     </div>
@@ -318,7 +331,7 @@
         log.innerHTML += (`<div>
                                 <small class='text-muted'>[${data.datetime}]</small>
                                 <strong>${data.user}:</strong> ${data.message}
-                            </div>`)
+                        </div>`)
         log.scrollTop = log.scrollHeight;
     };
 
@@ -328,10 +341,8 @@
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
         const input = document.querySelector('#chat-message-input');
-        const chatlog = document.querySelector('#chat-log')
         
         if (input.value.trim() !== "") {
-            chatlog.style.display = 'block';
             chatSocket.send(JSON.stringify({
                 'message': input.value
             }));
