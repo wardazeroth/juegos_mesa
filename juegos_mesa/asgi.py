@@ -10,7 +10,20 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+import juegos.routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'juegos_mesa.settings')
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+    # SI el protocolo es htttp
+    "http":  get_asgi_application(),
+    
+    #Si es websocket, usar Channels + ruteo de chat
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            juegos.routing.websocket_urlpatterns
+        )
+    )
+})

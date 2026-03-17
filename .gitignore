@@ -3,3 +3,11 @@ media/
 *.zip
 __pycache__/
 db.sqlite3
+
+# Bases de datos y Docker
+data/
+*.sock
+
+# Entornos virtuales
+virtualAmb/
+venv/

@@ -401,7 +401,7 @@ ul {
     display: none;
 }
 
-#post-cita, #comentario-cita, #post-cita-cuadro, #comentario-cita-cuadro{
+#post-cita, #comentario-cita, #post-cita-cuadro, #comentario-cita-cuadro, #chat-log{
     background-color: rgba(0, 0, 0, 0.1); /* Color gris claro */
     padding: 10px;
     border-left: 4px solid #007bff; /* Línea azul a la izquierda */
@@ -494,4 +494,15 @@ ul {
     background-color:#454e75!important;
     color: aliceblue !important;
     border: none !important;
+}
+
+#chat-log {
+    display: none;
+}
+
+#chat-message-input {
+    border-radius: 5px;
+    width: 30rem;
+    background-color:#454e75!important;
+    color: aliceblue !important;
 }
