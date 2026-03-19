@@ -219,6 +219,7 @@ figure:hover > .capa p, figure:hover > .capa-2 p  {
     display: block;
     margin: auto;
     margin-bottom: 2rem;
+    background-color: transparent !important;
     }
 
 .marquee {
@@ -402,9 +403,9 @@ ul {
 }
 
 #post-cita, #comentario-cita, #post-cita-cuadro, #comentario-cita-cuadro, #chat-log{
-    background-color: rgba(0, 0, 0, 0.1); /* Color gris claro */
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 10px;
-    border-left: 4px solid #007bff; /* Línea azul a la izquierda */
+    border-left: 4px solid #007bff;
     font-style: italic;
     margin-bottom: 10px;
 }
@@ -502,3 +503,9 @@ ul {
     background-color:#454e75!important;
     color: aliceblue !important;
 }
+
+#chat-log {
+    height: 300px;
+    overflow-y: auto;
+}
+

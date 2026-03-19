@@ -2,9 +2,7 @@
 {%load static%}
 {%block content%}
 
-
-<div class="container">
-
+<div class="pt-3">
     <div class="row">
 
         {%for juego in juegos%}
@@ -14,7 +12,7 @@
                 <a href="{% url 'detalle_juego' juego.id %}" style="text-decoration: none;">
                     <div class="card">
                         {%if juego.logo %}
-                            <img style="background-color: transparent;" src="{{juego.logo.url}}" alt="Logo" class="card-img-top">
+                            <img style="background-color: transparent;" src="{{juego.logo.url}}" alt="Logo" class="card-img-top img_logo">
                         {%endif%}    
                             <div class="card-body">
                                 <h5 class="card-title">{{juego.nombre}}</h5>
@@ -23,9 +21,10 @@
                     </div>
                 </a>
             </div>
-
         </div>
+
         {%endfor%}
+
     </div>
 </div>
 

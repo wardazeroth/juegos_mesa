@@ -33,7 +33,7 @@ def inicio(req):
     partida_sabado = Partida.objects.filter(fecha = week_day[5]).order_by('hora')
     partida_domingo = Partida.objects.filter(fecha = week_day[6]).order_by('hora')
     
-    mensajes = ChatMessage.objects.all()
+    mensajes = ChatMessage.objects.all().order_by('-timestamp')[:50]
     
     context = {
         'partidas': partidas,
@@ -207,7 +207,7 @@ def edit_game(req, id):
         # Juego.objects.filter(id=juego_id).update(descripcion, minimo_jugadores, maximo_jugadores, imagenes)
         juego.save()
         messages.success(req, 'Juego editado con éxito')
-        return redirect('/') 
+        return redirect('/juegos/ver_juegos') 
     
 def eliminar_game(req, id):
     
@@ -255,16 +255,18 @@ class NuevoJuegoView(View):
     def post(self, req):
         form = JuegoModelForm(req.POST, req.FILES)
         imagen_form = JuegoImagenMultipleForm(req.POST, req.FILES)
+        print("Errores JuegoForm:", form.errors)
+        print("Errores ImagenForm:", imagen_form.errors)
         try:
-            if form.is_valid() and imagen_form.is_valid():
+            if form.is_valid():
                 juego = form.save()
-                for img in req.FILES.getlist('imagen'):
+                archivos = req.FILES.getlist('imagen')
+                for img in archivos:
                     JuegoImagen.objects.create(juego=juego, imagen = img)
                 messages.success(req, 'Juego Creado')
         except IntegrityError:
             messages.warning(req, "Este juego ya está registrado!")
-        
-        return redirect('/')
+        return redirect('/juegos/ver_juegos')
         
 class NuevaPartidaView(View):
     @method_decorator(login_required)
@@ -315,7 +317,7 @@ class NuevoLocalView(View):
             local.guardar_coordenadas()
             local.save()
         messages.success(req, 'Local agregado')
-        return redirect('/')
+        return redirect('/locales/ver_locales')
 
 def ver_locales(req):
     locales = Local.objects.all()

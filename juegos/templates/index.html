@@ -86,7 +86,10 @@
                 <div class="partida-container">
                     <figure>
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}                 
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
                                 
                             <div class="capa">
                                 <a href="{%url 'inscribir' partida.id %}">
@@ -96,8 +99,11 @@
                                 </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                
                             <div class="capa-2">
                                 <a href="{%url 'detalles_historial' partida.id %}">
                                     <p class="text-light">{{partida.juego.nombre}}</p>
@@ -116,8 +122,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -126,8 +135,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -145,8 +157,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -155,8 +170,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -174,8 +192,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -184,8 +205,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -203,8 +227,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -213,8 +240,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -232,8 +262,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -242,8 +275,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -261,8 +297,11 @@
                 <div class="partida-container">
                     <figure>  
                         {%if partida.fecha == hoy and partida.hora > ahora_mas_una or partida.fecha > hoy%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a>                
-                            
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a>                
+                                {%endif%}
+                                
                             <div class="capa">
                                     <a href="{%url 'inscribir' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
@@ -271,8 +310,11 @@
                                     </a>
                             </div>
                         {%else%}
-                            <a href="#" class="image"><img src="{{ partida.juego.logo.url }}" alt="Logo del Juego" data-position="top center" /></a> 
-                            <div class="capa-2">
+                            <a href="#" class="image">
+                                {%if partida.juego.logo%}
+                                    <img src="{{ partida.juego.logo.url }}" class="img_logo" alt="Logo del Juego" data-position="top center" /></a> 
+                                {%endif%}
+                                <div class="capa-2">
                                     <a href="{%url 'detalles_historial' partida.id %}">
                                         <p class="text-light">{{partida.juego.nombre}}</p>
                                         <p class="text-light">{{partida.hora}}</p>
@@ -294,7 +336,7 @@
         <div class="col-md-7">
             <div class="marco">
                 <h3 class="mb-3">Chat de la comunidad</h3>
-                <div id="chat-log">
+                <div id="chat-log" class="custom-scrollbar">
                     {%for mensaje in mensajes%}
                         <div>
                             <small class='text-muted'>[{{mensaje.timestamp|date:"d/m H:i"}}]</small><strong> {{mensaje.user.username}}: </strong>{{mensaje.content}}
@@ -328,11 +370,19 @@
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         const log = document.querySelector('#chat-log');
-        log.innerHTML += (`<div>
-                                <small class='text-muted'>[${data.datetime}]</small>
-                                <strong>${data.user}:</strong> ${data.message}
-                        </div>`)
-        log.scrollTop = log.scrollHeight;
+
+        const nuevoDiv = document.createElement('div');
+        nuevoDiv.innerHTML = `<small class='text-muted'>[${data.datetime}]</small>
+                                <strong>${data.user}:</strong> ${data.message}`;
+        log.prepend(nuevoDiv);
+
+        const max_msjs = 100;
+        if (log.children.length > max_msjs)
+        {
+            log.removeChild(log.children[0]);
+        }
+        // log.scrollTop = log.scrollHeight;
+        log.scrollTop = 0;
     };
 
     chatSocket.onclose = function(e) {

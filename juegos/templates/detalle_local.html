@@ -4,14 +4,15 @@
 
 {%if local != None %}
 
-    <h1 class="text-center pt-3 pb-5 text-light">{{local.nombre}}</h1>
-    <div class="container">
+<h1 class="text-center pt-3 text-light">{{local.nombre}}</h1>
+<div class="pt-3">
+    <div>
         <div class="marco">
             <div class="row">
                 
-                {%if local.imagenes%}
+                {%if local.imagenes.all%}
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 mt-5">
                         <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
                         <div id="carouselExample" class="carousel slide carousel-fade">
         
@@ -34,17 +35,15 @@
                         </div>
                     </div>
                     </div>
-                
-    
-            {%endif%}
-            
+        
+            {%endif%}    
     
     {%endif%}
     
         <div class="col-md-6">
         <div class="card-body">
 
-                    <h2 class="card-subtitle mb-2 text-light">{{local.ubicacion}}</h2>        
+                    <h3 class="card-subtitle mb-2 text-light">{{local.ubicacion}}</h3>        
                     <div id="map" style="width: 500px; height: 400px ; margin-top: 2rem;"></div>
                     <div>
                         <button class="btn btn-outline-success mt-4 mb-4" id="getLocation">Obtener mi ubicación</button>
@@ -62,7 +61,9 @@
         </div>
     
     </div>
-        </div>
+</div>
+
+    </div>
 
 {%endblock%}
 
@@ -91,7 +92,7 @@
 
         L.marker([{{local.latitud}}, {{local.longitud}}]).addTo(map).bindPopup('{{local.nombre}}').openPopup()
 
-       
+
     // Conocer la geolocalizacipon del usuario
     const locationResult = document .querySelector('#locationResult')
     document.querySelector('#getLocation').addEventListener('click', geolocalizacion)

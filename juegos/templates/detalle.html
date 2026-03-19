@@ -4,41 +4,38 @@
 
 {%if juego != None %}
 <form action="/" method="post">
-    <img class="img_logo" src="{{juego.logo.url}}" alt="logo">
+    {%if juego.logo%}
+        <img class="img_logo" src="{{juego.logo.url}}" alt="logo">
+    {%endif%}
     <div class="container">
         <div class="marco">
             <div class="row">
-                {%if juego.imagenes%}
-                
-                    <div class="col-md-6">
-                        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-                        <div id="carouselExample" class="carousel slide carousel-fade">
-        
-                            <div class="carousel-inner">
-                            {%for imagen in juego.imagenes.all %}
-                            <div class="carousel-item active" data-bs-interval="2000">
-                                <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
-                            </div>
-                            {%endfor%}
-        
-                            </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                            </button>
+            {%if juego.imagenes%}                
+                <div class="col-md-6">
+                    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                    <div id="carouselExample" class="carousel slide carousel-fade">
+    
+                        <div class="carousel-inner">
+                        {%for imagen in juego.imagenes.all %}
+                        <div class="carousel-item active" data-bs-interval="2000">
+                            <img src="{{ imagen.imagen.url }}" class="d-block w-100" alt="imagen">
                         </div>
-                    </div>
-                    </div>
-                
+                        {%endfor%}
     
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+                </div>
             {%endif%}
-            
-    
-    {%endif%}
+{%endif%}
     <div class="col-md-1"></div>
         <div class="col-md-5">
         <div class="card-body">
