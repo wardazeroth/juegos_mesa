@@ -63,34 +63,34 @@
                     {%endif%}
 
                     {%if post.adjuntos%}
-                                        {%for archivo in post.adjuntos.all%}
-                                            <div class="col-md-12 mt-3">
-                                                <ui>
-                                                    {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
-                                                        <i class="fas fa-file-image"></i>
-                                                    {% elif archivo.extension == '.pdf' %}
-                                                        <i class="fas fa-file-pdf"></i>
-                                                    {% elif archivo.extension == '.txt' %}
-                                                        <i class="fas fa-file-alt"></i>
-                                                    {% elif archivo.extension == '.zip' %}
-                                                        <i class="fa-regular fa-file-zipper"></i>
-                                                    {% elif archivo.extension == '.docx' %}
-                                                        <i class="fa-regular fa-file-word"></i>
-                                                    {% else %}
-                                                        <i class="fas fa-file"></i>
-                                                    {% endif %}
-                                                    <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
-                                                </ui>
-                                            </div>
-                                        {%endfor%}
-                                    {%endif%}
+                        {%for archivo in post.adjuntos.all%}
+                            <div class="col-md-12 mt-3">
+                                <ui>
+                                    {% if archivo.extension == '.jpg' or archivo.extension == '.png' %}
+                                        <i class="fas fa-file-image"></i>
+                                    {% elif archivo.extension == '.pdf' %}
+                                        <i class="fas fa-file-pdf"></i>
+                                    {% elif archivo.extension == '.txt' %}
+                                        <i class="fas fa-file-alt"></i>
+                                    {% elif archivo.extension == '.zip' %}
+                                        <i class="fa-regular fa-file-zipper"></i>
+                                    {% elif archivo.extension == '.docx' %}
+                                        <i class="fa-regular fa-file-word"></i>
+                                    {% else %}
+                                        <i class="fas fa-file"></i>
+                                    {% endif %}
+                                    <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                                </ui>
+                            </div>
+                        {%endfor%}
+                    {%endif%}
 
                     <p class="card-text mt-3"  style="text-align: left">{{ post.contenido}}</p>
                         {%if post.autor == request.user%}
                         
                         <section id="edit-form">
                             <form action="{% url 'editar_post' 'Post' post.id %}" method="post" enctype="multipart/form-data">
-                                <div id="imagen-prev-edit-post"  style="padding: 0 0 1rem 0"></div>
+                                <div id="imagen-prev-edit-post"></div>
                                 <div id="link-prev-post"></div>
                                 <div id="file-prev-post"></div>
 
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
+                                <div>
                                 <label for="text" class="form-label">Editar</label>
                                 <input
                                     type="text"
@@ -346,13 +346,12 @@
                                         {%endfor%}
                                     {%endif%}
 
-                                        <p class="card-text mt-3"  style="text-align: left">{{ com.mensaje }}</p>
+                                        <p class="card-text mt-2"  style="text-align: left">{{ com.mensaje }}</p>
 
                                         <section id="edit-comment-form-{{com.id}}">
-
                                             <div id="imagen-prev-edit-{{com.id}}"></div>
-                                            <div id="link-prev-edit-{{com.id}}" style="padding: 2rem 0"></div>
-                                            <div id="file-prev-com-{{com.id}}" style="padding: 2rem 0"></div>
+                                            <div id="link-prev-edit-{{com.id}}"></div>
+                                            <div id="file-prev-com-{{com.id}}"></div>
         
                                             <form action="{% url 'editar_comentario' 'Comentario' com.id %}" method="post" enctype="multipart/form-data">
                                                 {% csrf_token %}

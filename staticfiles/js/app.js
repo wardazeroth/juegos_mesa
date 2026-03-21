@@ -1,36 +1,40 @@
-
-const btnToggle = document.querySelector('.toggle-btn')
-
-btnToggle.addEventListener('click', function () {
-	document.getElementById('sidebar').classList.toggle('active')
-})
+function getCSRFToken() {
+        return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const btnToggle = document.querySelector('.toggle-btn')
+
+    if (btnToggle) {
+        btnToggle.addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active')
+        })
+    }
+
     const modalEliminar = document.getElementById('ModalEliminar');
-    const myModalDelete = bootstrap.Modal.getOrCreateInstance(modalEliminar);
+    if (modalEliminar) {
+        const myModalDelete = bootstrap.Modal.getOrCreateInstance(modalEliminar);
+        const btnConfirmar = document.getElementById('btnConfirmarEliminar');
+        const tituloModal = document.getElementById('tituloModal');
+        const mensajeModal = document.getElementById('mensajeModal');
 
-    const btnConfirmar = document.getElementById('btnConfirmarEliminar');
-    const tituloModal = document.getElementById('tituloModal');
-    const mensajeModal = document.getElementById('mensajeModal');
+        document.addEventListener('click', function(e) {
+            const boton = e.target.closest('.btn-abrir-eliminar');
+            if (boton) {
+                e.preventDefault();
+            const urlEliminar = boton.getAttribute('data-url');
+            const tipoElemento = boton.getAttribute('data-tipo');
 
-    document.addEventListener('click', function(e) {
-        const boton = e.target.closest('.btn-abrir-eliminar');
-        if (boton) {
-            e.preventDefault();
-        const urlEliminar = boton.getAttribute('data-url');
-        const tipoElemento = boton.getAttribute('data-tipo');
+            tituloModal.innerText = `Eliminar ${tipoElemento}`;
+            mensajeModal.innerText = `¿Estás seguro de que deseas eliminar ${tipoElemento}?`;
 
-        tituloModal.innerText = `Eliminar ${tipoElemento}`;
-        mensajeModal.innerText = `¿Estás seguro de que deseas eliminar ${tipoElemento}?`;
+            btnConfirmar.href = urlEliminar;
 
-        btnConfirmar.href = urlEliminar;
-
-        myModalDelete.show();
-        }
-    });
-});
-
-try {
+            myModalDelete.show();
+            }
+        });
+    }
+    try {
     const particlesContainer = document.getElementById('particles-js');
     if (particlesContainer && typeof particlesJS !== 'undefined') {
         particlesJS('particles-js', {
@@ -53,9 +57,33 @@ try {
         });
         console.log("Partículas inicializadas con éxito.");
     }
-} catch (e) {
-    console.warn("ParticlesJS no pudo cargar, pero el resto sigue funcionando:", e);
-}
+    } catch (e) {
+        console.warn("ParticlesJS no pudo cargar, pero el resto sigue funcionando:", e);
+    }
+
+    const btnNuevoPost = document.getElementById("nuevo_post");
+    const modalCrearEl = document.getElementById('myModal');
+    if (btnNuevoPost && modalCrearEl) {
+        const myModalCrear = new bootstrap.Modal(modalCrearEl);
+        btnNuevoPost.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log("Abriendo modal de nuevo post...");
+            myModalCrear.show();
+        });
+    }
+
+    const modalResponder = document.getElementById('ModalResponderPrincipal');
+    const myModalResp = new bootstrap.Modal(modalResponder);
+    if (modalResponder && myModalResp) {
+        document.querySelectorAll('.responder').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault()
+
+            myModalResp.show()
+            });
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('.reaccion').forEach(button => {
@@ -91,25 +119,7 @@ document.addEventListener('DOMContentLoaded', function(){
             .catch(error =>console.error('Error:', error));
         });
     });
-
-    function getCSRFToken() {
-        return document.querySelector("[name=csrfmiddlewaretoken]").value;
-    }
 });
-
-        document.addEventListener('DOMContentLoaded', function(){
-            const modalResponder = document.getElementById('ModalResponderPrincipal');
-            const myModalResp = new bootstrap.Modal(modalResponder);
-            document.querySelectorAll('.responder').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault()
-
-                myModalResp.show()
-                // document.getElementById('formulario').style.display='block'
-                // document.getElementById('responder').style.display= 'none';
-                });
-            });
-        });
 
 const imagenes_resp = document.getElementById('imagenes')
 const prev_resp = document.getElementById('previsual_resp')
@@ -117,51 +127,56 @@ const fomularioRespuesta = document.getElementById('formulario')
 
 let agregar_img = []
 let elim_resp = []
+if (imagenes_resp) {
+    imagenes_resp.addEventListener('change', () => {
+        let archivos = imagenes_resp.files
+        for (let i=0; i < archivos.length; i++) {
+            
+            console.log('hay lista: ', agregar_img)
+            const file = archivos[i]
+            const reader = new FileReader();    
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
 
-imagenes_resp.addEventListener('change', () => {
-    let archivos = imagenes_resp.files
-    for (let i=0; i < archivos.length; i++) {
-        
-        console.log('hay lista: ', agregar_img)
-        const file = archivos[i]
-        const reader = new FileReader();    
-        const container = document.createElement('div');
-        container.classList.add('imagen-container')
-        const img = document.createElement('img');
-        const trashIcono = document.createElement('i')
-        trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            elim_resp.push(archivos[i])
+            console.log('eliminando: ', elim_resp)
+        })
 
-    trashIcono.addEventListener('click', function() {
-        container.remove();
-        elim_resp.push(archivos[i])
-        console.log('eliminando: ', elim_resp)
-    })
+        reader.onload = function(e) {
+            // convert image file to base64 string
+            img.src = reader.result
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            prev_resp.appendChild(container)
+            prev_resp.style.display = 'block';
+            agregar_img.push(archivos[i])
 
-    reader.onload = function(e) {
-        // convert image file to base64 string
-        img.src = reader.result
-        container.appendChild(img)
-        container.appendChild(trashIcono)
-        prev_resp.appendChild(container)
-        prev_resp.style.display = 'block';
-        agregar_img.push(archivos[i])
-
-        console.log('cargadas para enviar', agregar_img)
-        let dataTransfer = new DataTransfer()
-        for (let file of agregar_img) {
-            dataTransfer.items.add(file)
+            console.log('cargadas para enviar', agregar_img)
+            let dataTransfer = new DataTransfer()
+            for (let file of agregar_img) {
+                dataTransfer.items.add(file)
+            }
+            imagenes_resp.files = dataTransfer.files
         }
-        imagenes_resp.files = dataTransfer.files
-    }
-    reader.readAsDataURL(archivos[i]);
-    }
-});
+        reader.readAsDataURL(archivos[i]);
+        }
+    });
+}
 
-document.getElementById("add_img").addEventListener('click', function (e) {
-    e.preventDefault();
-    imagenes_resp.click()
-});
+const btn_add_img = document.getElementById('add_img')
 
+if (btn_add_img) {
+    btn_add_img.addEventListener('click', function (e) {
+    if (typeof imagenes_resp !== 'undefined') {
+            imagenes_resp.click();
+        }
+    });
+}
 
 if (fomularioRespuesta) {
 
@@ -187,9 +202,7 @@ if (fomularioRespuesta) {
     })
     .catch(error=> {
         console.log('Error:', error)});   
-
-});
-
+    });
 }
 
     document.querySelectorAll('.citar').forEach(button => {
@@ -225,7 +238,9 @@ if (fomularioRespuesta) {
 });
 
 let imagenes_list = []
-document.getElementById('imagenes').addEventListener('change', function(event) {        
+const imagenes = document.getElementById('imagenes')
+if (imagenes) {
+imagenes.addEventListener('change', function(event) {        
     let imagenes = event.target.files;
     let previsual = document.getElementById('imagen-prev')
 
@@ -271,9 +286,10 @@ document.getElementById('imagenes').addEventListener('change', function(event) {
             document.getElementById('imagenes').files = dataTransfer.files
         }
         reader.readAsDataURL(imagenes[i]);
+    }
+    });
 }
 
-});
 
 document.addEventListener('DOMContentLoaded', function () {    
     document.addEventListener('click', function (event) {
@@ -318,7 +334,7 @@ document.querySelectorAll('.edit-comment').forEach(button => {
     });
 });
 
-function abrirEditorComentario({modelo, id, formularioEdicion, extra, imagenes_edit, previsual}) {
+window.abrirEditorComentario= function({modelo, id, formularioEdicion, extra, imagenes_edit, previsual}) {
     if (formularioEdicion) {
             formularioEdicion.style.display='block'
             extra.style.display='none'            
@@ -433,10 +449,6 @@ function obtener_imagenes_backend({modelo, id, previsual, eliminar_img}) {
         }
     }).catch(error =>console.error('Error:', error));
 }       
-
-function getCSRFToken() {
-return document.querySelector("[name=csrfmiddlewaretoken]").value;
-}
 
 document.querySelectorAll('.add_url_btn').forEach(btn => {
     btn.addEventListener('click', function(e){
@@ -621,59 +633,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 prevFile.innerHTML = nombre_archivo
                 prevFile.appendChild(container);
                 }
-        })
-
+            })
         })
     })
-})
+});
 
 const formularioRespuesta = document.getElementById('formulario') || document.querySelector('.form-respuesta');
 
-function agregarCampo(event) {
+window.agregarCampo = function(event) {
+    if (event) event.preventDefault();
     const boton = event.target.closest('a, button')
     const modelo = event.target.dataset.model
     const dataId = event.target.dataset.id
 
-    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
-
+    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp, .modalPost, .modal-body');
     let previsual_form = null;
     const input = document.createElement('input')
+    input.type = 'url';
+    input.classList.add("form-control")
+    input.style = "margin: 5px 5px; border-radius: 5px"
+    input.placeholder = 'URL de imagen';
 
         if ( modelo === 'post') {
-    // if (boton.id === 'add_url_post') {
-        contenedor = contenedorRaiz.querySelector('.add_url_post');
+        contenedor = contenedorRaiz.querySelector('.add_url_post') || contenedorRaiz.querySelector('.add_url');
         previsual_form = document.getElementById('imagen-prev-edit-post')
-        input.type = 'url';
         input.name = 'url_post';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
 
         } else if ( modelo === 'comentario') {
-    // }else if (boton.id === 'add_url_com') {
         contenedor = contenedorRaiz.querySelector(`.add_url_com[data-id="${dataId}"]`);
         previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
-        input.type = 'url';
         input.name = 'url_com';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
         
         } else if ( modelo === 'respuesta') {
-    // } else if (boton.id === 'add_url_com_btn') {
-
         contenedor = contenedorRaiz.querySelector('div.add_url');
-
         previsual_form = document.getElementById('previsual_resp')
-        input.type = 'url';
         input.name = 'url';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
     }
+
+    contenedor.appendChild(input)
 
     previsual_form.style.display = 'block';
     input.addEventListener('input', () => {
@@ -700,52 +697,38 @@ function agregarCampo(event) {
     }
 )};
 
-function agregarLink(event) {
+window.agregarLink = function(event) {
     const boton = event.target.closest('a, button');
     const modelo = event.target.dataset.model
     const dataId = event.target.dataset.id
 
-    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
+    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp, modalPost');
 
     let previsual_form = null;
     let contenedor = null;
     const input = document.createElement('input')
-
+    input.type = 'url';
+    input.classList.add("form-control")
+    input.style = "margin: 5px 5px; border-radius: 5px"
+    input.placeholder = 'Inserte un nuevo link';
     if ( modelo === 'post') {
-    // if (boton.id === 'add_url_post') {
-        contenedor = contenedorRaiz.querySelector('.add-link-post');
+        contenedor = contenedorRaiz.querySelector('.add-link-post') || contenedorRaiz.querySelector('.add-link');
+        previsual_form = document.getElementById('link-prev-post');
         previsual_form = document.getElementById('link-prev-post')
-        input.type = 'url';
         input.name = 'link-post';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
 
         } else if ( modelo === 'comentario') {
-    // }else if (boton.id === 'add_url_com') {
         contenedor = contenedorRaiz.querySelector(`.add-link-com-cuadro[data-id="${dataId}"]`);
         previsual_form = document.getElementById(`link-prev-edit-${dataId}`)
-        input.type = 'url';
         input.name = 'link-com';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
         
         } else if ( modelo === 'respuesta') {
-    // } else if (boton.id === 'add_url_com_btn') {
-
         contenedor = contenedorRaiz.querySelector('div.add-link');
-
         previsual_form = document.getElementById("link-prev-resp")
-        input.type = 'url';
         input.name = 'link-resp';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
     }
+
+    contenedor.appendChild(input)
 
     previsual_form.style.display = 'block';
     input.addEventListener('input', () => {
@@ -765,17 +748,24 @@ function agregarLink(event) {
     });
 }
 
-document.getElementById('add_archivo').addEventListener('click', function(e) {
-    e.preventDefault()
-    let input_archivo = document.getElementById('archivo')
-    input_archivo.click()
-});
+const add_archivo = document.getElementById('add_archivo')
+const add_archivo_post = document.getElementById('add_archivo_post')
 
-document.getElementById('add_archivo_post').addEventListener('click', function(e) {
-    e.preventDefault()
-    let input_archivo = document.getElementById('archivo_post')
-    input_archivo.click()
-});
+if (add_archivo) {
+    add_archivo.addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo')
+        input_archivo.click()
+    });
+}
+
+if (add_archivo_post) {
+    add_archivo_post.addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo_post')
+        input_archivo.click()
+    });
+}
 
 document.querySelectorAll('.add_archivo_com').forEach(btn => {
     btn.addEventListener('click', function(e){
@@ -784,14 +774,6 @@ document.querySelectorAll('.add_archivo_com').forEach(btn => {
     let input_archivo = document.getElementById(`archivo_com-${id}`)
     input_archivo.click()
     })
-});
-
-const myModalElement = document.getElementById('myModal');
-const myModal = new bootstrap.Modal(myModalElement);
-
-document.getElementById("nuevo_post").addEventListener('click', function (e) {
-    e.preventDefault();
-    myModal.show();
 });
 
     const imagenes_edit = document.getElementById('imagenes_edit')
@@ -973,92 +955,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     prevFile.innerHTML = nombre_archivo
                     prevFile.appendChild(container);
                     }
-            })
-
+                })
             })
         })
-    });
-
-function agregarCampo(event) {
-    const boton = event.target
-    let previsual_form = document.getElementById('imagen-prev-edit-post')
-    let contenedor = document.querySelector('.add_url');
-    const input = document.createElement('input')
-    input.type = 'url';
-    input.name = 'url-post';
-    input.classList.add("form-control")
-    input.style = "margin: 5px 5px; border-radius: 5px"
-    input.placeholder = 'Nuevo URL de imagen';
-    contenedor.appendChild(input)
-    
-    previsual_form.style.display = 'block';
-    input.addEventListener('input', () => {
-    const url = input.value;
-
-    if (!url) return;
-
-    const container = document.createElement('div');
-    container.classList.add('imagen-container')
-    const img = document.createElement('img');
-    img.src = url;
-
-    const trashIcono = document.createElement('i')
-    trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
-
-    trashIcono.addEventListener('click', function() {
-        container.remove();
-        input.value = '';
-    })
-        container.appendChild(img)
-        container.appendChild(trashIcono)
-        previsual_form.appendChild(container)
-        previsual_form.style.display = 'block';
-    });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-    const addLink = document.getElementById('add-link')
-    if (addLink) {
-        addLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            let add_link = document.querySelector('.add-link');
-            add_link.style.display = 'block';
-        })
-    }
-})
-
-    function agregarLink(event) {
-        const boton = event.target
-        const input = document.createElement('input')
-        let contenedor = document.querySelector('.add-link');
-        let previsual_form = document.getElementById('link-prev-post')
-        input.type = 'url';
-        input.name = 'link-post';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
-        previsual_form.style.display = 'block';
-
-        input.addEventListener('input', () => {
-            const url = input.value;
-
-            if (!url) return;
-
-            const container = document.createElement('div');
-            const enlace = document.createElement('a')
-            enlace.href = url
-            enlace.textContent = url;
-            enlace.target = "_blank";
-            container.appendChild(enlace)
-            container.style = 'padding: 1rem 0'
-            previsual_form.appendChild(container)
-            previsual_form.style.display = 'block';
-        });
-    }
-
-    document.getElementById('add_archivo').addEventListener('click', function(e) {
-    e.preventDefault()
-    let input_archivo = document.getElementById('archivo')
-    input_archivo.click()
     });

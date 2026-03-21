@@ -1,36 +1,40 @@
-
-const btnToggle = document.querySelector('.toggle-btn')
-
-btnToggle.addEventListener('click', function () {
-	document.getElementById('sidebar').classList.toggle('active')
-})
+function getCSRFToken() {
+        return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const btnToggle = document.querySelector('.toggle-btn')
+
+    if (btnToggle) {
+        btnToggle.addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active')
+        })
+    }
+
     const modalEliminar = document.getElementById('ModalEliminar');
-    const myModalDelete = bootstrap.Modal.getOrCreateInstance(modalEliminar);
+    if (modalEliminar) {
+        const myModalDelete = bootstrap.Modal.getOrCreateInstance(modalEliminar);
+        const btnConfirmar = document.getElementById('btnConfirmarEliminar');
+        const tituloModal = document.getElementById('tituloModal');
+        const mensajeModal = document.getElementById('mensajeModal');
 
-    const btnConfirmar = document.getElementById('btnConfirmarEliminar');
-    const tituloModal = document.getElementById('tituloModal');
-    const mensajeModal = document.getElementById('mensajeModal');
+        document.addEventListener('click', function(e) {
+            const boton = e.target.closest('.btn-abrir-eliminar');
+            if (boton) {
+                e.preventDefault();
+            const urlEliminar = boton.getAttribute('data-url');
+            const tipoElemento = boton.getAttribute('data-tipo');
 
-    document.addEventListener('click', function(e) {
-        const boton = e.target.closest('.btn-abrir-eliminar');
-        if (boton) {
-            e.preventDefault();
-        const urlEliminar = boton.getAttribute('data-url');
-        const tipoElemento = boton.getAttribute('data-tipo');
+            tituloModal.innerText = `Eliminar ${tipoElemento}`;
+            mensajeModal.innerText = `¿Estás seguro de que deseas eliminar ${tipoElemento}?`;
 
-        tituloModal.innerText = `Eliminar ${tipoElemento}`;
-        mensajeModal.innerText = `¿Estás seguro de que deseas eliminar ${tipoElemento}?`;
+            btnConfirmar.href = urlEliminar;
 
-        btnConfirmar.href = urlEliminar;
-
-        myModalDelete.show();
-        }
-    });
-});
-
-try {
+            myModalDelete.show();
+            }
+        });
+    }
+    try {
     const particlesContainer = document.getElementById('particles-js');
     if (particlesContainer && typeof particlesJS !== 'undefined') {
         particlesJS('particles-js', {
@@ -53,9 +57,33 @@ try {
         });
         console.log("Partículas inicializadas con éxito.");
     }
-} catch (e) {
-    console.warn("ParticlesJS no pudo cargar, pero el resto sigue funcionando:", e);
-}
+    } catch (e) {
+        console.warn("ParticlesJS no pudo cargar, pero el resto sigue funcionando:", e);
+    }
+
+    const btnNuevoPost = document.getElementById("nuevo_post");
+    const modalCrearEl = document.getElementById('myModal');
+    if (btnNuevoPost && modalCrearEl) {
+        const myModalCrear = new bootstrap.Modal(modalCrearEl);
+        btnNuevoPost.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log("Abriendo modal de nuevo post...");
+            myModalCrear.show();
+        });
+    }
+
+    const modalResponder = document.getElementById('ModalResponderPrincipal');
+    const myModalResp = new bootstrap.Modal(modalResponder);
+    if (modalResponder && myModalResp) {
+        document.querySelectorAll('.responder').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault()
+
+            myModalResp.show()
+            });
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('.reaccion').forEach(button => {
@@ -91,25 +119,7 @@ document.addEventListener('DOMContentLoaded', function(){
             .catch(error =>console.error('Error:', error));
         });
     });
-
-    function getCSRFToken() {
-        return document.querySelector("[name=csrfmiddlewaretoken]").value;
-    }
 });
-
-        document.addEventListener('DOMContentLoaded', function(){
-            const modalResponder = document.getElementById('ModalResponderPrincipal');
-            const myModalResp = new bootstrap.Modal(modalResponder);
-            document.querySelectorAll('.responder').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault()
-
-                myModalResp.show()
-                // document.getElementById('formulario').style.display='block'
-                // document.getElementById('responder').style.display= 'none';
-                });
-            });
-        });
 
 const imagenes_resp = document.getElementById('imagenes')
 const prev_resp = document.getElementById('previsual_resp')
@@ -117,51 +127,56 @@ const fomularioRespuesta = document.getElementById('formulario')
 
 let agregar_img = []
 let elim_resp = []
+if (imagenes_resp) {
+    imagenes_resp.addEventListener('change', () => {
+        let archivos = imagenes_resp.files
+        for (let i=0; i < archivos.length; i++) {
+            
+            console.log('hay lista: ', agregar_img)
+            const file = archivos[i]
+            const reader = new FileReader();    
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
 
-imagenes_resp.addEventListener('change', () => {
-    let archivos = imagenes_resp.files
-    for (let i=0; i < archivos.length; i++) {
-        
-        console.log('hay lista: ', agregar_img)
-        const file = archivos[i]
-        const reader = new FileReader();    
-        const container = document.createElement('div');
-        container.classList.add('imagen-container')
-        const img = document.createElement('img');
-        const trashIcono = document.createElement('i')
-        trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            elim_resp.push(archivos[i])
+            console.log('eliminando: ', elim_resp)
+        })
 
-    trashIcono.addEventListener('click', function() {
-        container.remove();
-        elim_resp.push(archivos[i])
-        console.log('eliminando: ', elim_resp)
-    })
+        reader.onload = function(e) {
+            // convert image file to base64 string
+            img.src = reader.result
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            prev_resp.appendChild(container)
+            prev_resp.style.display = 'block';
+            agregar_img.push(archivos[i])
 
-    reader.onload = function(e) {
-        // convert image file to base64 string
-        img.src = reader.result
-        container.appendChild(img)
-        container.appendChild(trashIcono)
-        prev_resp.appendChild(container)
-        prev_resp.style.display = 'block';
-        agregar_img.push(archivos[i])
-
-        console.log('cargadas para enviar', agregar_img)
-        let dataTransfer = new DataTransfer()
-        for (let file of agregar_img) {
-            dataTransfer.items.add(file)
+            console.log('cargadas para enviar', agregar_img)
+            let dataTransfer = new DataTransfer()
+            for (let file of agregar_img) {
+                dataTransfer.items.add(file)
+            }
+            imagenes_resp.files = dataTransfer.files
         }
-        imagenes_resp.files = dataTransfer.files
-    }
-    reader.readAsDataURL(archivos[i]);
-    }
-});
+        reader.readAsDataURL(archivos[i]);
+        }
+    });
+}
 
-document.getElementById("add_img").addEventListener('click', function (e) {
-    e.preventDefault();
-    imagenes_resp.click()
-});
+const btn_add_img = document.getElementById('add_img')
 
+if (btn_add_img) {
+    btn_add_img.addEventListener('click', function (e) {
+    if (typeof imagenes_resp !== 'undefined') {
+            imagenes_resp.click();
+        }
+    });
+}
 
 if (fomularioRespuesta) {
 
@@ -187,9 +202,7 @@ if (fomularioRespuesta) {
     })
     .catch(error=> {
         console.log('Error:', error)});   
-
-});
-
+    });
 }
 
     document.querySelectorAll('.citar').forEach(button => {
@@ -225,7 +238,9 @@ if (fomularioRespuesta) {
 });
 
 let imagenes_list = []
-document.getElementById('imagenes').addEventListener('change', function(event) {        
+const imagenes = document.getElementById('imagenes')
+if (imagenes) {
+imagenes.addEventListener('change', function(event) {        
     let imagenes = event.target.files;
     let previsual = document.getElementById('imagen-prev')
 
@@ -271,9 +286,10 @@ document.getElementById('imagenes').addEventListener('change', function(event) {
             document.getElementById('imagenes').files = dataTransfer.files
         }
         reader.readAsDataURL(imagenes[i]);
+    }
+    });
 }
 
-});
 
 document.addEventListener('DOMContentLoaded', function () {    
     document.addEventListener('click', function (event) {
@@ -318,7 +334,7 @@ document.querySelectorAll('.edit-comment').forEach(button => {
     });
 });
 
-function abrirEditorComentario({modelo, id, formularioEdicion, extra, imagenes_edit, previsual}) {
+window.abrirEditorComentario= function({modelo, id, formularioEdicion, extra, imagenes_edit, previsual}) {
     if (formularioEdicion) {
             formularioEdicion.style.display='block'
             extra.style.display='none'            
@@ -433,10 +449,6 @@ function obtener_imagenes_backend({modelo, id, previsual, eliminar_img}) {
         }
     }).catch(error =>console.error('Error:', error));
 }       
-
-function getCSRFToken() {
-return document.querySelector("[name=csrfmiddlewaretoken]").value;
-}
 
 document.querySelectorAll('.add_url_btn').forEach(btn => {
     btn.addEventListener('click', function(e){
@@ -621,59 +633,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 prevFile.innerHTML = nombre_archivo
                 prevFile.appendChild(container);
                 }
-        })
-
+            })
         })
     })
-})
+});
 
 const formularioRespuesta = document.getElementById('formulario') || document.querySelector('.form-respuesta');
 
-function agregarCampo(event) {
+window.agregarCampo = function(event) {
+    if (event) event.preventDefault();
     const boton = event.target.closest('a, button')
     const modelo = event.target.dataset.model
     const dataId = event.target.dataset.id
 
-    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
-
+    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp, .modalPost, .modal-body');
     let previsual_form = null;
     const input = document.createElement('input')
+    input.type = 'url';
+    input.classList.add("form-control")
+    input.style = "margin: 5px 5px; border-radius: 5px"
+    input.placeholder = 'URL de imagen';
 
         if ( modelo === 'post') {
-    // if (boton.id === 'add_url_post') {
-        contenedor = contenedorRaiz.querySelector('.add_url_post');
+        contenedor = contenedorRaiz.querySelector('.add_url_post') || contenedorRaiz.querySelector('.add_url');
         previsual_form = document.getElementById('imagen-prev-edit-post')
-        input.type = 'url';
         input.name = 'url_post';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
 
         } else if ( modelo === 'comentario') {
-    // }else if (boton.id === 'add_url_com') {
         contenedor = contenedorRaiz.querySelector(`.add_url_com[data-id="${dataId}"]`);
         previsual_form = document.getElementById(`imagen-prev-edit-${dataId}`)
-        input.type = 'url';
         input.name = 'url_com';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
         
         } else if ( modelo === 'respuesta') {
-    // } else if (boton.id === 'add_url_com_btn') {
-
         contenedor = contenedorRaiz.querySelector('div.add_url');
-
         previsual_form = document.getElementById('previsual_resp')
-        input.type = 'url';
         input.name = 'url';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'URL de imagen';
-        contenedor.appendChild(input)
     }
+
+    contenedor.appendChild(input)
 
     previsual_form.style.display = 'block';
     input.addEventListener('input', () => {
@@ -700,52 +697,38 @@ function agregarCampo(event) {
     }
 )};
 
-function agregarLink(event) {
+window.agregarLink = function(event) {
     const boton = event.target.closest('a, button');
     const modelo = event.target.dataset.model
     const dataId = event.target.dataset.id
 
-    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp');
+    const contenedorRaiz = boton.closest('.marco-editor, .marco, .modalResp, modalPost');
 
     let previsual_form = null;
     let contenedor = null;
     const input = document.createElement('input')
-
+    input.type = 'url';
+    input.classList.add("form-control")
+    input.style = "margin: 5px 5px; border-radius: 5px"
+    input.placeholder = 'Inserte un nuevo link';
     if ( modelo === 'post') {
-    // if (boton.id === 'add_url_post') {
-        contenedor = contenedorRaiz.querySelector('.add-link-post');
+        contenedor = contenedorRaiz.querySelector('.add-link-post') || contenedorRaiz.querySelector('.add-link');
+        previsual_form = document.getElementById('link-prev-post');
         previsual_form = document.getElementById('link-prev-post')
-        input.type = 'url';
         input.name = 'link-post';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
 
         } else if ( modelo === 'comentario') {
-    // }else if (boton.id === 'add_url_com') {
         contenedor = contenedorRaiz.querySelector(`.add-link-com-cuadro[data-id="${dataId}"]`);
         previsual_form = document.getElementById(`link-prev-edit-${dataId}`)
-        input.type = 'url';
         input.name = 'link-com';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
         
         } else if ( modelo === 'respuesta') {
-    // } else if (boton.id === 'add_url_com_btn') {
-
         contenedor = contenedorRaiz.querySelector('div.add-link');
-
         previsual_form = document.getElementById("link-prev-resp")
-        input.type = 'url';
         input.name = 'link-resp';
-        input.classList.add("form-control")
-        input.style = "margin: 5px 5px; border-radius: 5px"
-        input.placeholder = 'Inserte un nuevo link';
-        contenedor.appendChild(input)
     }
+
+    contenedor.appendChild(input)
 
     previsual_form.style.display = 'block';
     input.addEventListener('input', () => {
@@ -765,17 +748,24 @@ function agregarLink(event) {
     });
 }
 
-document.getElementById('add_archivo').addEventListener('click', function(e) {
-    e.preventDefault()
-    let input_archivo = document.getElementById('archivo')
-    input_archivo.click()
-});
+const add_archivo = document.getElementById('add_archivo')
+const add_archivo_post = document.getElementById('add_archivo_post')
 
-document.getElementById('add_archivo_post').addEventListener('click', function(e) {
-    e.preventDefault()
-    let input_archivo = document.getElementById('archivo_post')
-    input_archivo.click()
-});
+if (add_archivo) {
+    add_archivo.addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo')
+        input_archivo.click()
+    });
+}
+
+if (add_archivo_post) {
+    add_archivo_post.addEventListener('click', function(e) {
+        e.preventDefault()
+        let input_archivo = document.getElementById('archivo_post')
+        input_archivo.click()
+    });
+}
 
 document.querySelectorAll('.add_archivo_com').forEach(btn => {
     btn.addEventListener('click', function(e){
@@ -786,11 +776,186 @@ document.querySelectorAll('.add_archivo_com').forEach(btn => {
     })
 });
 
-const myModalElement = document.getElementById('myModal');
-const myModal = new bootstrap.Modal(myModalElement);
+    const imagenes_edit = document.getElementById('imagenes_edit')
+    const previsual = document.getElementById('imagen-prev-edit-post')
+    const formularioEdicion = document.getElementById('post-form');
 
-document.getElementById("nuevo_post").addEventListener('click', function (e) {
-    e.preventDefault();
-    myModal.show();
+    let imagenes_add = []
+    let eliminar_img= []
+
+    imagenes_edit.addEventListener('change', () => {
+        let archivos = imagenes_edit.files
+
+
+        for (let i=0; i < archivos.length; i++) {
+            
+            console.log('hay lista: ', imagenes_add)
+            const file = archivos[i]
+            const reader = new FileReader();    
+            const container = document.createElement('div');
+            container.classList.add('imagen-container')
+            const img = document.createElement('img');
+            const trashIcono = document.createElement('i')
+            trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            eliminar_img.push(archivos[i])
+            console.log('eliminando: ', eliminar_img)
+        })
+
+        reader.onload = function(e) {
+            // convert image file to base64 string
+            img.src = reader.result
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            previsual.appendChild(container)
+            previsual.style.display = 'block';
+            imagenes_add.push(archivos[i])
+
+            console.log('cargadas para enviar', imagenes_add)
+            let dataTransfer = new DataTransfer()
+            for (let file of imagenes_add) {
+                dataTransfer.items.add(file)
+            }
+            imagenes_edit.files = dataTransfer.files
+        }
+        reader.readAsDataURL(archivos[i]);
+        }
+    })
+
+    document.querySelector('.add-img-edit').addEventListener('click', function (event) {
+            event.preventDefault();
+            
+            imagenes_edit.click()        
+    });
+
+    formularioEdicion.addEventListener('submit', function enviarForm(e) {
+        const id = this.dataset.id;
+        console.log('eliminadas: ', eliminar_img);
+        let form = e.target                  
+        let formData = new FormData(form);
+
+        formData.append('imagenes_eliminadas', JSON.stringify(eliminar_img));
+
+        fetch(`/foro/${modelo}/${id}/edit-foto`,  {
+        method: 'POST',
+        body: formData,
+        headers: {
+        "X-CSRFToken": getCSRFToken(),
+        "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('imágenes actualizadas')
+    })
+    .catch(error=> {
+        console.log('Error:', error)});   
 });
 
+function getCSRFToken() {
+    return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
+
+document.getElementById('add_url').addEventListener('click', function(e){
+    e.preventDefault();
+    let url_add =document.querySelector('.add_url');
+    url_add.style.display = 'block';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('input[type="url"]');
+
+    inputs.forEach((input) =>{
+        input.addEventListener('input', (event) => {
+            const modelo = event.target.dataset.model
+            let inputPrincipal = document.getElementById('url')
+            let inputLink = document.getElementById('link-post')
+            let prevLink = document.getElementById("link-prev-post")
+            
+        previsual.style.display = 'block';
+        const url = inputPrincipal.value;
+        const link = inputLink.value;
+        prevLink.style.display = 'block'
+        const linked = `<a href="${link}" target="_blank">${link}</a>`
+        prevLink.innerHTML = linked
+
+        if (!url) return;
+
+        const container = document.createElement('div');
+        container.classList.add('imagen-container')
+        const img = document.createElement('img');
+        img.src = url;
+
+        const trashIcono = document.createElement('i')
+        trashIcono.classList.add('fas', 'fa-trash-alt', 'borrar-icon')
+
+        trashIcono.addEventListener('click', function() {
+            container.remove();
+            input.value = '';
+            })
+            container.appendChild(img)
+            container.appendChild(trashIcono)
+            previsual.appendChild(container)
+            previsual.style.display = 'block';
+            })
+        })
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs_file = document.querySelectorAll('input[type="file"]')
+
+        inputs_file.forEach((input) =>{
+            input.addEventListener('input', (event) => {
+                const inputId = event.target.id     
+                const dataId = event.target.dataset.id
+                const modelo = event.target.dataset.model
+                let inputAdjunto = null
+                let prevFile = null
+                const extensionesValidas =['.jpg', '.png', '.pdf', '.txt', '.zip', '.docx'];
+
+                if(modelo === 'respuesta') {
+                    inputAdjunto = document.getElementById('archivo')
+                    prevFile = document.getElementById("file-prev-resp")
+                }
+
+            const archivos= inputAdjunto.files;
+            Array.from(archivos).forEach((archivo) => {
+                const extension = archivo.name.substring(archivo.name.lastIndexOf('.')).toLowerCase(); // Extrae .pdf, .jpg, etc.
+                if (!extensionesValidas.includes(extension)) {
+                    alert(`Extensión ${extension} no permitida. Solo se aceptan ${extensionesValidas.join(', ')}`)
+                } else {
+                    prevFile.style.display = 'block'
+                    const container = document.createElement('div');
+                    const icono = document.createElement('i');
+                    // <a href="{{ archivo.archivo.url }}" download>{{ archivo.archivo.name|cut:"adjuntos/" }}</a>
+                    if (extension == '.pdf') {
+                        icono.classList.add('fas', 'fa-file-pdf')
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.jpg' || extension === '.jpeg' || extension === '.png') {
+                        icono.classList.add('fas', 'fa-file-image');
+                        icono.style.fontSize = '2rem'
+                    } else if (extension === '.txt') {
+                        icono.classList.add('fas', 'fa-file-alt');
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.docx') {
+                        icono.classList.add('fas', 'fa-file-word')
+                        icono.style.fontSize = '2rem'
+                    }else if (extension === '.zip') {
+                        icono.classList.add('fas', 'fa-file-zipper')
+                        icono.style.fontSize = '2rem'
+                    } else {
+                        icono.classList.add('fas', 'fa-file');
+                        icono.style.fontSize = '2rem'
+                    }
+                    let nombre_archivo = archivo.name
+                    console.log('los adjuntos: ', archivo)
+                    container.appendChild(icono)
+                    prevFile.innerHTML = nombre_archivo
+                    prevFile.appendChild(container);
+                    }
+                })
+            })
+        })
+    });

@@ -224,6 +224,96 @@
         </div>
     </div>
 </div>
+
+<div class="modal" id="myModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-dialog-fullscreen">
+        <div class="modal-content" style="background-color: rgb(44, 44, 44);">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body custom-scrollbar" style="overflow-y: auto;">
+                <div class="modal-top-static p-3">
+                <div class="marco modalPost">
+                    <div id="particles-js"></div> 
+                    <section id="post-form">
+                            <h3 class="text-center mt-3 mb-3">Escribe tu post</h3>
+                                <form action="{% url 'crear_post' %}" method="post" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        {%csrf_token%}
+                                        {%for field in form%}
+                                            <div class="mb-3">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                            </div>
+                                        {%endfor%}
+                                        <div class="mb-3">
+                                            <input
+                                                type="file"
+                                                class="imagenes-edit"
+                                                name="imagenes_edit"
+                                                id="imagenes_edit"
+                                                style="display: none;"
+                                                placeholder="nueva imagen"
+                                                value="{{post.imagenes}}"
+                                                multiple
+                                            />
+                                        </div>                       
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <label for="" class="form-label" style="margin-bottom: 1rem;">Agrega imágenes o enlaces</label>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <a href="#" id="add-link" class="btn btn-outline-primary"><i class="fa-solid fa-link"></i> Añadir Link</a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <a href="#" class="add-img-edit btn btn-outline-primary mb-3" id="boton_foto" data-id="{{post.id}}" data-model="post"><i class="fa-solid fa-images"></i> Añadir Imagen</a>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <button type="button" id="add_url" class="btn btn-outline-primary mb-3"><i class="fa-solid fa-images"></i>Añadir URL</button>
+                                            </div>
+
+                                            <input type="file" name="archivo" id="archivo" style="display: none;" data-model="respuesta" multiple>
+                                            <div class="col-md-6">
+                                                <a href="#" id="add_archivo" class="btn btn-outline-primary mb-1"><i class="fa-solid fa-paperclip"></i> Añadir Archivo</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-10 add_url" style="display: none; margin: 0 2rem">
+                                                <label for="url" class="form-label">URL</label>
+                                                <input name="url-post" type="url" class="form-control" id="url" data-model="post" placeholder="Inserte URL de la imagen">
+                                                <button type="button" id="add_url" onclick="agregarCampo(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otra URL de imagen</button>
+                                            </div>
+
+                                            <div class="col-md-10 add-link" style="display: none; margin: 0 2rem">
+                                                <label for="link" class="form-label">Link</label>
+                                                <input type="url" id="link-post" class="form-control" name="link-post" data-model="post" placeholder="Inserte un link">
+                                                <button type="button" id="add_link_post" onclick="agregarLink(event)" data-model="post" class="btn btn-outline-primary mb-3 mt-3">Agregar otro Link</button>
+                                            </div>
+
+                                            <div class="col-md-10">
+                                                <div id="imagen-prev-edit-post"></div>
+                                                <div id="link-prev-post"></div>
+                                                <div id="file-prev-resp" style="padding: 2rem 0"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <input type="submit" value="Postear" class="btn btn-outline-primary">                    
+                                    </div>
+                                </form>
+                            </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Bootstrap JavaScript Libraries -->
 <script
     src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
