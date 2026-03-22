@@ -2,6 +2,7 @@ import json
 from django.utils import timezone
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from django.core.cache import cache
 from .models import ChatMessage   
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -21,11 +22,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #Aceptar la conexión del Websocket
         await self.accept()
         
+        if self.scope["user"].is_authenticated:
+            cache_key = f"online_user_{self.scope['user'].id}"
+            from asgiref.sync import sync_to_async
+            await sync_to_async(cache.set)(cache_key, True, 300)
+        
+        await self.enviar_conteo_usuarios()
+        
     async def disconnect(self, close_code):
+        user = self.scope["user"]
+        if user.is_authenticated:
+            cache_key = f"online_user_{user.id}"
+            from asgiref.sync import sync_to_async
+            await sync_to_async(cache.delete)(cache_key)
+            
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+        
+        await self.enviar_conteo_usuarios()
         
     #Recibe el mensaje desde el navegador (Front)
     async def receive(self, text_data):
@@ -76,3 +92,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'datetime': event['datetime']
         }))
         
+    async def enviar_conteo_usuarios(self):
+        from asgiref.sync import sync_to_async
+        conteo = await sync_to_async(lambda: len(cache.keys("online_user_*"))) ()
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'user_count_update',
+                'count': conteo
+            }
+        )
+        
+    async def user_count_update(self, event):
+        count = event['count']
+        await self.send(text_data=json.dumps({
+            'type': 'user_count',
+            'count': count
+        }))

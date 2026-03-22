@@ -5,6 +5,7 @@ from django.contrib.auth.models import User, Group
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
 from django.utils import timezone
+from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from juegos.forms import PartidaModelForm, JuegoModelForm, LocalModelForm, JuegoImagenForm, JuegoImagenMultipleForm, UserProfileForm, PostModelForm, ComentarioModelForm
@@ -16,7 +17,6 @@ from django.core.exceptions import ValidationError
 import json
 
 # Create your views here.
-
 
 def inicio(req):
     partidas = Partida.objects.all()
@@ -34,6 +34,7 @@ def inicio(req):
     partida_domingo = Partida.objects.filter(fecha = week_day[6]).order_by('hora')
     
     mensajes = ChatMessage.objects.all().order_by('-timestamp')[:50]
+    conectados = usuarios_online()
     
     context = {
         'partidas': partidas,
@@ -47,9 +48,13 @@ def inicio(req):
         'week_day': week_day,
         'hoy': hoy,
         'ahora_mas_una': ahora,
-        'mensajes': mensajes
+        'mensajes': mensajes,
+        'conectados': conectados
     }
     return render(req, 'index.html', context)
+
+def usuarios_online():
+    return len(cache.keys("online_user_*"))
 
 def get_weeks_days():
     today = date.today()

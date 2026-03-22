@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'juegos.middleware.UsuariosOnlineMiddleware'
 ]
 
 ROOT_URLCONF = 'juegos_mesa.urls'
