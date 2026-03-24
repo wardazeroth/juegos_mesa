@@ -54,6 +54,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         hora_local = timezone.localtime(utc_now)
         ahora = hora_local.strftime('%d/%m %H:%M')
         
+        from asgiref.sync import sync_to_async
+        keys = await sync_to_async(cache.keys)("online_user_*")
+        data_redis = await sync_to_async(cache.get_many)(keys)
+        nombres_conectados = list(data_redis.values())
+        
         #Guardar mensaje en bd relacional
         if user.is_authenticated:
             await self.save_message(user, message, self.room_group_name, ahora)
@@ -68,7 +73,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'message': message,
                 'user': username,
-                'datetime': ahora
+                'datetime': ahora,
+                'conectados_ahora': nombres_conectados
             }
         )
         
@@ -85,12 +91,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
         user = event['user']
+        conectados_ahora = event['conectados_ahora']
         
         #Mandar el mensaje al webscoket del cliente
         await self.send(text_data=json.dumps({
             'message': message,
             'user': user,
-            'datetime': event['datetime']
+            'datetime': event['datetime'],
+            'conectados_ahora': conectados_ahora
         }))
         
     async def enviar_conteo_usuarios(self):

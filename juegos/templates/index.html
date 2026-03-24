@@ -342,7 +342,7 @@
                     {%for mensaje in mensajes%}
                         <div>
                             <small class='text-muted'>[{{mensaje.timestamp|date:"d/m H:i"}}]</small>
-                                <strong> {{mensaje.user.username}}: </strong>{{mensaje.content}}
+                                <strong class="chat-username" data-user="{{mensaje.user.username}}">{{mensaje.user.username}}: </strong>  {{mensaje.content}}
                         </div>
                     {%endfor%}    
                 </div>
@@ -369,12 +369,30 @@
         'ws://'+ window.location.host+ '/ws/chat/general/'
     );
 
+    function actualizarColorUsuario (listaConectados) {
+        const nombres= document.querySelectorAll('.chat-username');
+        nombres.forEach(elemento => {
+            const nombreUsuario = elemento.getAttribute('data-user');
+            const marcador_online = elemento.parentElement.querySelector('.text-muted');
+
+            if (listaConectados.includes(nombreUsuario)) {
+                elemento.style.color= '#00ff00'
+                elemento.style.textShadow = "0 0 5px #00ff00";
+                if (marcador_online) marcador_online.classList.add('online');
+            }
+            else {
+                elemento.style.color = '#ffffff';
+                elemento.style.textShadow = "none";
+                if (marcador_online) marcador_online.classList.remove('online');
+            }
+        })
+    };
+
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
         if (data.type === 'user_count') {
             const usernames = data.usernames
-            const conected = document.getElementById('conected');
             const contadorElem = document.getElementById('contador_online');
             const conectados = document.getElementById('conectados');
             
@@ -387,14 +405,18 @@
                 conectados.style.color = "#00ff00";
             }
 
+            actualizarColorUsuario(usernames)
+
         } else {
             const log = document.querySelector('#chat-log');
+            const conected_user = document.getElementById('conected_user')
+            const conectados = data.conectados_ahora
 
             const nuevoDiv = document.createElement('div');
             nuevoDiv.innerHTML = `<small class='text-muted'>[${data.datetime}]</small>
-            <strong>${data.user}:</strong> ${data.message}`;
+            <strong class="chat-username" data-user="${data.user}">${data.user}:</strong> ${data.message}`;
             log.prepend(nuevoDiv);
-            
+                    
             const max_msjs = 100;
             if (log.children.length > max_msjs)
             {
@@ -402,6 +424,11 @@
             }
             // log.scrollTop = log.scrollHeight;
             log.scrollTop = 0;
+
+            if (conectados)
+                {
+                    actualizarColorUsuario(conectados)
+                }
             }
         };
 

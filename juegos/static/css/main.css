@@ -512,3 +512,26 @@ ul {
 .logo-juego {
     width: 250px !important;
 }
+
+.text-muted {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease;
+}
+
+.text-muted::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #555;
+    display: inline-block;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-right: 10px;
+}
+
+.text-muted.online::before {
+    background-color: #00ff00 !important;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+}
