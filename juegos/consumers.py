@@ -24,8 +24,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         if self.scope["user"].is_authenticated:
             cache_key = f"online_user_{self.scope['user'].id}"
+            user = self.scope['user']
             from asgiref.sync import sync_to_async
-            await sync_to_async(cache.set)(cache_key, True, 300)
+            await sync_to_async(cache.set)(cache_key, user.username, 300)
         
         await self.enviar_conteo_usuarios()
         
@@ -94,18 +95,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     async def enviar_conteo_usuarios(self):
         from asgiref.sync import sync_to_async
-        conteo = await sync_to_async(lambda: len(cache.keys("online_user_*"))) ()
+        keys = await sync_to_async(cache.keys)("online_user_*")
+        nombres = []
+        if keys:
+            valores = await sync_to_async(cache.get_many)(keys)
+            nombres = list(valores.values())
+            
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'user_count_update',
-                'count': conteo
+                'count': len(nombres),
+                'conectados': nombres,
             }
         )
         
     async def user_count_update(self, event):
-        count = event['count']
+        #aquí se envía el JSON al nevegador
+        
         await self.send(text_data=json.dumps({
             'type': 'user_count',
-            'count': count
+            'count': event['count'],
+            'usernames': event['conectados'],
         }))
